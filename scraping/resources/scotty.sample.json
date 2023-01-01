@@ -1,0 +1,153 @@
+[
+  {
+    "id": "3dw4dmgm44c8974k",
+    "ver": "1.32",
+    "lang": "deu",
+    "auth": {
+      "type": "AID",
+      "aid": "5vHavmuWPWIfetEe"
+    },
+    "client": {
+      "id": "OEBB",
+      "type": "WEB",
+      "name": "webapp",
+      "l": "vs_webapp"
+    },
+    "formatted": false,
+    "ext": "OEBB.11",
+    "svcReqL": [
+      {
+        "req": {
+          "input": {
+            "field": "S",
+            "loc": {
+              "name": "WIEN?",
+              "type": "ALL",
+              "dist": 1000
+            },
+            "maxLoc": 7
+          }
+        },
+        "meth": "LocMatch",
+        "id": "1|1|"
+      }
+    ]
+  },
+  {
+    "id": "3dw4dmgm44c8974k",
+    "ver": "1.32",
+    "lang": "deu",
+    "auth": {
+      "type": "AID",
+      "aid": "5vHavmuWPWIfetEe"
+    },
+    "client": {
+      "id": "OEBB",
+      "type": "WEB",
+      "name": "webapp",
+      "l": "vs_webapp"
+    },
+    "formatted": false,
+    "ext": "OEBB.11",
+    "svcReqL": [
+      {
+        "req": {
+          "input": {
+            "field": "S",
+            "loc": {
+              "name": "WIEN?",
+              "type": "ALL",
+              "dist": 1000
+            },
+            "maxLoc": 7
+          }
+        },
+        "meth": "LocMatch",
+        "id": "1|2|"
+      }
+    ]
+  },
+  {
+    "id": "3dw4dmgm44c8974k",
+    "ver": "1.32",
+    "lang": "deu",
+    "auth": {
+      "type": "AID",
+      "aid": "5vHavmuWPWIfetEe"
+    },
+    "client": {
+      "id": "OEBB",
+      "type": "WEB",
+      "name": "webapp",
+      "l": "vs_webapp"
+    },
+    "formatted": false,
+    "ext": "OEBB.11",
+    "svcReqL": [
+      {
+        "meth": "TripSearch",
+        "req": {
+          "depLocL": [
+            {
+              "lid": "A=1@O=Linz/Donau Hbf@X=14291814@Y=48290150@U=81@L=008100013@B=1@p=1275041666@",
+              "name": "Linz/Donau Hbf"
+            }
+          ],
+          "arrLocL": [
+            {
+              "lid": "A=1@O=WIEN@X=16341553@Y=48207036@U=80@L=001190100@B=1@p=1248698221@",
+              "name": "WIEN"
+            }
+          ],
+          "minChgTime": "-1",
+          "liveSearch": false,
+          "maxChg": "1000",
+          "jnyFltrL": [
+            {
+              "type": "PROD",
+              "mode": "INC",
+              "value": 15359
+            }
+          ],
+          "gisFltrL": [
+            {
+              "type": "P",
+              "mode": "FB",
+              "profile": {
+                "type": "F",
+                "enabled": true,
+                "maxdist": "2000"
+              }
+            },
+            {
+              "type": "M",
+              "mode": "FB",
+              "meta": "foot_speed_normal"
+            },
+            {
+              "type": "P",
+              "mode": "FB",
+              "profile": {
+                "type": "B",
+                "enabled": false,
+                "maxdist": "0"
+              }
+            },
+            {
+              "type": "M",
+              "mode": "FB",
+              "meta": "bike_speed_normal"
+            }
+          ],
+          "getPolyline": true,
+          "outFrwd": true,
+          "outTime": "010240",
+          "outDate": "20221028",
+          "getPasslist": true,
+          "getTariff": true
+        },
+        "id": "1|4|"
+      }
+    ]
+  }
+]

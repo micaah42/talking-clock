@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml.qrc</file>
+        <file>AdMoMain.qml</file>
+    </qresource>
+</RCC>

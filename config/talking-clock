@@ -1,0 +1,35 @@
+#!/bin/sh
+
+if [ ! -f /usr/bin/talking-clock ]; then
+    echo 'binary not found'
+    exit 1
+fi
+
+start() {
+    /usr/bin/taking-clock &
+}
+
+stop() {
+    killall talking-clock
+}
+
+case "$1" in 
+    start)
+       start
+       ;;
+    stop)
+       stop
+       ;;
+    restart)
+       stop
+       start
+       ;;
+    status)
+       ps -A | grep talking-clock
+       ;;
+    *)
+       echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0
+

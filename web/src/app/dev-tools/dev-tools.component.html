@@ -1,0 +1,43 @@
+<mat-card>
+  <mat-card-content>
+    <div *ngFor="let receiver of cmds">
+      <div><b>{{receiver[0]}}:</b></div>
+      <div *ngFor="let method of receiver[1]" class="method">
+        <i (click)="cmd.receiver = receiver[0]; cmd.method = methodName(method)">- {{method}}</i>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-subtitle>Command</mat-card-subtitle>
+  <mat-card-content>
+    <mat-form-field>
+      <label>Receiver</label>
+      <input matInput [(ngModel)]="cmd.receiver" required>
+    </mat-form-field>
+    <mat-form-field>
+      <label>Method</label>
+      <input matInput [(ngModel)]="cmd.method">
+    </mat-form-field>
+    <mat-form-field>
+      <label>Arguments</label>
+      <input matInput [(ngModel)]="cmd.args">
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-subtitle>Answer</mat-card-subtitle>
+  <mat-card-content>
+    <div *ngIf="answer.length > 0" class="info-primary">
+      {{answer}}
+    </div>
+    <div *ngIf="error.length > 0" class="info-accent">
+      {{error}}
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-flat-button color="primary" (click)="send()">
+      Send
+    </button>
+  </mat-card-actions>
+</mat-card>

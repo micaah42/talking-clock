@@ -1,0 +1,74 @@
+#!/usr/bin/python
+
+import json
+import os
+import pprint
+import argparse
+import datetime
+import dateutil.parser
+
+import scralib.fb
+import scralib.utils
+
+if __name__ == '__main__':
+    # parse args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--source_type', choices=['fbgrp', 'fbacc', 'fbhsh', 'subreddit'], required=True)
+    parser.add_argument('-t', '--time_limit', type=str)
+
+    parser.add_argument('source', type=str)
+    args = parser.parse_args()
+
+    # check architecture
+    args.machine = os.popen('uname -m').read()[:-1]
+
+
+def get_source_directory():
+    # get the path for this source
+    source_directory = os.path.join(scralib.utils.get_data_folder(), args.source_type, args.source)
+    os.makedirs(source_directory, exist_ok=True)
+    return source_directory
+
+
+def get_fetch_directory():
+    source_directory = get_source_directory()
+    fetch_name = scralib.utils.get_next(source_directory, 'fetch', '')
+    fetch_directory = os.path.join(source_directory, fetch_name)
+    return fetch_directory
+
+
+def get_time_limit():
+    if type(args.time_limit) == str:
+        return dateutil.parser.parse(args.time_limit)
+    elif type(args.time_limit) is int or type(args.time_limit) is float:
+        return datetime.datetime.fromtimestamp(args.time_limit)
+    else:
+        source_directory = get_source_directory()
+        previous_fetch = scralib.utils.get_next(source_directory, 'fetch', '', 0)
+        previous_metafile = os.path.join(source_directory, previous_fetch, 'meta.json')
+        if os.path.isfile(previous_metafile):
+            with open(previous_metafile, 'r') as f:
+                meta = json.load(f)
+            return datetime.datetime.fromtimestamp(meta['timestamp']['max'])
+        else:
+            raise Exception('Failed to determine timelimit!')
+
+
+def main():
+    # do some additional parsing
+    args.fetch_directory = get_fetch_directory()
+    args.time_limit = get_time_limit()
+
+    # print the args
+    print('args'.center(64, '.'))
+    print(pprint.pformat(vars(args), indent=0)[1:-1])
+    print(''.center(64, '.'))
+
+    if args.source_type.startswith('fb'):
+        scralib.fb.download(args.source, args.source_type, args.time_limit, args.fetch_directory)
+    else:
+        raise f'source type {args.source_type} not implemented!'
+
+
+if __name__ == '__main__':
+    main()

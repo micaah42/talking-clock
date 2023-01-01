@@ -1,0 +1,28 @@
+@import 'src/theme.scss';
+
+:host {
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+
+  mat-toolbar {
+    padding: 10px;
+    height: fit-content;
+
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 5px;
+
+    span {
+      color: $primary-dark;
+      font-weight: bold;
+    }
+
+    filter: drop-shadow(0px 2px 2px $accent-dark);
+  }
+
+  .main {
+    flex: 1;
+    padding: 20px 10px 10px;
+  }
+}

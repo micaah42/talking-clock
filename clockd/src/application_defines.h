@@ -1,0 +1,6 @@
+#ifndef APPLICATION_DEFINES_H
+#define APPLICATION_DEFINES_H
+
+#define MAIN_URL QUrl("qrc:/Main.qml")
+
+#endif // APPLICATION_DEFINES_H

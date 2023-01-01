@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  // align-items: stretch;
+  flex-flow: column nowrap;
+  gap: 10px
+}
+
+#alarm-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 10px;
+
+  mat-card-content {
+    flex: 1;
+  }
+
+  .grow {
+    flex: 1;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .repeat-rule {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: baseline;
+    gap: 10px;
+  }
+}

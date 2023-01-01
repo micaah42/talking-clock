@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>loudcow.wav</file>
+    </qresource>
+</RCC>

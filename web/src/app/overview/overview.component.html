@@ -1,0 +1,28 @@
+<div id="canvas-container">
+  <img class="wave" src="assets/images/wave0.svg">
+  <img class="wave mirrored" src="assets/images/wave0.svg">
+  <img @rocket class="rocket" *ngIf="timeToFly" src="assets/images/rocket.png">
+</div>
+
+<div id="other">
+  <mat-card>
+    <mat-card-subtitle>Next Alarm:</mat-card-subtitle>
+    <mat-card-title *ngFor="let item of nextAlarms">
+      <b>{{item.name}}</b>, <b>{{item.time}}</b>
+    </mat-card-title>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title>Training Status</mat-card-title>
+    <mat-card-content>
+      Text. Text text bla i dunno whadda hell to!
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title>Device Status</mat-card-title>
+    <mat-card-content>
+      Text. Text text bla i dunno whadda hell to!
+    </mat-card-content>
+  </mat-card>
+</div>

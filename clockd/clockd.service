@@ -1,0 +1,11 @@
+[Unit]
+Description=This unit starts the talking clock gui.
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/usr/bin/clockd
+Environment='QT_QPA_PLATFORM=eglfs'
+
+[Install]
+WantedBy=multi-user.target

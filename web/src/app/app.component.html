@@ -1,0 +1,16 @@
+<!-- Toolbar -->
+<mat-toolbar>
+  <button [routerLink]="''" class="image-button" color="primary" mat-button>
+    <img alt="favicon" src="favicon.ico">
+    Talking Clock
+  </button>
+  <button [routerLink]="'alarms'" color="accent" mat-button>Alarms</button>
+  <button color="default" mat-button>Brains</button>
+  <button [routerLink]="'devtools'" color="default" mat-button>Dev Tools</button>
+  <mat-divider></mat-divider>
+</mat-toolbar>
+
+<!-- Router -->
+<div class="mat-app-background main">
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+}
+
+mat-card-content {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+mat-form-field {
+  flex: 1;
+}
+

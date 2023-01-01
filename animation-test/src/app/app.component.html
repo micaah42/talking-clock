@@ -1,0 +1,17 @@
+<svg
+  id="visual"
+  viewBox="-1 -1 2 2"
+  >
+  <g >
+    <path transform="translate(0, 0)"
+      [attr.d]="backgroundPath"
+      fill="#BB004B"
+    ></path>
+  </g>
+  <g  [attr.transform]="hourTransform">
+    <path
+      [attr.d]="hourPointerPath"
+      fill="#000000"
+    ></path>
+  </g>
+</svg>
