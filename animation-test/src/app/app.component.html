@@ -1,17 +1,23 @@
-<svg
-  id="visual"
-  viewBox="-1 -1 2 2"
-  >
-  <g >
-    <path transform="translate(0, 0)"
-      [attr.d]="backgroundPath"
-      fill="#BB004B"
-    ></path>
+<!--
+<svg style="display: none;" id="visual" viewBox="-1 -1 2 2">
+  <g>
+    <path transform="translate(0, 0)" [attr.d]="backgroundPath" fill="#BB004B"></path>
   </g>
-  <g  [attr.transform]="hourTransform">
-    <path
-      [attr.d]="hourPointerPath"
-      fill="#000000"
-    ></path>
+  <g [attr.transform]="hourTransform">
+    <path [attr.d]="hourPointerPath" fill="#000000"></path>
   </g>
 </svg>
+-->
+<mat-sidenav-container style="height: 100vh; width: 100vw;">
+  <mat-sidenav #sidenav [opened]="true" mode="side" class="sidenav">
+    <div class="route-container">
+      <button mat-stroked-button *ngFor="let route of routes" [routerLink]="route.path">
+        {{route.component?.name}}
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

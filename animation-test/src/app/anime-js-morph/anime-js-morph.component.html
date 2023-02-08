@@ -1,0 +1,20 @@
+<svg id="visual" viewBox="-1.5 -1.5 3 3" xmlns="http://www.w3.org/2000/svg">
+    <filter id='inset-shadow'>
+        <feOffset dx='0' dy='0' />
+        <feGaussianBlur stdDeviation='0.05' result='offset-blur' />
+        <feComposite operator='out' in='SourceGraphic' in2='offset-blur' result='inverse' />
+        <feFlood flood-color='black' flood-opacity='.95' result='color' />
+        <feComposite operator='in' in='color' in2='inverse' result='shadow' />
+        <feComposite operator='over' in='shadow' in2='SourceGraphic' />
+    </filter>
+    <g filter="url(#inset-shadow)">
+        <path *ngIf="backgroundGraph" [attr.d]="backgroundGraph.d" fill="#611C35"></path>
+    </g>
+    <g>
+        <path *ngIf="secondsGraph" [attr.d]="secondsGraph.d" fill="#2E5077"></path>
+        <path *ngIf="minutesGraph" [attr.d]="minutesGraph.d" fill="#4DA1A9"></path>
+        <path *ngIf="hoursGraph" [attr.d]="hoursGraph.d" fill="#D7E8BA"></path>
+        <rect *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 12]" width="0.1" height="0.01" x="0.69" rx="20"
+            ry="20" style="fill:rgb(0,0,0); rotate: {{360 * i / 12 }}deg; " />
+    </g>
+</svg>

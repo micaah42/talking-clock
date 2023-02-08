@@ -1,0 +1,11 @@
+:host {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+svg {
+    max-height: 95vh;
+    margin: auto;
+    rotate: 180deg;
+}
