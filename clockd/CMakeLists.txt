@@ -53,9 +53,6 @@ add_executable(clockd
   src/soundservice.h
   src/soundservice.cpp
 
-  src/soundplayer.h
-  src/soundplayer.cpp
-
   src/taskservice.h
   src/taskservice.cpp
   src/main.cpp
@@ -77,3 +74,4 @@ target_link_libraries(clockd
 include_directories(../libremote/)
 
 install(TARGETS clockd RUNTIME)
+install(DIRECTORY sounds/ DESTINATION share/clockd/sounds)

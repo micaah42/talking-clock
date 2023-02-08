@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     printApplicationStart();
 
-    qmlRegisterType<SoundPlayer>("Clock", 1, 0, "SoundPlayer");
+    // qmlRegisterType<SoundPlayer>("Clock", 1, 0, "SoundPlayer");
 
 #ifndef Q_PROCESSOR_X86_64
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -104,5 +104,6 @@ void printApplicationStart()
     qInfo().noquote() << "#  " + buildTime.leftJustified(75, ' ') << "  #";
     qInfo().noquote() << "#  " + appVersion.leftJustified(75, ' ') << "  #";
     qInfo().noquote() << "#  " + qtVersion.leftJustified(75, ' ') << "  #";
+    qInfo().noquote() << "#  " + QString("by micaah42").rightJustified(75, ' ') << "  #";
     qInfo().noquote() << QString().fill('#', 82);
 }

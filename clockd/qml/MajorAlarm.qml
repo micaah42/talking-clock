@@ -1,13 +1,12 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
 
-import Clock 1.0
-
+// import Clock 1.0
 Item {
     id: ctrl
     z: 100
     property var alarm
-    signal accepted();
+    signal accepted
 
     Item {
         x: -window.width
@@ -21,8 +20,6 @@ Item {
             color: colorService.colors["darkaccent"]
             border.color: "#fff"
             border.width: 2
-
-
         }
 
         PropertyAnimation on x {
@@ -30,7 +27,8 @@ Item {
             running: true
             easing.overshoot: 0.4
             easing.amplitude: 0.2
-            from: -window.width; to: 0
+            from: -window.width
+            to: 0
 
             easing.type: Easing.OutBack
             duration: 1750
@@ -41,15 +39,16 @@ Item {
             running: false
             easing.overshoot: 0.4
             easing.amplitude: 0.2
-            from: 0; to:-window.width;
+            from: 0
+            to: -window.width
 
             easing.type: Easing.OutBack
             duration: 1750
 
             onFinished: {
-                console.log('alarm accepted!');
-                ctrl.accepted();
-                ctrl.destroy();
+                console.log('alarm accepted!')
+                ctrl.accepted()
+                ctrl.destroy()
             }
         }
 
@@ -92,26 +91,20 @@ Item {
                 text: "Accept"
                 property bool wasHeld: false
                 onPressAndHold: {
-                    wasHeld = true;
+                    wasHeld = true
                 }
                 onReleased: {
                     if (!wasHeld)
-                        return;
+                        return
 
-                    closer.start();
-                    player.stop();
+                    soundService.stop()
+                    closer.start()
                 }
-
-            }
-
-            SoundPlayer {
-                id: player
-                sound: alarm["sound"]
             }
 
             Component.onCompleted: {
-                console.log('play', alarm["sound"]);
-                player.start();
+                console.log('play', alarm["sound"])
+                soundService.play(alarm['sound'])
             }
         }
     }
