@@ -45,7 +45,7 @@ VariantSerializer::VariantSerializer()
 QJsonValue VariantSerializer::serialize(const QVariant &variant)
 {
     if (!_serializers.contains(variant.userType())) {
-        _serializers[variant.userType()] = registerSerializer(variant.userType());
+        _serializers[variant.userType()] = buildSerializer(variant.userType());
     }
 
     auto value = _serializers[variant.userType()](variant);
@@ -55,14 +55,14 @@ QJsonValue VariantSerializer::serialize(const QVariant &variant)
 QVariant VariantSerializer::deserialize(const int typeId, const QJsonValue &value)
 {
     if (!_deserializers.contains(typeId)) {
-        _deserializers[typeId] = registerDeserializer(typeId);
+        _deserializers[typeId] = buildDeserializer(typeId);
     }
 
     auto variant = _deserializers[typeId](value);
     return variant;
 }
 
-std::function<QJsonValue(const QVariant &)> VariantSerializer::registerSerializer(int metaTypeId)
+std::function<QJsonValue(const QVariant &)> VariantSerializer::buildSerializer(int metaTypeId)
 {
     QMetaType metaType(metaTypeId);
     qCInfo(self) << "registering serializer:" << metaType.name() << metaType.flags();
@@ -118,7 +118,7 @@ std::function<QJsonValue(const QVariant &)> VariantSerializer::registerSerialize
     qFatal("Failed to build serializer!");
 }
 
-std::function<QVariant(const QJsonValue &)> VariantSerializer::registerDeserializer(int typeId)
+std::function<QVariant(const QJsonValue &)> VariantSerializer::buildDeserializer(int typeId)
 {
     QMetaType metaType(typeId);
     qCInfo(self) << "register deserializer:" << metaType.name() << metaType.flags();

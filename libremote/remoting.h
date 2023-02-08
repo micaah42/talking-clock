@@ -45,7 +45,7 @@ private:
     QMap<QString, QObject *> _objects;
     QMap<QObject *, QMap<QString, QMetaMethod>> _methodsOld;
     QMap<QObject *, QMap<QString, QList<QMetaProperty>>> _propertiesOld;
-    QMap<QObject *, QString> _modelKeys;
+    // QMap<QObject *, QString> _modelKeys;
 
     QMap<QString, QPair<QObject *, QMetaMethod>> _methods;
     QMap<QString, QPair<QObject *, QMetaProperty>> _properties;

@@ -6,7 +6,7 @@
 #include "templatemodel.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "remoting");
+Q_LOGGING_CATEGORY(self, "remoting", QtWarningMsg);
 }
 
 QByteArray Remoting::pong()
@@ -19,7 +19,6 @@ QByteArray Remoting::pong()
 Remoting::Remoting(QObject *parent) : QObject{parent}
 {
     connect(&_server, &ClockServer::messageReceived, this, &Remoting::onMessageReceived);
-    // registerObject("remoting", this);
 }
 
 void Remoting::registerObject(const QString &name, QObject *object)

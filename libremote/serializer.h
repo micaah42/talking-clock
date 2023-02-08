@@ -31,8 +31,8 @@ private:
     explicit VariantSerializer();
     static VariantSerializer *_instance;
 
-    std::function<QJsonValue(const QVariant &)> registerSerializer(int metaType);
-    std::function<QVariant(const QJsonValue &)> registerDeserializer(int metaType);
+    std::function<QJsonValue(const QVariant &)> buildSerializer(int metaType);
+    std::function<QVariant(const QJsonValue &)> buildDeserializer(int metaType);
 
     QMap<int, std::function<QJsonValue(const QVariant &)>> _serializers;
     QMap<int, std::function<QVariant(const QJsonValue &)>> _deserializers;
