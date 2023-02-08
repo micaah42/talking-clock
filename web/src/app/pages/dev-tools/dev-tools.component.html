@@ -1,9 +1,9 @@
 <mat-card>
   <mat-card-content>
-    <div *ngFor="let receiver of cmds">
-      <div><b>{{receiver[0]}}:</b></div>
-      <div *ngFor="let method of receiver[1]" class="method">
-        <i (click)="cmd.receiver = receiver[0]; cmd.method = methodName(method)">- {{method}}</i>
+    <div *ngFor="let receiver of cmdMap.keys()">
+      <div><b>{{receiver}}:</b></div>
+      <div *ngFor="let method of cmdMap.get(receiver)" class="method">
+        <button mat-button (click)="cmd.receiver = receiver; cmd.method = methodName(method)">{{method}}</button>
       </div>
     </div>
   </mat-card-content>

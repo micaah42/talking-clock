@@ -5,17 +5,11 @@
 
 
 
-html, body {
-  height: 100%;
-
-}
-
+html,
 body {
+  height: 100%;
   margin: 0;
-}
-
-* {
-  // font-family: 'Mouse Memoirs', sans-serif;
+  font-family: 'Mouse Memoirs', sans-serif;
 }
 
 .image-button {
@@ -32,16 +26,17 @@ body {
 }
 
 .info-primary {
-  background-color: mat.get-color-from-palette($light-primary);
+  background-color: mat.get-color-from-palette($dark-primary);
+  fill: mat.get-color-from-palette($dark-primary);
   border-radius: 5px;
   padding: 10px;
   width: 100%;
 }
 
 .info-accent {
-  background-color: mat.get-color-from-palette($light-accent);
+  background-color: mat.get-color-from-palette($dark-accent);
+  fill: mat.get-color-from-palette($dark-accent);
   border-radius: 5px;
   padding: 10px;
   width: 100%;
 }
-

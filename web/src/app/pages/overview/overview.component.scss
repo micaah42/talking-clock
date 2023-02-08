@@ -1,4 +1,5 @@
 :host {
+  height: 100%;
   display: flex;
   flex-flow: column;
   gap: 10px;
@@ -16,12 +17,14 @@
     rotate: 90deg;
     width: auto;
   }
+
   .wave {
     position: absolute;
     height: 50%;
     width: 100%;
     top: 0;
   }
+
   .mirrored {
     rotate: 180deg;
     top: 50%

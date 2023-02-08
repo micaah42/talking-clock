@@ -1,7 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from "rxjs";
-import {Alarm} from "../../models/alarm";
-import {Info, RemotingService} from "../remoting/remoting.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from "rxjs";
+
+import { Alarm } from "src/models/alarm";
+import { Info, RemotingService } from "src/app/remoting/remoting.service";
 
 @Component({
   selector: 'app-alarms',
@@ -34,7 +35,7 @@ export class AlarmsComponent implements OnInit, OnDestroy {
         if (value === null) {
           this._alarms.splice(index, 1);
         } else {
-          this._alarms[index] = {...this._alarms[index], ...value};
+          this._alarms[index] = { ...this._alarms[index], ...value };
         }
       })
     ]
@@ -46,21 +47,15 @@ export class AlarmsComponent implements OnInit, OnDestroy {
 
   onAlarmChanged(id: number): void {
     const alarm = this._alarms[id];
-    this.remoting.cmd<null>('alarms.model', 'set', [id, alarm]).catch((reason) => {
-      console.warn(`failed to change alarm ${id}, ${alarm}: ${reason}`);
-    });
+    this.remoting.cmd<null>('alarms.model', 'set', [id, alarm]);
   }
 
   addAlarm(): void {
-    this.remoting.cmd<null>('alarms.model', 'push', []).catch((reason) => {
-      console.warn(`failed to add alarm: ${reason}`);
-    })
+    this.remoting.cmd<null>('alarms.model', 'push', []).then();
   }
 
   removeAlarm(id: number): void {
-    this.remoting.cmd<null>('alarms.model', 'remove', [id]).catch((reason) => {
-      console.warn(`failed to remove alarm ${id}: ${reason}`);
-    })
+    this.remoting.cmd<null>('alarms.model', 'remove', [id]).then();
   }
 
   ngOnDestroy() {

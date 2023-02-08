@@ -1,8 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {animate, style, transition, trigger} from '@angular/animations';
-import {Subscription} from "rxjs";
-import {RemotingService, Info} from "../remoting/remoting.service";
-import {Alarm} from "src/models/alarm";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { Subscription } from "rxjs";
+
+import { RemotingService, Info } from "src/app/remoting/remoting.service";
+import { Alarm } from "src/models/alarm";
 
 @Component({
   selector: 'app-overview',
@@ -10,8 +11,8 @@ import {Alarm} from "src/models/alarm";
   styleUrls: ['./overview.component.scss'],
   animations: [
     trigger('rocket', [
-      transition(':enter', [style({'left': "-100%"}),
-        animate(10000, style({'left': "200%"})),])
+      transition(':enter', [style({ 'left': "-100%" }),
+      animate(10000, style({ 'left': "200%" })),])
     ]),
   ]
 })

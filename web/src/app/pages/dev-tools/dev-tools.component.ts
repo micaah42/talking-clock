@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {RemotingService} from "../remoting/remoting.service";
+import { Component, OnInit } from '@angular/core';
+
+import { RemotingService } from 'src/app/remoting/remoting.service';
 
 @Component({
   selector: 'app-dev-tools',
@@ -11,8 +12,8 @@ export class DevToolsComponent implements OnInit {
   constructor(private remoting: RemotingService) {
   }
 
-  private cmdMap: Map<string, string[]> = new Map<string, string[]>();
-  public cmd = {receiver: '', method: '', args: ''};
+  public cmdMap: Map<string, string[]> = new Map<string, string[]>();
+  public cmd = { receiver: '', method: '', args: '' };
   public answer = '';
   public error = ''
 
@@ -42,12 +43,13 @@ export class DevToolsComponent implements OnInit {
       return JSON.parse(arg)
     });
 
-    this.remoting.cmd(this.cmd.receiver, this.cmd.method, args).then(answer => {
+    this.remoting.cmd<unknown>(this.cmd.receiver, this.cmd.method, args).then(answer => {
       this.answer = JSON.stringify(answer);
       this.error = '';
-    }).catch(reason => {
+    }).catch((reason: any) => {
+      console.log(reason)
+      this.error = JSON.stringify(reason);
       this.answer = '';
-      this.error = reason;
     });
   }
 
