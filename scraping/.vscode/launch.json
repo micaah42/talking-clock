@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Python: Scrape",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "--page", "facebook",
+                "--source_type", "account",
+                "--source_name", "nintendo",
+                "--time_limit", "jan 10"
+            ],
+        }
+    ]
+}

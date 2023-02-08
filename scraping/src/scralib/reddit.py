@@ -7,7 +7,7 @@ import praw
 import pandas as pd
 
 # custom
-import scralib.utils
+import scralib.fetcher
 
 
 def download():

@@ -1,0 +1,19 @@
+[project]
+name = "scralib"
+version = "0.1"
+
+description = "Package for scraping social media on rpi4."
+authors = [{ name="micaah42", email="someone@micaah42.com" }]
+
+requires-python = ">=3.10"
+readme = "README.md"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+"Homepage" = "http://www.micaah42.com"
+
+# [project.scripts]
+# hello-world = "scralib:fetch"

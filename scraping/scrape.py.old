@@ -38,20 +38,22 @@ def get_fetch_directory():
 
 
 def get_time_limit():
-    if type(args.time_limit) == str:
+    if type(args.time_limit) is str:
         return dateutil.parser.parse(args.time_limit)
     elif type(args.time_limit) is int or type(args.time_limit) is float:
         return datetime.datetime.fromtimestamp(args.time_limit)
+    elif args.time_limit is not None:
+        raise Exception('Failed to parse timelimit!')
+
+    source_directory = get_source_directory()
+    previous_fetch = scralib.utils.get_next(source_directory, 'fetch', '', 0)
+    previous_metafile = os.path.join(source_directory, previous_fetch, 'meta.json')
+    if os.path.isfile(previous_metafile):
+        with open(previous_metafile, 'r') as f:
+            meta = json.load(f)
+        return datetime.datetime.fromtimestamp(meta['timestamp']['max'])
     else:
-        source_directory = get_source_directory()
-        previous_fetch = scralib.utils.get_next(source_directory, 'fetch', '', 0)
-        previous_metafile = os.path.join(source_directory, previous_fetch, 'meta.json')
-        if os.path.isfile(previous_metafile):
-            with open(previous_metafile, 'r') as f:
-                meta = json.load(f)
-            return datetime.datetime.fromtimestamp(meta['timestamp']['max'])
-        else:
-            raise Exception('Failed to determine timelimit!')
+        raise Exception('Failed to determine timelimit!')
 
 
 def main():
@@ -65,7 +67,7 @@ def main():
     print(''.center(64, '.'))
 
     if args.source_type.startswith('fb'):
-        scralib.fb.download(args.source, args.source_type, args.time_limit, args.fetch_directory)
+        scralib.fb.download(args.source, args.source_type, args.time_limit)
     else:
         raise f'source type {args.source_type} not implemented!'
 
