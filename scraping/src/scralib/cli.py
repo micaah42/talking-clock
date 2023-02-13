@@ -12,7 +12,7 @@ def main():
     # source selection
     parser = argparse.ArgumentParser()
     parser.add_argument('--page', choices=['facebook', 'reddit'], required=True)
-    parser.add_argument('--source_type', choices=['account', 'group'], required=True)
+    parser.add_argument('--source_type', choices=['account', 'group'])
     parser.add_argument('--source_name', type=str, required=True)
     parser.add_argument('--time_limit', type=str)
     args = parser.parse_args()
