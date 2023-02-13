@@ -46,11 +46,12 @@ private:
     QTimer _triggerer;
 
     QTimer _clock;
+    QTimer _saveTimer;
     QString _clockString;
     QString _clockFormat;
 
     QList<int> _nextIds;
-    void updateTriggerer();
+    void updateTriggerer(const QDateTime &after = QDateTime::currentDateTime());
 
     AlarmModel _alarms;
     QFile _alarmsFile;

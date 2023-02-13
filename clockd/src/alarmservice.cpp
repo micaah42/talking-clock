@@ -40,7 +40,15 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
             this,
             [this](const QModelIndex &index, const QVariant &value, const QVector<int> role) {
                 updateTriggerer();
-                saveAlarms();
+                _saveTimer.start();
+            });
+
+    connect(&_alarms,
+            &AlarmModel::rowsRemoved,
+            this,
+            [this](const QModelIndex &parent, const int &first, const int last) {
+                updateTriggerer();
+                _saveTimer.start();
             });
 }
 
@@ -49,15 +57,14 @@ QList<int> AlarmService::nextIds() const
     return _nextIds;
 }
 
-void AlarmService::updateTriggerer()
+void AlarmService::updateTriggerer(const QDateTime &after)
 {
-    auto now = QDateTime::currentDateTime();
     int minTimeout = -1;
 
     QList<int> nextIds;
     for (int i = 0; i < _alarms.size(); i++) {
         const auto &alarm = _alarms.at(i);
-        auto alarmNextTrigger = alarm.nextTrigger(now);
+        auto alarmNextTrigger = alarm.nextTrigger(after);
         if (alarmNextTrigger == -1) {
             continue;
         }
@@ -90,6 +97,7 @@ void AlarmService::updateTriggerer()
 
 void AlarmService::onTriggererTriggered()
 {
+    QDateTime after;
     auto now = QDateTime::currentDateTime();
     for (auto id : qAsConst(_nextIds)) {
         if (!_alarms.at(id).repeats()) {
@@ -97,11 +105,15 @@ void AlarmService::onTriggererTriggered()
             deactivated.setActivated(false);
             _alarms.set(id, deactivated);
         }
-        qCInfo(self) << "triggered alarm:" << id << "with drift:" << _alarms.at(id).time();
+
+        after = QDateTime{now.date(), _alarms.at(id).time()};
+        auto drift = now.time().msecsTo(_alarms.at(id).time());
+        qCInfo(self) << "triggered alarm:" << id << "with drift:" << drift;
         emit alarmTriggered(id);
     }
 
-    updateTriggerer();
+    after = after.isValid() ? after : now;
+    updateTriggerer(after);
 }
 
 void AlarmService::onClockTriggered()
