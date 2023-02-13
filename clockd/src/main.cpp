@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     remoting.registerObject("remoting", &remoting);
     remoting.registerObject("settings", settingsService);
     remoting.registerObject("alarms", alarms);
+    remoting.registerObject("sounds", soundService);
 
     const QUrl url("qrc:/Main.qml");
     QObject::connect(
