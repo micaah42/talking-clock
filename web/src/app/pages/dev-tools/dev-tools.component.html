@@ -1,9 +1,30 @@
 <mat-card>
+  <mat-card-subtitle>Properties</mat-card-subtitle>
   <mat-card-content>
-    <div *ngFor="let receiver of cmdMap.keys()">
-      <div><b>{{receiver}}:</b></div>
-      <div *ngFor="let method of cmdMap.get(receiver)" class="method">
-        <button mat-button (click)="cmd.receiver = receiver; cmd.method = methodName(method)">{{method}}</button>
+    <div>
+      <h3>Property:</h3>
+      <div *ngFor="let property of properties">
+        <button mat-button (click)="getPropertyValue(property)" style="width: 100%;">
+          {{property}}
+        </button>
+      </div>
+    </div>
+    <div>
+      <h3> Value: </h3>
+      <pre *ngIf="propertyValue">{{ propertyValue }}</pre>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-subtitle>Methods</mat-card-subtitle>
+  <mat-card-content>
+    <div *ngFor="let receiver of receivers">
+      <h3 style="text-align: center;">{{receiver}}</h3>
+      <div *ngFor="let method of methods.get(receiver)" class="method">
+        <button mat-button (click)="cmd.receiver = receiver; cmd.method = methodName(method)" style="width: 100%;">
+          {{method}}
+        </button>
       </div>
     </div>
   </mat-card-content>

@@ -8,15 +8,15 @@
         <feComposite operator='over' in='shadow' in2='SourceGraphic' />
     </filter>
 
-    <g filter="url(#inset-shadow)">
+    <g>
         <path *ngIf="backgroundGraph" [attr.d]="backgroundGraph.d" class="background"></path>
         <rect *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 12]" width="0.1" height="0.01" x="0.69" rx="20"
             ry="20" style="fill:rgb(0,0,0); rotate: {{360 * i / 12 }}deg;" />
     </g>
 
     <g>
-        <path *ngIf="secondsGraph" [attr.d]="secondsGraph.d" class="handle"></path>
-        <path *ngIf="minutesGraph" [attr.d]="minutesGraph.d" class="handle"></path>
         <path *ngIf="hoursGraph" [attr.d]="hoursGraph.d" class="handle"></path>
+        <path *ngIf="minutesGraph" [attr.d]="minutesGraph.d" class="handle"></path>
+        <path *ngIf="secondsGraph" [attr.d]="secondsGraph.d" class="handle"></path>
     </g>
 </svg>

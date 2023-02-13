@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
 
 @include mat.core();
@@ -5,9 +6,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Mouse+Memoirs&display=swap');
 
 // Define typography
-$my-typography: mat.define-typography-config($font-family: 'Mouse Memoirs, "Mouse Memoirs", sans-serif');
+$my-typography: mat.define-typography-config($font-family: 'Mouse Memoirs, "Mouse Memoirs", sans-serif',
+        $display-4: mat.define-typography-level(123px, 123px, 300, $letter-spacing: -0.05em),
+        $display-3: mat.define-typography-level(61px, 61px, 400, $letter-spacing: -0.02em),
+        $display-2: mat.define-typography-level(49px, 52px, 400, $letter-spacing: -0.005em),
+        $display-1: mat.define-typography-level(37px, 44px, 400),
+        $headline: mat.define-typography-level(26px, 35px, 400),
+        $title: mat.define-typography-level(22px, 35px, 500),
+        $subheading-2: mat.define-typography-level(17px, 30px, 400),
+        $subheading-1: mat.define-typography-level(16px, 26px, 400),
+        $body-2: mat.define-typography-level(15px, 26px, 500),
+        $body-1: mat.define-typography-level(15px, 22px, 400),
+        $caption: mat.define-typography-level(13px, 22px, 400),
+        $button: mat.define-typography-level(16px, 15px, 500),
+        $input: mat.define-typography-level(inherit, 1.2375, 440));
 
-// Define a light theme
+// Define a light theme 
 // $light-primary: mat.define-palette(mat.$indigo-palette);
 // $light-accent: mat.define-palette(mat.$pink-palette);
 // $light-theme: mat.define-light-theme((
@@ -21,20 +35,61 @@ $my-typography: mat.define-typography-config($font-family: 'Mouse Memoirs, "Mous
 // Define a dark theme
 $dark-primary: mat.define-palette(mat.$blue-palette);
 $dark-accent: mat.define-palette(mat.$red-palette);
+$dark-background: mat.$dark-theme-background-palette;
 
 $dark-theme: mat.define-dark-theme((color: (primary: $dark-primary, accent: $dark-accent), typography: $my-typography));
 
-// Apply the dark theme by default
-//@include mat.core-theme($dark-theme);
-//@include mat.button-theme($dark-theme);
-@include mat.all-component-themes($dark-theme);
 
-// Apply the light theme only when the `.my-light-theme` CSS class is applied
-// to an ancestor element of the components (such as `body`).
-//.my-light-theme {
-//  @include mat.core-color($light-theme);
-//  @include mat.button-color($light-theme);
-//}
+// Apply the dark theme by default
+@include mat.all-component-themes($dark-theme);
 
 $primary-dark: mat.get-color-from-palette($dark-primary);
 $accent-dark: mat.get-color-from-palette($dark-accent);
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Mouse Memoirs', sans-serif;
+}
+
+.image-button {
+    .mat-button-wrapper {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 8px;
+
+        img {
+            height: 28px;
+        }
+    }
+}
+
+.info-primary {
+    background-color: mat.get-color-from-palette($dark-primary);
+    fill: mat.get-color-from-palette($dark-primary);
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+}
+
+.info-accent {
+    background-color: mat.get-color-from-palette($dark-accent);
+    fill: mat.get-color-from-palette($dark-accent);
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+}
+
+.column {
+    display: flex;
+    flex-flow: column;
+    margin: 0;
+}
+
+.row {
+    display: flex;
+    flex-flow: row;
+    margin: 0;
+}

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { async } from '@angular/core/testing';
 
 import { RemotingService } from 'src/app/remoting/remoting.service';
 
@@ -8,40 +9,50 @@ import { RemotingService } from 'src/app/remoting/remoting.service';
   styleUrls: ['./dev-tools.component.scss']
 })
 export class DevToolsComponent implements OnInit {
+  public properties: string[] = [];
+  public propertyValue?: string;
 
-  constructor(private remoting: RemotingService) {
-  }
-
-  public cmdMap: Map<string, string[]> = new Map<string, string[]>();
+  public receivers: string[] = [];
+  public methods: Map<string, string[]> = new Map<string, string[]>();
   public cmd = { receiver: '', method: '', args: '' };
   public answer = '';
-  public error = ''
+  public error = '';
 
-  ngOnInit(): void {
-    this.remoting.cmd<string[]>('remoting', 'receivers', []).then((receivers: string[]) => {
-      for (let receiver of receivers) {
-        this.remoting.cmd<string[]>('remoting', 'methods', [receiver]).then((methods: string[]) => {
-          this.cmdMap.set(receiver, methods);
-          console.log(`${receiver}: ${methods}`);
-        })
-      }
+  constructor(private remoting: RemotingService) {
+    this.remoting.cmd<string[]>('remoting', 'properties', []).then(props => this.properties = props);
+
+    this.remoting.cmd<string[]>('remoting', 'receivers', []).then(async (receivers: string[]) => {
+      const methods = await Promise.all(receivers.map(async receiver => { return await this.remoting.cmd<string[]>('remoting', 'methods', [receiver]) }));
+      methods.forEach((v, i) => this.methods.set(receivers[i], v));
+      this.receivers = receivers.filter(receiver => this.methods.get(receiver)!.length > 0);
     })
   }
 
-  get cmds(): [string, string[]][] {
-    const arr = Array.from(this.cmdMap)
-    return arr;
+  ngOnInit(): void {
+
   }
 
   methodName(method: string): string {
     return method.split(' ')[1].split('(')[0]
   }
 
+  async getPropertyValue(property: string) {
+    const value = await this.remoting.cmd('remoting', 'value', [property]);
+    this.propertyValue = JSON.stringify(value, undefined, 2).trim();
+    console.log(this.propertyValue)
+  }
+
 
   send(): void {
-    const args = this.cmd.args.split(',').map(arg => {
-      return JSON.parse(arg)
-    });
+    const args = this.cmd.args.length > 0 ? this.cmd.args.split(',').map(arg => {
+      try {
+        return JSON.parse(arg)
+      } catch (e) {
+        this.error = JSON.stringify(e);
+        this.answer = '';
+        return;
+      }
+    }) : [];
 
     this.remoting.cmd<unknown>(this.cmd.receiver, this.cmd.method, args).then(answer => {
       this.answer = JSON.stringify(answer);

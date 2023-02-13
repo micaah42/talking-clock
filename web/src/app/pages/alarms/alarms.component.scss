@@ -1,3 +1,5 @@
+@import 'src/theme';
+
 :host {
   display: flex;
   // align-items: stretch;
@@ -6,13 +8,13 @@
 }
 
 #alarm-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 10px;
-
-  mat-card-content {
-    flex: 1;
+  mat-card {
+    margin-bottom: 10px;
   }
+
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
 
   .grow {
     flex: 1;

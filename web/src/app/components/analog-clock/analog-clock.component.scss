@@ -15,15 +15,13 @@
 }
 
 .background {
-    // fill: #611C35;
-    fill: mat.get-color-from-palette($dark-primary, 'darker');
-    filter: brightness(0.8);
+    fill: #1A1940;
+    stroke: #000;
+    stroke-width: 0.0025;
 }
 
 .handle {
-    //filter: drop-shadow(0px 0px 40px #000);
-    fill: mat.get-color-from-palette($dark-accent, 'darker');
-    filter: brightness(0.8);
-    stroke: mat.get-color-from-palette($dark-primary, 'darker');
-    stroke-width: 0.001;
+    fill: #731F1F;
+    stroke: #000;
+    stroke-width: 0.0025;
 }

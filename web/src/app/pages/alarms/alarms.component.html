@@ -1,45 +1,53 @@
 <div id="alarm-list">
   <mat-card *ngFor="let alarm of alarms; let i = index">
-    <mat-card-content class="alarm-form">
-      <mat-list>
-        <mat-list-item>
-          <span class="grow">
-             <mat-slide-toggle
-               color="primary" matSuffix
-               [(ngModel)]="alarm.activated"
-               (change)="onAlarmChanged(i)">
-             </mat-slide-toggle>
+    <mat-card-content class="column fixed-height">
+      <div class="row" style="align-items: baseline;">
+        <span class="grow">
+          <mat-slide-toggle color="primary" matSuffix [(ngModel)]="alarm.activated" (change)="onAlarmChanged(i)">
+          </mat-slide-toggle>
+        </span>
+        <div class="repeat-rule">
+          <span *ngFor="let rule of alarm.repeatRule; let j = index" class="column">
+            <mat-checkbox color="primary" [checked]="alarm.repeatRule[j]"
+              (click)="alarm.repeatRule[j] = !alarm.repeatRule[j]; onAlarmChanged(i)">
+            </mat-checkbox>
+            <div style="align-self: center">{{weekDays[j]}}</div>
           </span>
-          <div class="repeat-rule">
-            <span *ngFor="let rule of alarm.repeatRule; let j = index">
-              <mat-checkbox color="primary" [checked]="alarm.repeatRule[j]"
-                            (click)="alarm.repeatRule[j] = !alarm.repeatRule[j]; onAlarmChanged(i)">
-              </mat-checkbox>
-            </span>
-          </div>
-        </mat-list-item>
+        </div>
+      </div>
 
-        <mat-list-item>
-          <mat-form-field class="grow">
-            <mat-label>Name</mat-label>
-            <input [(ngModel)]="alarm.name" matInput (change)="onAlarmChanged(i)">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Time</mat-label>
-            <input matInput type="time" [(ngModel)]="alarm.time" (change)="onAlarmChanged(i)">
-          </mat-form-field>
-        </mat-list-item>
-      </mat-list>
+      <div class="row">
+        <mat-form-field class="grow">
+          <mat-label>Name</mat-label>
+          <input [(ngModel)]="alarm.name" matInput (change)="onAlarmChanged(i)">
+        </mat-form-field>
+        <mat-form-field class="grow">
+          <mat-label>Time</mat-label>
+          <input matInput type="time" [(ngModel)]="alarm.time" (change)="onAlarmChanged(i)">
+        </mat-form-field>
+      </div>
+
+      <div class="row">
+        <mat-form-field class="grow">
+          <mat-label>Sound</mat-label>
+          <mat-select [(value)]="alarm.sound" (valueChange)="onAlarmChanged(i)">
+            <mat-option *ngFor="let option of sounds" [value]="option">{{option}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="grow"></div>
+      </div>
+
+      <mat-list-item>
+        <button mat-stroked-button (click)="removeAlarm(i)" color="warn" style="margin-left: auto;">Remove</button>
+      </mat-list-item>
     </mat-card-content>
-    <mat-card-actions align="end">
-      <button mat-stroked-button (click)="removeAlarm(i)" color="warn">Remove</button>
-    </mat-card-actions>
+
   </mat-card>
+
+  <span>
+    <button mat-raised-button (click)="addAlarm()" color="primary">
+      New Alarm
+    </button>
+  </span>
+
 </div>
-
-<span>
-  <button mat-raised-button (click)="addAlarm()" color="primary">
-    New Alarm
-  </button>
-</span>
-

@@ -11,6 +11,8 @@ import { Info, RemotingService } from "src/app/remoting/remoting.service";
 })
 export class AlarmsComponent implements OnInit, OnDestroy {
   private _subs: Subscription[] = [];
+  public sounds: string[] = []
+  public weekDays: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   constructor(private remoting: RemotingService) {
   }
@@ -37,11 +39,19 @@ export class AlarmsComponent implements OnInit, OnDestroy {
         } else {
           this._alarms[index] = { ...this._alarms[index], ...value };
         }
+      }),
+
+      this.remoting.subscribe<string[]>('sounds.availableSounds', (message: Info<string[]>) => {
+        this.sounds = message.value
       })
     ]
 
     this.remoting.cmd<any>('remoting', 'value', ['alarms.model']).then(alarms => {
       this._alarms = alarms['#'];
+    })
+
+    this.remoting.cmd<string[]>('remoting', 'value', ['sounds.availableSounds']).then(sounds => {
+      this.sounds = sounds;
     })
   }
 

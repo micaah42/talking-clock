@@ -1,3 +1,9 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@include mat.core();
+
+@import 'src/theme';
+
 :host {
   display: flex;
   flex-flow: column;
@@ -7,7 +13,7 @@
 mat-card-content {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  // justify-content: space-between;
   gap: 10px;
 }
 
@@ -15,3 +21,7 @@ mat-form-field {
   flex: 1;
 }
 
+pre {
+  width: 100%;
+  background-color: mat.get-color-from-palette($dark-background, 'contrast');
+}
