@@ -27,7 +27,7 @@ VariantSerializer::VariantSerializer()
         return variant.value<QDateTime>().toString(Qt::ISODate);
     };
     _serializers[QMetaType::fromType<QTime>().id()] = [](const QVariant &variant) {
-        return variant.value<QTime>().toString("HH:mm:ss");
+        return variant.value<QTime>().toString("HH:mm");
     };
     _serializers[QMetaType::fromType<void>().id()] = [](const QVariant &variant) {
         return QJsonValue::Null;
@@ -38,7 +38,7 @@ VariantSerializer::VariantSerializer()
         return QVariant::fromValue(QDateTime::fromString(value.toString(), Qt::ISODate));
     };
     _deserializers[QMetaType::fromType<QTime>().id()] = [](const QJsonValue &value) {
-        return QVariant::fromValue(QTime::fromString(value.toString(), "HH:mm:ss"));
+        return QVariant::fromValue(QTime::fromString(value.toString(), "HH:mm"));
     };
 }
 

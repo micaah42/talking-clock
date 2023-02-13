@@ -30,8 +30,12 @@ public:
     Q_INVOKABLE QJsonValue value(const QString &key);
     Q_INVOKABLE void subscribe(const QString &key);
 
+    // list methods
     Q_INVOKABLE QJsonArray receivers();
     Q_INVOKABLE QJsonArray methods(const QString &receiver);
+
+    // list properties
+    Q_INVOKABLE QStringList properties();
 
 private slots:
     void onNotifySignal();

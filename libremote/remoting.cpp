@@ -6,7 +6,7 @@
 #include "templatemodel.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "remoting", QtWarningMsg);
+Q_LOGGING_CATEGORY(self, "remoting", QtInfoMsg);
 }
 
 QByteArray Remoting::pong()
@@ -125,6 +125,11 @@ QJsonArray Remoting::methods(const QString &receiver)
     return methods;
 }
 
+QStringList Remoting::properties()
+{
+    return _properties.keys();
+}
+
 void Remoting::onNotifySignal()
 {
     if (!_notifierCache.contains(QPair{sender(), senderSignalIndex()})) {
@@ -151,7 +156,8 @@ void Remoting::onModelChanged(const QModelIndex &from, const QModelIndex &to, QV
         QJsonObject values;
         for (const int role : qAsConst(roles)) {
             auto value = VariantSerializer::I()->serialize(model->data(model->index(i, 0), role));
-            values[model->roleNames()[role]] = value;
+            auto const roleNames = model->roleNames();
+            values[roleNames[role]] = value;
             notifications.append(QJsonObject{{"value", values}, {"key", key}});
         }
     }
@@ -212,7 +218,7 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
     auto receiver = cmd["receiver"].toString();
     if (!_objects.contains(receiver)) {
         qCCritical(self) << "no such receiver:" << receiver;
-        return QJsonObject{{"id", id}, {"error", "invalid cmd"}};
+        return QJsonObject{{"id", id}, {"error", "invalid_receiver"}};
     }
     auto object = _objects[receiver];
 
@@ -220,7 +226,7 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
     auto method = cmd["method"].toString();
     if (!_methodsOld[_objects[receiver]].contains(method)) {
         qCCritical(self) << "no such method for " << receiver << ":" << method;
-        return QJsonObject{{"id", id}, {"error", "invalid cmd"}};
+        return QJsonObject{{"id", id}, {"error", "invalid_method"}};
         ;
     }
     auto metaMethod = _methodsOld[object][method];
@@ -229,7 +235,7 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
     auto args = cmd["args"].toArray();
     if (metaMethod.parameterCount() > args.size()) {
         qCCritical(self) << "not enough parameters.";
-        return QJsonObject{{"id", id}, {"error", "invalid cmd"}};
+        return QJsonObject{{"id", id}, {"error", "invalid_args"}};
         ;
     }
 
@@ -250,7 +256,7 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
         else if (!variant.convert(metaMethod.parameterType(i))) {
             // if conversion failed, send error
             qCCritical(self) << "bad conversion:" << args[i] << "->" << variant;
-            return QJsonObject{{"id", id}, {"error", "invalid cmd"}};
+            return QJsonObject{{"id", id}, {"error", "invalid_args"}};
         }
         else {
             variants.append(variant);
@@ -292,7 +298,7 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
     }
 
     if (metaMethod.returnType() == QMetaType::Void) {
-        return QJsonObject{{"id", id}, {"value", QJsonValue::Null}};
+        return QJsonObject{{"id", id}, {"value", QJsonValue::Undefined}};
     }
 
     auto value = VariantSerializer::I()->serialize(returnValue);
