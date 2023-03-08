@@ -6,7 +6,7 @@
 #include "templatemodel.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "remoting", QtInfoMsg);
+Q_LOGGING_CATEGORY(self, "remoting", QtWarningMsg);
 }
 
 QByteArray Remoting::pong()
