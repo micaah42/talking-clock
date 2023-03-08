@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {RemotingService} from "./remoting/remoting.service";
-import {Title} from "@angular/platform-browser";
+import { Component, OnInit } from '@angular/core';
+import { RemotingService } from "./remoting/remoting.service";
+import { Title } from "@angular/platform-browser";
+import { WebSocketService } from './remoting/web-socket.service';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +11,14 @@ import {Title} from "@angular/platform-browser";
 export class AppComponent implements OnInit {
   title = 'web';
 
-  constructor(private remoting: RemotingService, private titleService: Title) {
+  constructor(private websocket: WebSocketService, private titleService: Title) {
     titleService.setTitle('Talking Clock');
   }
 
   ngOnInit(): void {
+  }
+
+  get connected(): boolean {
+    return this.websocket.isOpen
   }
 }

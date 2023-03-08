@@ -8,6 +8,8 @@
   <button color="default" mat-button>Brains</button>
   <button [routerLink]="'devtools'" color="default" mat-button>Dev Tools</button>
   <mat-divider></mat-divider>
+  <span style="flex: 1;"></span>
+  <mat-icon color="warn" *ngIf="!connected">wifi_off</mat-icon>
 </mat-toolbar>
 
 <!-- Router -->

@@ -57,38 +57,33 @@ export class AnalogClockComponent {
   constructor(private http: HttpClient) {
     this.http.get<any>('/assets/blobs.json').subscribe((value) => {
       this.backgroundGraph = new ClockGraph(value.backgrounds);
+
+      const now = new Date();
       this.secondsGraph = new ClockGraph(value.handles_s);
+      this.secondsGraph.t = -now.getTime() / 1000;
       this.minutesGraph = new ClockGraph(value.handles_m);
+      this.minutesGraph.t = -now.getTime() / 60000;
       this.hoursGraph = new ClockGraph(value.handles_h);
+      this.hoursGraph.t = -now.getTime() / 3600000;
 
       setInterval(() => {
         this.backgroundGraph!.t = new Date().getTime() / 5000;
         const now = new Date();
 
-        if (now.getSeconds())
-          anime({
-            targets: this.secondsGraph!,
-            t: -new Date().getSeconds(),
-            easing: 'easeOutElastic',
-            duration: 500
-          }).play();
-        else this.secondsGraph!.t = 0;
+        anime({
+          targets: this.secondsGraph!,
+          t: -Math.floor(now.getTime() / 1000),
+          easing: 'easeOutElastic',
+          duration: 500
+        }).play();
 
-        if (now.getMinutes())
-          anime({
-            targets: this.minutesGraph!,
-            t: -new Date().getMinutes(),
-            duration: 250
-          }).play();
-        else this.minutesGraph!.t = 0;
+        anime({
+          targets: this.minutesGraph!,
+          t: -Math.floor(now.getTime() / 60000),
+          duration: 500
+        }).play();
 
-        if (now.getHours())
-          anime({
-            targets: this.hoursGraph!,
-            t: -new Date().getHours(),
-            duration: 250
-          }).play();
-        else this.hoursGraph!.t = 0;
+        this.hoursGraph!.t = -(now.getHours() + now.getMinutes() / 60);
 
       }, 100)
     });

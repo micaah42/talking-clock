@@ -1,17 +1,17 @@
-import {Injectable} from '@angular/core';
-import {webSocket, WebSocketSubject} from "rxjs/webSocket";
-import {Subject} from "rxjs";
-import {catchError} from "rxjs/operators";
-import {WS_ENDPOINT} from "./remoting.service";
+import { Injectable } from '@angular/core';
+import { webSocket, WebSocketSubject } from "rxjs/webSocket";
+import { Subject } from "rxjs";
+import { catchError } from "rxjs/operators";
+import { WS_ENDPOINT } from "./remoting.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
   private socket$?: WebSocketSubject<any>;
-  private isOpen: boolean = false;
   private _buffer: any[] = [];
   private messagesSubject$ = new Subject();
+  public isOpen: boolean = false;
   public messages$ = this.messagesSubject$.pipe(catchError(e => {
     console.error(e);
     throw e;
@@ -27,10 +27,12 @@ export class WebSocketService {
           console.log('connected!');
         }
       },
-      closeObserver: {next: () => {
+      closeObserver: {
+        next: () => {
           this.isOpen = false;
           window.alert('Connection lost!');
-        }}
+        }
+      }
     });
     this.messages$ = this.socket$.asObservable();
     this._buffer.forEach(msg => this.sendMessage(msg));

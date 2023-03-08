@@ -16,6 +16,7 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatRadioModule } from "@angular/material/radio";
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon'
 
 import { AlarmsComponent } from './pages/alarms/alarms.component';
 import { DevToolsComponent } from './pages/dev-tools/dev-tools.component';
@@ -51,7 +52,8 @@ import { AppRoutingModule } from "./app-routing.module";
     MatDialogModule,
     MatRadioModule,
     HttpClientModule,
-    MatSelectModule
+    MatSelectModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
