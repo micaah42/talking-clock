@@ -4,8 +4,9 @@ import QtQuick.Layouts 1.14
 import QtQuick.VirtualKeyboard 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Controls.Material 2.14
-import "."
+import Qt.labs.platform 1.1
 
+import Clock 1.0
 
 ApplicationWindow {
     id: window
@@ -38,42 +39,18 @@ ApplicationWindow {
     Connections {
         target: alarms
         function onAlarmTriggered(id) {
-            var c = Qt.createComponent("MajorAlarm.qml")
-            c.createObject(window, {alarm: alarms.model.at(id), width: window.width, height: window.height})
+            var c = Qt.createComponent("AlarmPopup.qml")
+            c.createObject(window, {
+                               "alarm": alarms.model.at(id)
+                           })
         }
     }
 
     Component.onCompleted: {
-        console.log("view fully loaded :)");
-        var c = Qt.createComponent("MajorAlarm.qml")
-        c.createObject(window, {alarm: alarms.model.at(0), width: window.width, height: window.height})
+        console.log("view fully loaded :)")
+        var popup = Qt.createComponent("AlarmPopup.qml")
+        popup.createObject(window, {
+                               "alarm": alarms.model.at(0)
+                           })
     }
-
-//    Button {
-//        anchors.top: parent.top
-//        anchors.right: parent.right
-//        text: "bla"
-//        onClicked: pop.popped = !pop.popped;
-//    }
-
-//    Frame {
-//        id: pop
-//        property bool popped: false
-
-//        background: Rectangle { color: colorService.colors["accent"]; opacity: 0.5 }
-
-//        height: popped ? parent.height / 4 : 0
-
-//        anchors.margins: 5
-//        anchors.bottom: parent.bottom
-//        anchors.right: parent.right
-//        anchors.left: parent.left
-
-//        Behavior on height {
-//            PropertyAnimation {
-//                easing.type: Easing.InOutQuad
-//                duration: 300
-//            }
-//        }
-//    }
 }

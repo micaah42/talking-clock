@@ -1,6 +1,7 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
 import "qrc:/controls"
+import Clock 1.0
 
 Item {
     property var setting
@@ -12,9 +13,9 @@ Item {
         sourceComponent: CComboBox {
             label: setting["key"]
             model: setting["options"]
-            text: settingsService.value(setting["key"])
+            text: SettingsService.value(setting["key"])
             onActivated: {
-                settingsService.setValue(setting["key"], model[index])
+                SettingsService.setValue(setting["key"], model[index])
             }
         }
     }
@@ -24,9 +25,9 @@ Item {
         active: setting["options"].length === 0
         sourceComponent: CTextField {
             label: setting["key"]
-            text: settingsService.value(setting["key"])
+            text: SettingsService.value(setting["key"])
             onTextChanged: {
-                settingsService.setValue(setting["key"], text.toString());
+                SettingsService.setValue(setting["key"], text.toString())
             }
         }
     }

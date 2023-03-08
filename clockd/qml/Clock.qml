@@ -1,6 +1,7 @@
 import QtQuick 2.14
 import QtQuick.Layouts 1.14
 import "qrc:/controls"
+import Clock 1.0
 
 Item {
     id: ctrl
@@ -109,7 +110,7 @@ Item {
     // @SettingsDefinition: "clock/stars" -> stars.model
     Connections {
         id: connection
-        target: settingsService
+        target: SettingsService
         function onValueChanged(key, value) {
             const split = key.split('/')
             const group = split[0]
@@ -121,9 +122,9 @@ Item {
     }
 
     Component.onCompleted: {
-        settingsService.create("clock/stars", 150)
-        settingsService.create("clock/blinkUp", 850)
-        settingsService.create("clock/blinkDown", 2500)
-        settingsService.create("clock/timeScale", 1.4)
+        SettingsService.create("clock/stars", 150)
+        SettingsService.create("clock/blinkUp", 850)
+        SettingsService.create("clock/blinkDown", 2500)
+        SettingsService.create("clock/timeScale", 1.4)
     }
 }

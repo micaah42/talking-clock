@@ -27,6 +27,10 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
     _clock.setSingleShot(false);
     _clock.start();
 
+    // set up the save timer
+    connect(&_saveTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
+    _saveTimer.setInterval(std::chrono::seconds(10));
+
     // set clock format
     _clockFormat = Qt::ISODate;
 
@@ -34,7 +38,7 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
     _alarmsFile.setFileName(PathService::homeFile("alarms.json"));
     loadAlarms();
 
-    // save changes to file
+    // handle changes in the alarms
     connect(&_alarms,
             &AlarmModel::dataChanged,
             this,

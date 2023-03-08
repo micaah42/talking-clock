@@ -60,7 +60,8 @@ int main(int argc, char *argv[])
     auto taskService = new TaskService;
 
     // inject service(s)
-    engine.rootContext()->setContextProperty("settingsService", settingsService);
+    qmlRegisterSingletonInstance<SettingsService>("Clock", 1, 0, "SettingsService", settingsService);
+    qmlRegisterUncreatableType<Alarm>("Clock", 1, 0, "Alarm", "alarm created");
     engine.rootContext()->setContextProperty("colorService", palette);
     engine.rootContext()->setContextProperty("fontService", fontService);
     engine.rootContext()->setContextProperty("alarms", alarms);

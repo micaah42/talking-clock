@@ -11,6 +11,7 @@
         <file>MajorAlarm.qml</file>
         <file>TaskPage.qml</file>
         <file>DarkCard.qml</file>
+        <file>AlarmPopup.qml</file>
     </qresource>
     <qresource prefix="/controls">
         <file>CComboBox.qml</file>
