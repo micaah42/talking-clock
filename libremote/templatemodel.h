@@ -5,10 +5,11 @@
 #include <QMetaProperty>
 #include <QObject>
 
+#include "libremote_global.h"
 #include "serializer.h"
 
 // to store a list of gadgets or objects
-class TemplateModel : public QAbstractTableModel
+class LIBREMOTE_EXPORT TemplateModel : public QAbstractTableModel
 {
     Q_OBJECT
 

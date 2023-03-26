@@ -7,25 +7,29 @@
 #include <QMetaType>
 #include <QObject>
 
-class VariantSerializer
+#include "libremote_global.h"
+
+class LIBREMOTE_EXPORT VariantSerializer
 {
 public:
     static VariantSerializer *I();
 
     QJsonValue serialize(const QVariant &variant);
+
     template<class T>
     QJsonValue serialize(const T &value)
     {
         return this->serialize(QVariant::fromValue(value));
     }
 
-    QVariant deserialize(const int typeId, const QJsonValue &object);
     template<class T>
     T deserialize(const QJsonValue &value)
     {
         const QVariant variant = this->deserialize(QMetaType::fromType<T>().id(), value);
         return variant.value<T>();
     }
+
+    QVariant deserialize(const int typeId, const QJsonValue &object);
 
 private:
     explicit VariantSerializer();

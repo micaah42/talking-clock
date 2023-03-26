@@ -29,7 +29,8 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
 
     // set up the save timer
     connect(&_saveTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
-    _saveTimer.setInterval(std::chrono::seconds(10));
+    _saveTimer.setSingleShot(true);
+    _saveTimer.setInterval(10000);
 
     // set clock format
     _clockFormat = Qt::ISODate;
@@ -43,8 +44,8 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
             &AlarmModel::dataChanged,
             this,
             [this](const QModelIndex &index, const QVariant &value, const QVector<int> role) {
-                updateTriggerer();
                 _saveTimer.start();
+                updateTriggerer();
             });
 
     connect(&_alarms,
@@ -162,21 +163,26 @@ void AlarmService::loadAlarms()
     auto data = _alarmsFile.readAll();
     auto alarms = QJsonDocument::fromJson(data, &error);
     if (error.error != QJsonParseError::NoError) {
-        qCWarning(self) << error.errorString();
+        qCWarning(self) << "alarm parsing error:" << error.errorString();
         _alarmsFile.close();
         return;
     }
 
-    // insert alarms
-    if (alarms.isArray()) {
-        for (auto const &alarmJson : alarms.array()) {
-            auto alarm = VariantSerializer::I()->deserialize<Alarm>(alarmJson);
-            if (true) {
-                qCInfo(self) << "loaded:" << alarmJson;
-                _alarms.push(alarm);
-            }
+    if (!alarms.isArray()) {
+        qCWarning(self) << "alarms json is not an array!";
+        _alarmsFile.close();
+        return;
+    }
+
+    auto alarmsArray = alarms.array();
+    for (auto const &alarmJson : qAsConst(alarmsArray)) {
+        auto alarm = VariantSerializer::I()->deserialize<Alarm>(alarmJson);
+        if (true) {
+            qCInfo(self) << "loaded:" << alarmJson;
+            _alarms.push(alarm);
         }
     }
+
     _alarmsFile.close();
 }
 

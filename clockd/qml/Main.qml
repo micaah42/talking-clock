@@ -17,8 +17,8 @@ ApplicationWindow {
 
     Material.theme: Material.Dark
     Material.accent: colorService.colors["accent"]
-    Material.background: colorService.colors["background"]
     Material.primary: colorService.colors["primary"]
+    Material.background: colorService.colors["background"]
 
     SwipeView {
         // anchors.margins: 5
@@ -27,7 +27,6 @@ ApplicationWindow {
         SettingsPage {}
         Clock {}
         AlarmPage {}
-        TaskPage {}
     }
 
     InputPanel {

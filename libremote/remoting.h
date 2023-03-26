@@ -12,9 +12,10 @@
 #include <QUuid>
 
 #include "clockserver.h"
+#include "libremote_global.h"
 #include "serializer.h"
 
-class Remoting : public QObject
+class LIBREMOTE_EXPORT Remoting : public QObject
 {
     Q_OBJECT
 public:
