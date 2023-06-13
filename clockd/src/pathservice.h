@@ -9,7 +9,7 @@ class PathService
 {
 public:
     static QString AppHome;
-    static QString homeFile(const QString &filename, bool file = true);
+    static QString create(const QString &filename, bool file = true);
     static void init();
 
 private:

@@ -5,6 +5,8 @@
 #include <QFontDatabase>
 #include <QJsonArray>
 #include <QObject>
+#include <QSortFilterProxyModel>
+#include <QStringListModel>
 #include <QVariant>
 
 class SettingsService;
@@ -16,31 +18,33 @@ class FontService : public QObject
 public:
     explicit FontService(SettingsService *settingsService, QQmlApplicationEngine *parent = nullptr);
 
-    Q_INVOKABLE void setFont(const QString &family, const QString &style = "Bold");
-    int currentFamilyIndex() const;
+    Q_INVOKABLE void refreshFamilies();
+    QSortFilterProxyModel *families();
 
-    Q_INVOKABLE void loadFonts();
-    QVariantList families() const;
-
-    QString family() const;
+    const QString &family() const;
+    void setFamily(const QString &family);
 
 signals:
     void familyChanged();
     void familiesChanged();
-    void currentFamiliyIndexChanged();
 
 private:
-    QStringList _families;
+    // font loading & finding
     QFontDatabase _dataBase;
-    int _currentFamilyIndex;
     QList<QDir> _fontDirectories;
-    QQmlApplicationEngine *_engine;
     SettingsService *_settingsService;
 
+    // list of available families
+    QStringListModel __families;
+    QSortFilterProxyModel _families;
+
+    // for setting the font
+    QString _family;
+    QQmlApplicationEngine *_engine;
+
     // --- --- ---
-    Q_PROPERTY(QString family READ family NOTIFY familyChanged)
-    Q_PROPERTY(QVariantList families READ families NOTIFY familiesChanged)
-    Q_PROPERTY(int currentFamilyIndex READ currentFamilyIndex NOTIFY currentFamiliyIndexChanged)
+    Q_PROPERTY(QString family READ family WRITE setFamily NOTIFY familyChanged)
+    Q_PROPERTY(QSortFilterProxyModel *families READ families NOTIFY familiesChanged)
 };
 
 #endif // FONTSERVICE_H

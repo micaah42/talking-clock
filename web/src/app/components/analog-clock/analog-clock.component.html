@@ -1,22 +1,23 @@
-<svg id="visual" viewBox="-1.1 -1.1 2.2 2.2" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-    <filter id='inset-shadow'>
-        <feOffset dx='0' dy='0' />
-        <feGaussianBlur stdDeviation='0.5' result='offset-blur' />
-        <feComposite operator='out' in='SourceGraphic' in2='offset-blur' result='inverse' />
-        <feFlood flood-color='black' flood-opacity='.99' result='color' />
-        <feComposite operator='in' in='color' in2='inverse' result='shadow' />
-        <feComposite operator='over' in='shadow' in2='SourceGraphic' />
-    </filter>
+<svg id="visual" preserveAspectRatio="xMidYMid meet" viewBox="-1.1 -1.1 2.2 2.2" xmlns="http://www.w3.org/2000/svg">
+  <filter id='inset-shadow'>
+    <feOffset dx='0' dy='0'/>
+    <feGaussianBlur result='offset-blur' stdDeviation='0.5'/>
+    <feComposite in='SourceGraphic' in2='offset-blur' operator='out' result='inverse'/>
+    <feFlood flood-color='black' flood-opacity='.99' result='color'/>
+    <feComposite in='color' in2='inverse' operator='in' result='shadow'/>
+    <feComposite in='shadow' in2='SourceGraphic' operator='over'/>
+  </filter>
 
-    <g>
-        <path *ngIf="backgroundGraph" [attr.d]="backgroundGraph.d" class="background"></path>
-        <rect *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 12]" width="0.1" height="0.01" x="0.69" rx="20"
-            ry="20" style="fill:rgb(0,0,0); rotate: {{360 * i / 12 }}deg;" />
-    </g>
+  <g>
+    <path *ngIf="backgroundGraph" [attr.d]="backgroundGraph.d" class="background"
+          style="rotate: {{now.getTime() / 6e6}}deg"></path>
+    <rect *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 12]" height="0.015" rx="20" ry="20" style="fill:rgb(0,0,0); rotate: {{360 * i / 12 }}deg;"
+          width="0.15" x="0.69"/>
+  </g>
 
-    <g>
-        <path *ngIf="hoursGraph" [attr.d]="hoursGraph.d" class="handle"></path>
-        <path *ngIf="minutesGraph" [attr.d]="minutesGraph.d" class="handle"></path>
-        <path *ngIf="secondsGraph" [attr.d]="secondsGraph.d" class="handle"></path>
-    </g>
+  <g>
+    <path *ngIf="hoursGraph" [attr.d]="hoursGraph.d" class="handle"></path>
+    <path *ngIf="minutesGraph" [attr.d]="minutesGraph.d" class="handle"></path>
+    <path *ngIf="secondsGraph" [attr.d]="secondsGraph.d" class="handle"></path>
+  </g>
 </svg>

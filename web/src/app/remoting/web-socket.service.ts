@@ -30,7 +30,6 @@ export class WebSocketService {
       closeObserver: {
         next: () => {
           this.isOpen = false;
-          window.alert('Connection lost!');
         }
       }
     });

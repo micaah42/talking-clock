@@ -1,7 +1,9 @@
 import QtQuick 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
-import "qrc:/controls"
+
+import Clock 1.0
+import Controls 1.0
 
 ItemDelegate {
     id: ctrl
@@ -15,7 +17,7 @@ ItemDelegate {
     Rectangle {
         anchors.fill: parent
         opacity: 0
-        border.color: colorService.colors["primary"]
+        border.color: ColorService.primary
         radius: 5
     }
 
@@ -33,7 +35,7 @@ ItemDelegate {
                 text: checked ? 'Active' : 'Disabled'
                 Layout.fillHeight: true
                 checked: model.activated
-                onClicked: model.activated = checked;
+                onClicked: model.activated = checked
                 font.family: fontService.family
                 font.pixelSize: 18
             }
@@ -48,11 +50,13 @@ ItemDelegate {
             }
             Row {
                 id: weekdays
-                function getRepeat(i) { return  model.repeatRule[i] }
+                function getRepeat(i) {
+                    return model.repeatRule[i]
+                }
                 function setRepeat(i, v) {
-                    var rule = model.repeatRule;
-                    rule[i] = v;
-                    model.repeatRule = rule;
+                    var rule = model.repeatRule
+                    rule[i] = v
+                    model.repeatRule = rule
                 }
                 Repeater {
                     model: 7
@@ -78,15 +82,16 @@ ItemDelegate {
                 height: ctrl.expanded ? 325 : 0
                 width: parent.width
                 Behavior on height {
-                    PropertyAnimation { duration: 300 }
+                    PropertyAnimation {
+                        duration: 300
+                    }
                 }
 
                 CTextField {
                     Layout.fillWidth: true
                     label: 'Name'
                     text: model.name
-                    onTextEdited: model.name = text;
-
+                    onTextEdited: model.name = text
                 }
 
                 RowLayout {
@@ -97,13 +102,17 @@ ItemDelegate {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         time: model.time
-                        onTimeEdited: model.time = time;
+                        onTimeEdited: model.time = time
                     }
 
                     Frame {
                         id: sidebar
-                        function getSound() { return model.sound; }
-                        function setSound(sound) { model.sound = sound; }
+                        function getSound() {
+                            return model.sound
+                        }
+                        function setSound(sound) {
+                            model.sound = sound
+                        }
 
                         Layout.preferredWidth: parent.width / 3
                         Layout.fillHeight: true
@@ -122,19 +131,18 @@ ItemDelegate {
                             CComboBox {
                                 Layout.fillWidth: true
                                 label: "Sound"
-                                model: soundService.availableSounds;
+                                model: soundService.availableSounds
                                 text: sidebar.getSound()
                                 onActivated: {
                                     sidebar.setSound(soundService.availableSounds[index])
                                 }
-
                             }
 
                             Button {
                                 Layout.alignment: Qt.AlignRight
                                 highlighted: true
                                 text: "Remove"
-                                onClicked: alarms.model.remove(index);
+                                onClicked: alarms.model.remove(index)
                             }
                         }
                     }

@@ -1,7 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
+
 import Clock 1.0
+import ".."
 
 Item {
     property var alarm
@@ -32,16 +34,11 @@ Item {
                     handle.height: 32
                     handle.width: 52
 
-                    // these to mouse areas restrict interactivity to handle
+                    // mouse areas to restrict interactivity to handle
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
-                        onPressed: {
-                            mouse.accepted = !handleArea.containsMouse
-                            console.log('slider area pressed',
-                                        'handleArea.containsMouse: ',
-                                        handleArea.containsMouse)
-                        }
+                        onPressed: mouse.accepted = !handleArea.containsMouse
                     }
 
                     MouseArea {
@@ -50,10 +47,10 @@ Item {
                         anchors.fill: slider.handle
                         onPressed: {
                             mouse.accepted = false
-                            console.log('handle area pressed')
                         }
                     }
 
+                    // snap-back and accept logic
                     PropertyAnimation on value {
                         id: snapback
                         easing.type: Easing.OutBounce

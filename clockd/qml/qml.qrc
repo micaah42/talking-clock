@@ -3,20 +3,22 @@
         <file>Main.qml</file>
         <file>Card.qml</file>
         <file>Clock.qml</file>
-        <file>SettingsPage.qml</file>
-        <file>TimeField.qml</file>
-        <file>AlarmPage.qml</file>
-        <file>AlarmItem.qml</file>
-        <file>SettingView.qml</file>
-        <file>MajorAlarm.qml</file>
         <file>TaskPage.qml</file>
-        <file>DarkCard.qml</file>
-        <file>AlarmPopup.qml</file>
+        <file>alarms/AlarmItem.qml</file>
+        <file>alarms/AlarmPage.qml</file>
+        <file>alarms/AlarmPopup.qml</file>
+        <file>alarms/TimeField.qml</file>
+        <file>MenuPage.qml</file>
+        <file>Stars.qml</file>
+        <file>settings/SettingsPage.qml</file>
+        <file>settings/SettingView.qml</file>
+        <file>Controls/CCheckBox.qml</file>
+        <file>Controls/CComboBox.qml</file>
+        <file>Controls/CFormDialog.qml</file>
+        <file>Controls/CLabel.qml</file>
+        <file>Controls/CTextField.qml</file>
+        <file>Controls/qmldir</file>
+        <file>data/DataPage.qml</file>
     </qresource>
-    <qresource prefix="/controls">
-        <file>CComboBox.qml</file>
-        <file>CTextField.qml</file>
-        <file>CCheckBox.qml</file>
-        <file>CLabel.qml</file>
-    </qresource>
+    <qresource prefix="/controls"/>
 </RCC>

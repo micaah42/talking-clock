@@ -9,10 +9,10 @@ namespace {
 Q_LOGGING_CATEGORY(self, "remoting", QtWarningMsg);
 }
 
-QByteArray Remoting::pong()
+QByteArray Remoting::boink()
 {
     auto now = QDateTime::currentDateTime();
-    QJsonObject obj = {{"pong", now.toMSecsSinceEpoch()}};
+    QJsonObject obj = {{"boink", now.toMSecsSinceEpoch()}};
     return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
@@ -73,11 +73,11 @@ void Remoting::registerObject(const QString &name, QObject *object)
     }
 
     // and if this object is of type template model, send changes
-    auto model = qobject_cast<TemplateModel *>(object);
+    auto model = qobject_cast<QAbstractTableModel *>(object);
     if (model) {
         model->setObjectName(name);
-        connect(model, &TemplateModel::dataChanged, this, &Remoting::onModelChanged);
-        connect(model, &TemplateModel::rowsRemoved, this, &Remoting::onModelRowsRemoved);
+        connect(model, &QAbstractTableModel::dataChanged, this, &Remoting::onModelChanged);
+        connect(model, &QAbstractTableModel::rowsRemoved, this, &Remoting::onModelRowsRemoved);
     }
 }
 
@@ -147,7 +147,7 @@ void Remoting::onNotifySignal()
 
 void Remoting::onModelChanged(const QModelIndex &from, const QModelIndex &to, QVector<int> roles)
 {
-    auto model = qobject_cast<TemplateModel *>(sender());
+    auto model = qobject_cast<QAbstractTableModel *>(sender());
     Q_ASSERT(model);
 
     QJsonArray notifications;
@@ -168,7 +168,7 @@ void Remoting::onModelChanged(const QModelIndex &from, const QModelIndex &to, QV
 
 void Remoting::onModelRowsRemoved(const QModelIndex &parent, const int first, const int last)
 {
-    auto model = qobject_cast<TemplateModel *>(sender());
+    auto model = qobject_cast<QAbstractTableModel *>(sender());
     Q_ASSERT(model);
 
     QJsonArray notifications;
@@ -195,7 +195,7 @@ void Remoting::onMessageReceived(const QByteArray &message, const QUuid &clientI
     // answer ping
     if (obj.contains("ping")) {
         qCInfo(self) << "received ping:" << obj;
-        _server.sendMessage(pong(), clientId);
+        _server.sendMessage(boink(), clientId);
     }
     // answer normal command
     else if (obj["receiver"].isString() && obj["method"].isString()) {

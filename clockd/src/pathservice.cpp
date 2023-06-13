@@ -6,7 +6,7 @@
 
 QString PathService::AppHome;
 
-QString PathService::homeFile(const QString &filename, bool file)
+QString PathService::create(const QString &filename, bool file)
 {
     if (file) {
         return QDir(AppHome).filePath(filename);
@@ -25,7 +25,7 @@ void PathService::init()
         qCritical() << "no home locations!";
         homeLocations.append("");
     }
-    AppHome = QDir(homeLocations.first()).filePath(QCoreApplication::applicationName() + "-data");
+    AppHome = QDir(homeLocations.first()).filePath(QCoreApplication::applicationName());
     if (!QDir().mkpath(AppHome)) {
         qCritical() << "error making homedir!";
     };

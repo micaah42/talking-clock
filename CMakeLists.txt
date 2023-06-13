@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(talking-clock VERSION 0.2)
+project(talking-clock VERSION 0.3)
 
 add_subdirectory(web/)
 

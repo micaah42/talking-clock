@@ -13,19 +13,22 @@ Q_LOGGING_CATEGORY(self, "fonts")
 }
 
 FontService::FontService(SettingsService *settingsService, QQmlApplicationEngine *parent)
-    : QObject(parent), _currentFamilyIndex(0), _fontDirectories(QList<QDir>{QDir(":fonts")}),
-      _engine(parent), _settingsService(settingsService)
+    : QObject(parent)
+    , _fontDirectories(QList<QDir>{QDir(":fonts")})
+    , _engine(parent)
+    , _settingsService(settingsService)
 {
     Q_ASSERT(settingsService);
-    loadFonts();
+    refreshFamilies();
+    _families.setSourceModel(&__families);
 
-    _settingsService->create("fontfamily", "Working Man", families());
+    _settingsService->create("fontfamily", "Working Man", Setting::FontDialog);
     _settingsService->registerCallback("fontfamily", [this](const QVariant &value) {
-        setFont(value.toString());
+        setFamily(value.toString());
     });
 }
 
-void FontService::loadFonts()
+void FontService::refreshFamilies()
 {
     int loaded = 0;
     qCInfo(self) << "loading fonts...";
@@ -46,43 +49,28 @@ void FontService::loadFonts()
     }
 
     qCInfo(self) << "fonts loaded:" << loaded;
-    if (_dataBase.families() == _families) {
-        return;
-    }
-    _families = _dataBase.families();
+    __families.setStringList(_dataBase.families());
     emit familiesChanged();
 
     auto current = QGuiApplication::font();
-    qDebug() << current.family();
-    _currentFamilyIndex = _families.indexOf(current.family());
-    emit currentFamiliyIndexChanged();
+    qCInfo(self) << "current family:" << current.family();
 }
 
-QVariantList FontService::families() const
+QSortFilterProxyModel *FontService::families()
 {
-    QVariantList list;
-    for (auto const &family : _families) {
-        list.append(family);
-    }
-    return list;
+    return &_families;
 }
 
-QString FontService::family() const
+const QString &FontService::family() const
 {
-    return _families[_currentFamilyIndex];
+    return _family;
 }
 
-int FontService::currentFamilyIndex() const
+void FontService::setFamily(const QString &family)
 {
-    return _currentFamilyIndex;
-}
-
-void FontService::setFont(const QString &family, const QString &style)
-{
-    qCInfo(self) << "set font:" << family << style;
-    QGuiApplication::setFont(_dataBase.font(family, style, 0));
-    _currentFamilyIndex = _families.indexOf(family);
-    emit currentFamiliyIndexChanged();
+    qCInfo(self) << "set font:" << family;
+    QGuiApplication::setFont(QFont{family});
+    _family = family;
     emit familyChanged();
 
     if (!_engine) {
@@ -94,19 +82,4 @@ void FontService::setFont(const QString &family, const QString &style)
         qCInfo(self) << "engine already about to load";
         return;
     }
-
-    //QQuickWindow *window = qobject_cast<QQuickWindow *>(_engine->rootObjects().at(0));
-    //if (!window) {
-    //    qCCritical(self) << "could not find QQuickWindow!";
-    //    return;
-    //}
-
-#ifndef Q_PROCESSOR_ARM
-//    qCInfo(self) << "load new window...";
-//    _engine->load(QUrl("qrc:/Main.qml"));
-//    qCInfo(self) << "close old window...";
-//    //window->close();
-#else
-    qCWarning(self) << "font changes after reload!";
-#endif
 }

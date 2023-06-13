@@ -36,7 +36,7 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
     _clockFormat = Qt::ISODate;
 
     // load arlams data
-    _alarmsFile.setFileName(PathService::homeFile("alarms.json"));
+    _alarmsFile.setFileName(PathService::create("alarms.json"));
     loadAlarms();
 
     // handle changes in the alarms

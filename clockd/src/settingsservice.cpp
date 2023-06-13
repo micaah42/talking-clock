@@ -3,10 +3,9 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QJsonObject>
 #include <QLoggingCategory>
 #include <QStandardPaths>
-
-#include "jsonspecification.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "settings")
@@ -41,11 +40,11 @@ void SettingsService::registerCallback(const QString &key, Callback callback, co
     }
 }
 
-void SettingsService::create(const QString &key, const QVariant &value, const QVariantList &options)
+void SettingsService::create(const QString &key, const QVariant &value, const Setting::Input &input)
 {
     // Q_ASSERT(!_settings.contains(key));
-    qCInfo(self) << "create:" << key << "->" << value << "options" << options.size();
-    _settings[key] = {value, value.type(), options};
+    qCInfo(self) << "create:" << key << "->" << value << "options" << input;
+    _settings[key] = {value, value.type(), input};
 
     if (_settingsFile.contains(key)) {
         qCInfo(self) << "loading from file ...";
@@ -81,14 +80,10 @@ QJsonArray SettingsService::settings() const
 {
     QJsonArray arr;
     for (auto const &setting : _settings.keys()) {
-        QJsonArray opts;
-        for (auto const &option : _settings[setting].options) {
-            opts.append(option.toJsonValue());
-        }
         arr.append(QJsonObject{{"key", setting},
                                {"value", _settings[setting].value.toJsonValue()},
                                {"type", static_cast<int>(_settings[setting].type)},
-                               {"options", opts}});
+                               {"input", static_cast<int>(_settings[setting].input)}});
     }
     return arr;
 }

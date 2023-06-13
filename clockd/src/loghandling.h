@@ -20,7 +20,9 @@ class LogHandling
 public:
     static int KeepLogDuration;
     static void init();
-    static QString msgType2string(QtMsgType type, bool full = false);
+    static int msgType2syslog(QtMsgType type);
+    static QChar msgType2char(QtMsgType type);
+    static QString msgType2string(QtMsgType type);
 
 private:
     static QFile LogFile;

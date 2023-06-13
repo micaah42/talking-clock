@@ -8,9 +8,14 @@
 
 struct Setting
 {
+    Q_GADGET
+public:
+    enum Input { FontDialog = 0, TextLine, Float, Integer };
+    Q_ENUM(Input)
+
     QVariant value;
     QVariant::Type type;
-    QVariantList options;
+    Input input;
 };
 
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -33,7 +38,10 @@ signals:
     void settingsChanged();
 
 public slots:
-    void create(const QString &key, const QVariant &value, const QVariantList &options = {});
+    void create(const QString &key,
+                const QVariant &value,
+                const Setting::Input &input = Setting::TextLine);
+
     void setValue(const QString &key, QVariant value);
 
 private:

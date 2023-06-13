@@ -17,7 +17,7 @@ Item {
             radius: width / 2
             x: -width / 2
             y: -width / 2
-            color: colorService.colors["darkaccent"]
+            color: ColorService.colors["darkaccent"]
             border.color: "#fff"
             border.width: 2
         }
@@ -73,7 +73,7 @@ Item {
                 width: parent.width
                 height: 100
                 radius: 5
-                color: Qt.lighter(colorService.colors["darkaccent"], 0.8)
+                color: Qt.lighter(ColorService.colors["darkaccent"], 0.8)
 
                 ScrollView {
                     id: chatBox

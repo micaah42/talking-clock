@@ -53,6 +53,7 @@ export class AnalogClockComponent {
   secondsGraph?: ClockGraph;
   minutesGraph?: ClockGraph;
   hoursGraph?: ClockGraph;
+  now: Date = new Date();
 
   constructor(private http: HttpClient) {
     this.http.get<any>('/assets/blobs.json').subscribe((value) => {
@@ -84,7 +85,7 @@ export class AnalogClockComponent {
         }).play();
 
         this.hoursGraph!.t = -(now.getHours() + now.getMinutes() / 60);
-
+        this.now = now;
       }, 100)
     });
   }

@@ -15,37 +15,30 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core WebSockets Quick QuickCon
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core WebSockets Quick QuickControls2 Multimedia)
 
 add_executable(clockd
+
+  src/defines.h
+  src/constants.h
+
   src/alarm.h
   src/alarm.cpp
 
   src/alarmservice.h
   src/alarmservice.cpp
 
-  src/application_defines.h
-
-  src/defines.h
-  src/constants.h
-
   src/fontservice.h
   src/fontservice.cpp
 
-  src/jsonspecification.h
-  src/jsonspecification.cpp
+  src/eventfilter.h
+  src/eventfilter.cpp
 
   src/loghandling.h
   src/loghandling.cpp
-
-  src/model.h
-  src/model.cpp
 
   src/palette.h
   src/palette.cpp
 
   src/pathservice.h
   src/pathservice.cpp
-
-  src/payload.h
-  src/payload.cpp
 
   src/settingsservice.h
   src/settingsservice.cpp
@@ -55,12 +48,19 @@ add_executable(clockd
 
   src/taskservice.h
   src/taskservice.cpp
+
+  src/dataservice.h
+  src/dataservice.cpp
+
   src/main.cpp
 
   qml/qml.qrc
   fonts/fonts.qrc
+  icons/icons.qrc
   sounds/sounds.qrc
 )
+
+set(QML_IMPORT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/qml)
 
 target_link_libraries(clockd
     Qt${QT_VERSION_MAJOR}::Core

@@ -13,13 +13,12 @@
 
 #include "clockserver.h"
 #include "libremote_global.h"
-#include "serializer.h"
 
 class LIBREMOTE_EXPORT Remoting : public QObject
 {
     Q_OBJECT
 public:
-    static QByteArray pong();
+    static QByteArray boink();
 
     explicit Remoting(QObject *parent = nullptr);
 

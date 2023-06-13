@@ -1,23 +1,22 @@
 #include <QCursor>
 #include <QDebug>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
 
-// #define __ARM_PCS_VFin
-
 #include "alarmservice.h"
+#include "dataservice.h"
+#include "eventfilter.h"
 #include "fontservice.h"
 #include "loghandling.h"
 #include "palette.h"
 #include "pathservice.h"
+#include "remoting.h"
 #include "settingsservice.h"
-#include "soundplayer.h"
 #include "soundservice.h"
 #include "taskservice.h"
-
-#include "remoting.h"
 
 void printApplicationStart();
 
@@ -36,43 +35,54 @@ int main(int argc, char *argv[])
 
     printApplicationStart();
 
-    // qmlRegisterType<SoundPlayer>("Clock", 1, 0, "SoundPlayer");
-
 #ifndef Q_PROCESSOR_X86_64
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
     QGuiApplication::setQuitOnLastWindowClosed(false);
-
     QGuiApplication app(argc, argv);
+    app.setWindowIcon(QIcon{"./icon.png"});
+
 #ifndef Q_PROCESSOR_X86_64
     app.setOverrideCursor(QCursor(Qt::BlankCursor));
 #endif
 
     QQmlApplicationEngine engine;
+    engine.addImportPath(":/");
+
     QQuickStyle::setStyle("Material");
-
-    // first service to set up is the settings service
-    auto settingsService = new SettingsService;
-    auto palette = new Palette(settingsService);
-    auto fontService = new FontService(settingsService, &engine);
-    auto alarms = new AlarmService(500);
-    auto soundService = new SoundService(alarms);
-    auto taskService = new TaskService;
-
-    // inject service(s)
-    qmlRegisterSingletonInstance<SettingsService>("Clock", 1, 0, "SettingsService", settingsService);
-    qmlRegisterUncreatableType<Alarm>("Clock", 1, 0, "Alarm", "alarm created");
-    engine.rootContext()->setContextProperty("colorService", palette);
-    engine.rootContext()->setContextProperty("fontService", fontService);
-    engine.rootContext()->setContextProperty("alarms", alarms);
-    engine.rootContext()->setContextProperty("soundService", soundService);
-    engine.rootContext()->setContextProperty("taskService", taskService);
 
     Remoting remoting;
     remoting.registerObject("remoting", &remoting);
-    remoting.registerObject("settings", settingsService);
-    remoting.registerObject("alarms", alarms);
-    remoting.registerObject("sounds", soundService);
+
+    SettingsService settingsService;
+    qmlRegisterSingletonInstance<SettingsService>("Clock", 1, 0, "SettingsService", &settingsService);
+    remoting.registerObject("settings", &settingsService);
+
+    Palette palette{&settingsService};
+    qmlRegisterSingletonInstance<Palette>("Clock", 1, 0, "ColorService", &palette);
+
+    FontService fontService{&settingsService, &engine};
+    engine.rootContext()->setContextProperty("fontService", &fontService);
+
+    AlarmService alarms(500);
+    engine.rootContext()->setContextProperty("alarms", &alarms);
+    // qmlRegisterType<Alarm>("Clock", 1, 0, "Alarm");
+    remoting.registerObject("alarms", &alarms);
+
+    SoundService soundService(&alarms);
+    engine.rootContext()->setContextProperty("soundService", &soundService);
+    remoting.registerObject("sounds", &soundService);
+
+    TaskService taskService;
+    engine.rootContext()->setContextProperty("taskService", &taskService);
+
+    EventFilter eventFilter;
+    app.installEventFilter(&eventFilter);
+    qmlRegisterSingletonInstance<EventFilter>("Clock", 1, 0, "EventFilter", &eventFilter);
+
+    DataService dataService;
+    qmlRegisterSingletonInstance<DataService>("Clock", 1, 0, "DataService", &dataService);
+    remoting.registerObject("data", &dataService);
 
     const QUrl url("qrc:/Main.qml");
     QObject::connect(

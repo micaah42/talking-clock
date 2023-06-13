@@ -1,13 +1,16 @@
 #include "palette.h"
 
-Palette::Palette(SettingsService *settings) : _settings(settings), _frontlight(1.), _backlight(1.)
+Palette::Palette(SettingsService *settings)
+    : _settings(settings)
+    , _primary{0x38, 0x35, 0x8C}
+    , _darkPrimary{0x1A, 0x19, 0x40}
+    , _accent{0xD9, 0x30, 0x30}
+    , _darkAccent{0x73, 0x1F, 0x1F}
+    , _background{0x0D, 0x0B, 0x0C}
+    , _frontlight(1.)
+    , _backlight(1.)
 {
     // generate palette with https://color.adobe.com/create/image, dark mood
-    _baseColors = {{"background", "#0D0B0C"},
-                   {"primary", "#38358C"},
-                   {"darkprimary", "#1A1940"},
-                   {"accent", "#D93030"},
-                   {"darkaccent", "#731F1F"}};
 
     // create settings
     _settings->create("colors/frontlight", 100);
@@ -17,11 +20,6 @@ Palette::Palette(SettingsService *settings) : _settings(settings), _frontlight(1
     _settings->create("colors/backlight", 100);
     _settings->registerCallback("colors/backlight",
                                 [this](const QVariant &value) { setBacklight(value.toInt()); });
-}
-
-const QVariantMap &Palette::colors() const
-{
-    return _colors;
 }
 
 double Palette::frontlight() const
@@ -35,7 +33,6 @@ void Palette::setFrontlight(double newFrontLight)
         return;
 
     _frontlight = newFrontLight;
-    updateColors();
     emit frontlightChanged();
 }
 
@@ -50,18 +47,57 @@ void Palette::setBacklight(double newBacklight)
         return;
 
     _backlight = newBacklight;
-    updateColors();
     emit backlightChanged();
 }
 
-void Palette::updateColors()
+QColor Palette::primary() const
 {
-    for (const auto &key : _baseColors.keys()) {
-        Q_ASSERT(_baseColors[key].isValid());
-        if (key == "background")
-            _colors[key] = _baseColors[key].lighter(_backlight).name(QColor::HexRgb);
-        else
-            _colors[key] = _baseColors[key].lighter(_frontlight).name(QColor::HexRgb);
-    }
-    emit colorsChanged();
+    return _primary;
+}
+
+void Palette::setPrimary(const QColor &newPrimary)
+{
+    if (_primary == newPrimary)
+        return;
+    _primary = newPrimary;
+    emit primaryChanged();
+}
+
+QColor Palette::darkPrimary() const
+{
+    return _darkPrimary;
+}
+
+void Palette::setDarkPrimary(const QColor &newDarkPrimary)
+{
+    if (_darkPrimary == newDarkPrimary)
+        return;
+    _darkPrimary = newDarkPrimary;
+    emit darkPrimaryChanged();
+}
+
+QColor Palette::accent() const
+{
+    return _accent;
+}
+
+void Palette::setAccent(const QColor &newAccent)
+{
+    if (_accent == newAccent)
+        return;
+    _accent = newAccent;
+    emit accentChanged();
+}
+
+QColor Palette::background() const
+{
+    return _background;
+}
+
+void Palette::setBackground(const QColor &newBackground)
+{
+    if (_background == newBackground)
+        return;
+    _background = newBackground;
+    emit backgroundChanged();
 }

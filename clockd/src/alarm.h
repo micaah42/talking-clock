@@ -14,12 +14,10 @@
 #include <QJsonObject>
 #include <QTime>
 
-#include "payload.h"
-#include "qqml.h"
 class Alarm
 {
     Q_GADGET
-    QML_NAMED_ELEMENT(Alarm);
+
     Q_PROPERTY(bool activated READ activated WRITE setActivated)
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(QTime time READ time WRITE setTime)

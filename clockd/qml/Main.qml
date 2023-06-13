@@ -6,50 +6,82 @@ import QtQuick.Controls 2.14
 import QtQuick.Controls.Material 2.14
 import Qt.labs.platform 1.1
 
+import "alarms/"
 import Clock 1.0
+import Controls 1.0
 
 ApplicationWindow {
     id: window
     width: 840
     height: 480
     visible: true
-    color: colorService.colors["background"]
+    color: ColorService.background
 
     Material.theme: Material.Dark
-    Material.accent: colorService.colors["accent"]
-    Material.primary: colorService.colors["primary"]
-    Material.background: colorService.colors["background"]
+    Material.accent: ColorService.accent
+    Material.primary: ColorService.primary
+    Material.background: ColorService.background
 
-    SwipeView {
-        // anchors.margins: 5
-        anchors.fill: parent
-        currentIndex: 1
-        SettingsPage {}
-        Clock {}
-        AlarmPage {}
+    property real divisionY: Qt.inputMethod.visible ? height - keyboard.height : height
+
+    Behavior on divisionY {
+        PropertyAnimation {
+            easing.type: Easing.InOutQuad
+        }
+    }
+
+    ScrollView {
+        width: parent.width
+        height: divisionY
+
+        contentWidth: window.width
+        contentHeight: window.height
+
+        clip: true
+
+        Stars {
+            anchors.fill: parent
+        }
+
+        SwipeView {
+            id: mainView
+
+            width: window.width
+            height: window.height
+            currentIndex: 0
+
+            Clock {
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: mainView.currentIndex = (mainView.currentIndex + 1) % mainView.count
+                }
+            }
+
+            MenuPage {}
+        }
     }
 
     InputPanel {
         id: keyboard
-        anchors.fill: parent
-        visible: Qt.inputMethod.visible
+        width: parent.width
+        y: divisionY
+    }
+
+    Connections {
+        target: EventFilter
+        function onUserInactive() {
+            mainView.currentIndex = 0
+        }
     }
 
     Connections {
         target: alarms
         function onAlarmTriggered(id) {
-            var c = Qt.createComponent("AlarmPopup.qml")
+            var c = Qt.createComponent("alarms/AlarmPopup.qml")
+            var alarm = alarms.model.at(id)
             c.createObject(window, {
-                               "alarm": alarms.model.at(id)
+                               "alarm": alarm
                            })
         }
-    }
-
-    Component.onCompleted: {
-        console.log("view fully loaded :)")
-        var popup = Qt.createComponent("AlarmPopup.qml")
-        popup.createObject(window, {
-                               "alarm": alarms.model.at(0)
-                           })
     }
 }
