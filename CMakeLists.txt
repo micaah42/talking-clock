@@ -6,10 +6,6 @@ add_subdirectory(web/)
 
 add_subdirectory(clockd/)
 add_subdirectory(libremote/)
-# add_subdirectory(experiments/clock-test/)
-# add_subdirectory(experiments/advanced-modeling/)
-
-install(DIRECTORY web/dist/web/ DESTINATION share/apache2/default-site/htdocs)
 
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY NO)
