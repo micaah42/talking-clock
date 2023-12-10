@@ -10,7 +10,7 @@ Item {
         anchors.fill: parent
         model: DataService.datasets
         delegate: Card {
-            color: ColorService.primary
+            bright: true
             GridLayout {
                 CLabel {
                     text: model.name

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.14
 import QtQuick.VirtualKeyboard 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Controls.Material 2.14
-import Qt.labs.platform 1.1
+import QtMultimedia 5.15
 
 import "alarms/"
 import Clock 1.0
@@ -12,8 +12,12 @@ import Controls 1.0
 
 ApplicationWindow {
     id: window
-    width: 840
-    height: 480
+    width: 1024
+    onWidthChanged: console.warn(`window.width=${width}`)
+
+    height: 600
+    onHeightChanged: console.warn(`window.height=${height}`)
+
     visible: true
     color: ColorService.background
 
@@ -75,13 +79,16 @@ ApplicationWindow {
     }
 
     Connections {
-        target: alarms
+        target: AlarmService
         function onAlarmTriggered(id) {
-            var c = Qt.createComponent("alarms/AlarmPopup.qml")
-            var alarm = alarms.model.at(id)
-            c.createObject(window, {
-                               "alarm": alarm
-                           })
+            var comp = Qt.createComponent("alarms/AlarmNotification.qml")
+
+            var alarm = AlarmService.model.at(id)
+
+            var object = comp.createObject(window, {
+                                               "alarm": alarm
+                                           })
+            object.dtor = object.destroy
         }
     }
 }

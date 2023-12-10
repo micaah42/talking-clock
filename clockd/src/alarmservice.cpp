@@ -30,14 +30,10 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
     // set up the save timer
     connect(&_saveTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
     _saveTimer.setSingleShot(true);
-    _saveTimer.setInterval(10000);
+    _saveTimer.setInterval(2000);
 
     // set clock format
     _clockFormat = Qt::ISODate;
-
-    // load arlams data
-    _alarmsFile.setFileName(PathService::create("alarms.json"));
-    loadAlarms();
 
     // handle changes in the alarms
     connect(&_alarms,
@@ -45,16 +41,20 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
             this,
             [this](const QModelIndex &index, const QVariant &value, const QVector<int> role) {
                 _saveTimer.start();
-                updateTriggerer();
             });
 
     connect(&_alarms,
             &AlarmModel::rowsRemoved,
             this,
             [this](const QModelIndex &parent, const int &first, const int last) {
-                updateTriggerer();
                 _saveTimer.start();
             });
+
+    //QTimer::singleShot(1000, Qt::PreciseTimer, this, [this]() { emit alarmTriggered(0); });
+
+    // load arlams data
+    _alarmsFile.setFileName(PathService::create("alarms.json"));
+    loadAlarms();
 }
 
 QList<int> AlarmService::nextIds() const
@@ -64,24 +64,29 @@ QList<int> AlarmService::nextIds() const
 
 void AlarmService::updateTriggerer(const QDateTime &after)
 {
-    int minTimeout = -1;
+    QDateTime next;
 
+    // find next ids
     QList<int> nextIds;
     for (int i = 0; i < _alarms.size(); i++) {
-        const auto &alarm = _alarms.at(i);
-        auto alarmNextTrigger = alarm.nextTrigger(after);
-        if (alarmNextTrigger == -1) {
+        auto nextTimout = _alarms.at(i).nextTrigger(after);
+
+        if (!nextTimout.isValid()) {
             continue;
         }
-        else if (alarmNextTrigger < minTimeout || minTimeout == -1) {
+
+        else if (nextTimout < next || !next.isValid()) {
             nextIds.clear();
             nextIds.append(i);
-            minTimeout = alarmNextTrigger;
+            next = nextTimout;
         }
-        else if (alarmNextTrigger == minTimeout) {
+
+        else if (nextTimout == next) {
             nextIds.append(i);
         }
     }
+
+    // set timer for next alarm according to next ids
 
     if (nextIds != _nextIds) {
         qCInfo(self) << "nextIds:" << _nextIds << "->" << nextIds;
@@ -89,13 +94,15 @@ void AlarmService::updateTriggerer(const QDateTime &after)
         emit nextIdsChanged();
     }
 
-    if (minTimeout == -1) {
+    if (!next.isValid()) {
         qCInfo(self) << "no next alarm. deactivate triggerer";
         _triggerer.stop();
     }
+
     else {
-        qCInfo(self) << "trigger in:" << minTimeout / (1000 * 60 * 60) << "h";
-        _triggerer.setInterval(minTimeout);
+        qCInfo(self) << "trigger at:" << next;
+        auto now = QDateTime::currentDateTime();
+        _triggerer.setInterval(now.msecsTo(next));
         _triggerer.start();
     }
 }
@@ -105,6 +112,7 @@ void AlarmService::onTriggererTriggered()
     QDateTime after;
     auto now = QDateTime::currentDateTime();
     for (auto id : qAsConst(_nextIds)) {
+        //
         if (!_alarms.at(id).repeats()) {
             auto deactivated = _alarms.at(id);
             deactivated.setActivated(false);
@@ -123,15 +131,14 @@ void AlarmService::onTriggererTriggered()
 
 void AlarmService::onClockTriggered()
 {
-    QString _before = _clockString;
-    _clockString = QDateTime::currentDateTime().toString(Qt::ISODate);
-    if (_before != _clockString) {
-        emit clockTicked(_clockString);
-    }
+    _now = QDateTime::currentDateTime();
+    emit clockTicked();
 }
 
 void AlarmService::saveAlarms()
 {
+    updateTriggerer();
+
     if (!_alarmsFile.open(QIODevice::WriteOnly)) {
         qCWarning(self) << "failed to open alarms file for saving!";
         return;
@@ -186,9 +193,9 @@ void AlarmService::loadAlarms()
     _alarmsFile.close();
 }
 
-const QString &AlarmService::clockString() const
+const QDateTime &AlarmService::now() const
 {
-    return _clockString;
+    return _now;
 }
 
 QJsonArray AlarmService::nextIdsArray() const

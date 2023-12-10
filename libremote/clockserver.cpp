@@ -49,8 +49,8 @@ void ClockServer::onDisconnection()
     auto clientId = _ids[client];
     Q_ASSERT(_clients.contains(clientId));
 
-    _ids.remove(client);
     _clients.remove(clientId);
+    _ids.remove(client);
     client->deleteLater();
 }
 

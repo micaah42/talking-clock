@@ -16,7 +16,6 @@ Item {
             delegate: SettingView {
                 setting: modelData
                 Layout.fillWidth: true
-                // Layout.preferredHeight: implicitHeight
             }
         }
 

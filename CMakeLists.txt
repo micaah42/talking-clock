@@ -6,8 +6,8 @@ add_subdirectory(web/)
 
 add_subdirectory(clockd/)
 add_subdirectory(libremote/)
-add_subdirectory(advanced-modeling/)
-add_subdirectory(clock-test/)
+# add_subdirectory(experiments/clock-test/)
+# add_subdirectory(experiments/advanced-modeling/)
 
 install(DIRECTORY web/dist/web/ DESTINATION share/apache2/default-site/htdocs)
 

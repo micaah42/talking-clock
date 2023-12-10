@@ -22,12 +22,14 @@ void printApplicationStart();
 
 int main(int argc, char *argv[])
 {
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     if (true || qEnvironmentVariableIsEmpty("QT_IM_MODULE")) {
         qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     }
 
-    QCoreApplication::setOrganizationDomain("org");
     QCoreApplication::setOrganizationName("micaah");
+    QCoreApplication::setOrganizationDomain("org");
     QCoreApplication::setApplicationName("talking-clock");
     QCoreApplication::setApplicationVersion("0.1");
     LogHandling::init();
@@ -35,12 +37,9 @@ int main(int argc, char *argv[])
 
     printApplicationStart();
 
-#ifndef Q_PROCESSOR_X86_64
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
     QGuiApplication::setQuitOnLastWindowClosed(false);
     QGuiApplication app(argc, argv);
-    app.setWindowIcon(QIcon{"./icon.png"});
+    app.setWindowIcon(QIcon{":/favicon.ico"});
 
 #ifndef Q_PROCESSOR_X86_64
     app.setOverrideCursor(QCursor(Qt::BlankCursor));
@@ -62,19 +61,19 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance<Palette>("Clock", 1, 0, "ColorService", &palette);
 
     FontService fontService{&settingsService, &engine};
-    engine.rootContext()->setContextProperty("fontService", &fontService);
+    qmlRegisterSingletonInstance("Clock", 1, 0, "FontService", &fontService);
 
     AlarmService alarms(500);
-    engine.rootContext()->setContextProperty("alarms", &alarms);
+    qmlRegisterSingletonInstance("Clock", 1, 0, "AlarmService", &alarms);
     // qmlRegisterType<Alarm>("Clock", 1, 0, "Alarm");
     remoting.registerObject("alarms", &alarms);
 
     SoundService soundService(&alarms);
-    engine.rootContext()->setContextProperty("soundService", &soundService);
+    qmlRegisterSingletonInstance("Clock", 1, 0, "SoundService", &soundService);
     remoting.registerObject("sounds", &soundService);
 
     TaskService taskService;
-    engine.rootContext()->setContextProperty("taskService", &taskService);
+    qmlRegisterSingletonInstance("Clock", 1, 0, "TaskService", &taskService);
 
     EventFilter eventFilter;
     app.installEventFilter(&eventFilter);

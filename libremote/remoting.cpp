@@ -30,6 +30,7 @@ void Remoting::registerObject(const QString &name, QObject *object)
     auto metaObject = object->metaObject();
 
     // register methods
+
     for (int i = metaObject->methodOffset(); i < metaObject->methodCount(); i++) {
         auto method = metaObject->method(i);
         if (method.access() != QMetaMethod::Public || method.methodType() != QMetaMethod::Method)
@@ -38,8 +39,6 @@ void Remoting::registerObject(const QString &name, QObject *object)
         auto key = QString("%1.%2").arg(name, method.methodSignature());
         _methods[key] = QPair{object, method};
         qCInfo(self) << "+   method:" << key << method.typeName();
-
-        _methodsOld[object][method.name()] = method;
     }
 
     // we need a the notifier slot meta method for our connect signatures
@@ -57,7 +56,6 @@ void Remoting::registerObject(const QString &name, QObject *object)
         _properties[key] = QPair{object, property};
 
         if (property.hasNotifySignal()) {
-            _propertiesOld[object][property.notifySignal().methodSignature()].append(property);
             _notifierCache[QPair{object, property.notifySignalIndex()}] = key;
             connect(object, property.notifySignal(), this, notifierSlot);
         }
@@ -66,7 +64,6 @@ void Remoting::registerObject(const QString &name, QObject *object)
         auto propertyMetaObject = QMetaType(property.userType()).metaObject();
         if (propertyMetaObject) {
             qCInfo(self) << "  * recursing..." << property.typeName() << property.name();
-            _propertiesOld[object][property.name()].append(property);
             auto propertyObject = property.read(object).value<QObject *>();
             this->registerObject(QString("%1.%2").arg(name, property.name()), propertyObject);
         }
@@ -112,17 +109,9 @@ QJsonArray Remoting::receivers()
     return arr;
 }
 
-QJsonArray Remoting::methods(const QString &receiver)
+QStringList Remoting::methods()
 {
-    if (!_objects.contains(receiver)) {
-        throw QString("invalid receiver!");
-    }
-    QJsonArray methods;
-    for (auto const &method : qAsConst(_methodsOld[_objects[receiver]])) {
-        auto signature = QString("%1 %2").arg(method.typeName(), method.methodSignature());
-        methods.append(signature);
-    }
-    return methods;
+    return _methods.keys();
 }
 
 QStringList Remoting::properties()
@@ -215,31 +204,34 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
     int id = cmd["id"].toInt();
 
     // get QObject*
-    auto receiver = cmd["receiver"].toString();
-    if (!_objects.contains(receiver)) {
-        qCCritical(self) << "no such receiver:" << receiver;
-        return QJsonObject{{"id", id}, {"error", "invalid_receiver"}};
-    }
-    auto object = _objects[receiver];
+    // auto receiver = cmd["receiver"].toString();
+    // if (!_objects.contains(receiver)) {
+    //     qCCritical(self) << "no such receiver:" << receiver;
+    //     return QJsonObject{{"id", id}, {"error", "invalid_receiver"}};
+    // }
+    // auto object = _objects[receiver];
 
-    // get QMetaMethod
     auto method = cmd["method"].toString();
-    if (!_methodsOld[_objects[receiver]].contains(method)) {
-        qCCritical(self) << "no such method for " << receiver << ":" << method;
+
+    if (!_methods.contains(method)) {
+        qCCritical(self) << "no such method:" << method;
         return QJsonObject{{"id", id}, {"error", "invalid_method"}};
-        ;
     }
-    auto metaMethod = _methodsOld[object][method];
+
+    auto pair = _methods[cmd["method"].toString()];
+    auto object = pair.first;
+    auto metaMethod = pair.second;
 
     // parse arguments
     auto args = cmd["args"].toArray();
+
     if (metaMethod.parameterCount() > args.size()) {
-        qCCritical(self) << "not enough parameters.";
+        qCCritical(self) << "too many parameters expected:" << metaMethod.parameterCount() << "got:" << args.size();
         return QJsonObject{{"id", id}, {"error", "invalid_args"}};
-        ;
     }
 
     QVariantList variants;
+
     for (int i = 0; i < args.size(); i++) {
         auto variant = VariantSerializer::I()->deserialize(metaMethod.parameterType(i), args[i]);
         if (metaMethod.parameterType(i) == QMetaType::QVariant) {

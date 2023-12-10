@@ -29,11 +29,13 @@ add_library(${PROJECT_NAME} SHARED
   clockserver.cpp
 )
 
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#    SOVERSION ${PROJECT_VERSION}
-#)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    SOVERSION ${PROJECT_VERSION}
+)
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
@@ -43,5 +45,4 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE LIBREMOTE_LIBRARY)
-
 install(TARGETS ${PROJECT_NAME} LIBRARY)

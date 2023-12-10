@@ -43,10 +43,10 @@ void Alarm::setRepeatRule(const QVariantList &newRepeat)
     }
 }
 
-int Alarm::nextTrigger(const QDateTime &after) const
+QDateTime Alarm::nextTrigger(const QDateTime &after) const
 {
     if (!_activated) {
-        return -1;
+        return QDateTime();
     }
     QDateTime nextTime{after.date(), _time};
 
@@ -63,7 +63,7 @@ int Alarm::nextTrigger(const QDateTime &after) const
         }
 
     // return how long from now this is away
-    return QDateTime::currentDateTime().msecsTo(nextTime);
+    return nextTime;
 }
 
 bool Alarm::repeats() const
@@ -124,4 +124,17 @@ const QStringList &Alarm::arguments() const
 void Alarm::setArguments(const QStringList &newArguments)
 {
     _arguments = newArguments;
+}
+
+QDebug operator<<(QDebug debug, const Alarm &c)
+{
+    QDebugStateSaver saver(debug);
+    debug.nospace() << QString("Alarm(activated=%1,name='%2',time='%3',sound='%5')")
+                           .arg( //
+                               c.activated() ? "true" : "false",
+                               c.name(),
+                               c.time().toString(),
+                               c.sound());
+
+    return debug;
 }

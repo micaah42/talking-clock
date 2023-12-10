@@ -36,6 +36,12 @@ void SoundService::play(const QString &sound)
 {
     auto playlist = new QMediaPlaylist{};
     playlist->setPlaybackMode(QMediaPlaylist::Loop);
+
+    if (!_soundsFolder.exists(sound)) {
+        qCWarning(self) << "sound does not exist:" << _soundsFolder.filePath(sound);
+        return;
+    }
+
     playlist->addMedia(QUrl{"file://" + _soundsFolder.filePath(sound)});
 
     _player.setPlaylist(playlist);

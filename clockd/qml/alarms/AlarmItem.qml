@@ -7,12 +7,9 @@ import Controls 1.0
 
 ItemDelegate {
     id: ctrl
-    width: parent.width
-    height: column.height
 
-    property bool expanded: false
-    onClicked: expanded = !expanded
-    hoverEnabled: !expanded
+    property var alarm: model
+    height: 64
 
     Rectangle {
         anchors.fill: parent
@@ -21,133 +18,66 @@ ItemDelegate {
         radius: 5
     }
 
-    ColumnLayout {
-        id: column
-        width: parent.width
+    RowLayout {
+        anchors.fill: parent
+        anchors.margins: 8
+        spacing: 10
 
-        RowLayout {
+        Switch {
+            text: checked ? 'Active' : 'Disabled'
+            Layout.preferredWidth: 120
+            Layout.fillHeight: true
+            checked: alarm.activated
+            onClicked: alarm.activated = checked
+            font.family: FontService.family
+            font.pixelSize: 18
+        }
+
+        CLabel {
             Layout.fillWidth: true
-            Layout.leftMargin: 10
-            Layout.rightMargin: 10
-            spacing: 10
+            text: alarm.name
+            font.pixelSize: 18
+        }
 
-            Switch {
-                text: checked ? 'Active' : 'Disabled'
-                Layout.fillHeight: true
-                checked: model.activated
-                onClicked: model.activated = checked
-                font.family: fontService.family
-                font.pixelSize: 18
+        CLabel {
+            text: new Date(alarm.time).toLocaleTimeString(Qt.locale())
+            font.pixelSize: 18
+        }
+
+        Row {
+            id: weekdays
+            function getRepeat(i) {
+                return alarm.repeatRule[i]
             }
-            CLabel {
-                Layout.fillWidth: true
-                text: model.name
-                font.pixelSize: 18
+            function setRepeat(i, v) {
+                var rule = alarm.repeatRule
+                rule[i] = v
+                alarm.repeatRule = rule
             }
-            CLabel {
-                text: new Date(model.time).toLocaleTimeString(Qt.locale())
-                font.pixelSize: 18
-            }
-            Row {
-                id: weekdays
-                function getRepeat(i) {
-                    return model.repeatRule[i]
-                }
-                function setRepeat(i, v) {
-                    var rule = model.repeatRule
-                    rule[i] = v
-                    model.repeatRule = rule
-                }
-                Repeater {
-                    model: 7
-                    delegate: CCheckBox {
-                        width: 25
-                        scale: 1.15
-                        checked: weekdays.getRepeat(modelData)
-                        onClicked: weekdays.setRepeat(modelData, checked)
-                    }
+            Repeater {
+                model: 7
+                delegate: CCheckBox {
+                    width: 25
+                    scale: 1.15
+                    checked: weekdays.getRepeat(modelData)
+                    onClicked: weekdays.setRepeat(modelData, checked)
                 }
             }
         }
-        Item {
-            Layout.fillWidth: true
-            Layout.leftMargin: 10
-            Layout.rightMargin: 10
-            Layout.bottomMargin: 10
-            Layout.preferredHeight: childrenRect.height
-            clip: true
+    }
 
-            ColumnLayout {
-                visible: ctrl.height !== 0
-                height: ctrl.expanded ? 325 : 0
-                width: parent.width
-                Behavior on height {
-                    PropertyAnimation {
-                        duration: 300
-                    }
-                }
+    onClicked: {
+        editDialog.active = true
+    }
 
-                CTextField {
-                    Layout.fillWidth: true
-                    label: 'Name'
-                    text: model.name
-                    onTextEdited: model.name = text
-                }
+    Loader {
+        id: editDialog
+        asynchronous: true
+        active: false
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    TimeField {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        time: model.time
-                        onTimeEdited: model.time = time
-                    }
-
-                    Frame {
-                        id: sidebar
-                        function getSound() {
-                            return model.sound
-                        }
-                        function setSound(sound) {
-                            model.sound = sound
-                        }
-
-                        Layout.preferredWidth: parent.width / 3
-                        Layout.fillHeight: true
-
-                        ColumnLayout {
-                            anchors.margins: 5
-                            anchors.fill: parent
-                            CTextField {
-                                Layout.fillWidth: true
-                                label: "Program"
-                            }
-                            CTextField {
-                                Layout.fillWidth: true
-                                label: "Arguments"
-                            }
-                            CComboBox {
-                                Layout.fillWidth: true
-                                label: "Sound"
-                                model: soundService.availableSounds
-                                text: sidebar.getSound()
-                                onActivated: {
-                                    sidebar.setSound(soundService.availableSounds[index])
-                                }
-                            }
-
-                            Button {
-                                Layout.alignment: Qt.AlignRight
-                                highlighted: true
-                                text: "Remove"
-                                onClicked: alarms.model.remove(index)
-                            }
-                        }
-                    }
-                }
-            }
+        sourceComponent: AlarmDialog {
+            alarm: ctrl.alarm
+            onAboutToHide: editDialog.active = false
         }
     }
 }

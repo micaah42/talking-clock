@@ -52,36 +52,40 @@ Item {
                     width: 0.75 * parent.width
                     height: 0.75 * parent.height
                     Material.background: ColorService.darkPrimary
+
                     onClicked: {
                         loader.source = model.component
                         title.text = model.name
                     }
 
                     contentItem: Item {
-                        anchors.centerIn: parent
-
-                        ColumnLayout {
+                        Column {
                             anchors.centerIn: parent
-                            width: 0.6 * parent.height
+                            width: 128
 
                             Image {
                                 id: icon
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: width
-                                sourceSize.height: height
-                                sourceSize.width: width
-                                Layout.alignment: Qt.AlignHCenter
                                 source: model.icon
+
+                                width: parent.width
+                                height: width
+
+                                fillMode: Image.PreserveAspectFit
+                                sourceSize.width: width
+                                sourceSize.height: height
 
                                 ColorOverlay {
                                     anchors.fill: parent
                                     antialiasing: true
                                     source: parent
+                                    cached: true
                                     color: "#ffffff"
                                 }
                             }
+
                             Label {
-                                Layout.alignment: Qt.AlignHCenter
+                                horizontalAlignment: Qt.AlignHCenter
+                                width: parent.width
                                 font.pixelSize: 24
                                 text: model.name
                             }
@@ -100,16 +104,15 @@ Item {
             anchors.fill: parent
 
             Card {
-                visible: loader.status === Loader.Ready
-                color: ColorService.primary
                 Layout.preferredHeight: 50
                 Layout.fillWidth: true
-                Layout.margins: 5
+                Layout.margins: 8
+                bright: true
 
                 ToolButton {
                     anchors.verticalCenter: parent.verticalCenter
                     onClicked: close.start()
-                    text: '<'
+                    icon.source: 'qrc:/navigate_before_FILL0_wght700_GRAD200_opsz48.png'
                 }
 
                 Label {
@@ -120,16 +123,12 @@ Item {
                 }
             }
 
-            Loader {
+            FeedbackLoader {
                 id: loader
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                onStatusChanged: {
-                    if (status === Loader.Ready) {
-                        open.start()
-                    }
-                }
+                onLoaded: open.start()
             }
         }
 

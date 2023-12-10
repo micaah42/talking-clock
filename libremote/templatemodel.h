@@ -17,7 +17,7 @@ public:
     explicit TemplateModel(const QMetaType &metaType = QMetaType(), QObject *parent = nullptr);
 
     int classId() const { return _classId; };
-    int size() const { return _items.size(); };
+    Q_INVOKABLE int size() const { return _items.size(); };
     QVariant item(int i) { return _items.at(i); };
 
     // table model functions
@@ -106,14 +106,26 @@ void TemplateModel::_push(const T &value)
     public: \
         explicit C##Model(QObject *parent = nullptr) \
             : TemplateModel(QMetaType::fromType<C>(), parent){}; \
-        Q_INVOKABLE const C at(const int index) const { return TemplateModel::_at<C>(index); }; \
+        Q_INVOKABLE const C at(const int index) const \
+        { \
+            return TemplateModel::_at<C>(index); \
+        }; \
         Q_INVOKABLE void set(const int index, const C &value) \
         { \
             TemplateModel::_set<C>(index, value); \
         }; \
-        Q_INVOKABLE void remove(const int i) { TemplateModel::removeRows(i, 1); }; \
-        Q_INVOKABLE void push(const C &value = C()) { TemplateModel::_push<C>(value); }; \
-        Q_INVOKABLE bool contains(const C &value) { return TemplateModel::_contains<C>(value); }; \
+        Q_INVOKABLE void remove(const int i) \
+        { \
+            TemplateModel::removeRows(i, 1); \
+        }; \
+        Q_INVOKABLE void push(const C &value = C()) \
+        { \
+            TemplateModel::_push<C>(value); \
+        }; \
+        Q_INVOKABLE bool contains(const C &value) \
+        { \
+            return TemplateModel::_contains<C>(value); \
+        }; \
     };
 
 #endif // MAPADAPTER_H

@@ -13,14 +13,20 @@ Item {
         model: ctrl.stars
         delegate: Item {
             id: del
+
             x: parent.width * Math.random()
             y: parent.height * Math.random()
+
+            function blink() {
+                animation.start()
+            }
+
             width: 20
             height: width
 
             Rectangle {
                 id: star
-                property bool exploded: false
+
                 width: 3 * Math.random() + 0.5
                 height: width
                 radius: width / 2
@@ -29,33 +35,29 @@ Item {
 
                 color: Qt.lighter(ColorService.primary, 2.5)
             }
-            PropertyAnimation {
-                id: blinkUp
-                target: star
-                property: "opacity"
-                from: 0.3
-                to: 1.0
-                duration: ctrl.blinkUp
-                easing.type: Easing.Linear
-                onFinished: blinkDown.start()
-            }
-            PropertyAnimation {
-                id: blinkDown
-                target: star
-                property: "opacity"
-                from: 1.
-                to: 0.3
-                duration: ctrl.blinkDown
-                easing.type: Easing.Linear
-            }
 
-            Connections {
-                target: alarms
-                function onClockTicked() {
-                    if (Math.random() < 0.05 && !blinkUp.running && !blinkDown.running) {
-                        blinkUp.start()
-                    }
+            SequentialAnimation on opacity {
+                id: animation
+                PropertyAnimation {
+                    to: 1.0
+                    duration: ctrl.blinkUp
+                    easing.type: Easing.Linear
                 }
+                PropertyAnimation {
+                    to: 0.3
+                    duration: ctrl.blinkDown
+                    easing.type: Easing.Linear
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: AlarmService
+        function onClockTicked() {
+            for (var i = 0; i < stars / 5; i++) {
+                const index = Math.floor(Math.random() * stars)
+                starsRepeater.itemAt(index).blink()
             }
         }
     }

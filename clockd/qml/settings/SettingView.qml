@@ -1,12 +1,13 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
+import QtQuick.Controls.Material 2.14
 
 import Clock 1.0
 import Controls 1.0
 
 Item {
     property var setting
-    height: childrenRect.height
+    height: Material.delegateHeight
 
     Loader {
         width: parent.width

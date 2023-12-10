@@ -10,6 +10,9 @@ Frame {
     id: ctrl
     Layout.fillWidth: true
     Layout.fillHeight: true
+
+    property int visibleItems: 7
+    property bool seconds: false
     property date time
     signal timeEdited
 
@@ -28,38 +31,38 @@ Frame {
         }
     }
 
+    Component {
+        id: delegateComponent
+
+        CLabel {
+            text: modelData.toString().padStart(2, "0")
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.family: FontService.family
+
+            font.pixelSize: {
+                if (!parent)
+                    return 0
+
+                var displacement = 2 * Math.abs(Tumbler.displacement) / visibleItems
+                return Math.max(64 - 32 * displacement, 24)
+            }
+        }
+    }
+
     RowLayout {
         id: row
         anchors.fill: parent
-
-        Component {
-            id: delegateComponent
-
-            CLabel {
-                text: modelData.toString().padStart(2, "0")
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: {
-                    var displacement = Math.abs(Tumbler.displacement)
-                    var visibleItems = Tumbler.tumbler.visibleItemCount
-                    if (displacement < 1)
-                        return 64 - 32 * displacement
-                    else
-                        return 32
-                }
-                font.family: fontService.family
-            }
-        }
 
         Tumbler {
             id: hoursTumbler
             model: 24
             delegate: delegateComponent
-            currentIndex: {
-                currentIndex = ctrl.time.getHours()
-            }
+            currentIndex: currentIndex = ctrl.time.getHours()
             onCurrentIndexChanged: ctrl.setTime(currentIndex, null, null)
+            Layout.fillHeight: true
             Layout.fillWidth: true
+            clip: true
         }
 
         Text {
@@ -73,14 +76,15 @@ Frame {
         Tumbler {
             model: 60
             delegate: delegateComponent
-            currentIndex: {
-                currentIndex = ctrl.time.getMinutes()
-            }
+            currentIndex: currentIndex = ctrl.time.getMinutes()
             onCurrentIndexChanged: ctrl.setTime(null, currentIndex, null)
+            Layout.fillHeight: true
             Layout.fillWidth: true
+            clip: true
         }
 
         Text {
+            visible: seconds
             Layout.preferredWidth: 1 / 5
             horizontalAlignment: Text.AlignHCenter
             text: ":"
@@ -89,6 +93,7 @@ Frame {
         }
 
         Tumbler {
+            visible: seconds
             model: 60
             delegate: delegateComponent
             currentIndex: {

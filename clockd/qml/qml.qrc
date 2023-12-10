@@ -6,7 +6,7 @@
         <file>TaskPage.qml</file>
         <file>alarms/AlarmItem.qml</file>
         <file>alarms/AlarmPage.qml</file>
-        <file>alarms/AlarmPopup.qml</file>
+        <file>alarms/AlarmNotification.qml</file>
         <file>alarms/TimeField.qml</file>
         <file>MenuPage.qml</file>
         <file>Stars.qml</file>
@@ -19,6 +19,9 @@
         <file>Controls/CTextField.qml</file>
         <file>Controls/qmldir</file>
         <file>data/DataPage.qml</file>
+        <file>alarms/AlarmDialog.qml</file>
+        <file>FeedbackLoader.qml</file>
+        <file>alarms/NextAlarm.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

@@ -22,7 +22,7 @@ public:
     AlarmService(const int tickRate = 500, QObject *parent = nullptr);
 
     QList<int> nextIds() const;
-    const QString &clockString() const;
+    const QDateTime &now() const;
 
     QJsonArray nextIdsArray() const;
 
@@ -32,8 +32,8 @@ public:
 
 signals:
     void alarmTriggered(const int id);
-    void clockTicked(const QString &now);
     void nextIdsChanged();
+    void clockTicked();
 
 private slots:
     void onTriggererTriggered();
@@ -47,7 +47,7 @@ private:
 
     QTimer _clock;
     QTimer _saveTimer;
-    QString _clockString;
+    QDateTime _now;
     QString _clockFormat;
 
     QList<int> _nextIds;
@@ -57,7 +57,7 @@ private:
     QFile _alarmsFile;
 
     // properties
-    Q_PROPERTY(QString clockString READ clockString NOTIFY clockTicked)
+    Q_PROPERTY(QDateTime now READ now NOTIFY clockTicked)
     Q_PROPERTY(QJsonArray nextIds READ nextIdsArray NOTIFY nextIdsChanged)
     Q_PROPERTY(AlarmModel *model READ model CONSTANT)
 };

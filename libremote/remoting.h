@@ -32,7 +32,7 @@ public:
 
     // list methods
     Q_INVOKABLE QJsonArray receivers();
-    Q_INVOKABLE QJsonArray methods(const QString &receiver);
+    Q_INVOKABLE QStringList methods();
 
     // list properties
     Q_INVOKABLE QStringList properties();
@@ -47,10 +47,6 @@ private slots:
 
 private:
     QMap<QString, QObject *> _objects;
-    QMap<QObject *, QMap<QString, QMetaMethod>> _methodsOld;
-    QMap<QObject *, QMap<QString, QList<QMetaProperty>>> _propertiesOld;
-    // QMap<QObject *, QString> _modelKeys;
-
     QMap<QString, QPair<QObject *, QMetaMethod>> _methods;
     QMap<QString, QPair<QObject *, QMetaProperty>> _properties;
 

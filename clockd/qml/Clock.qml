@@ -11,41 +11,45 @@ Item {
     ColumnLayout {
         id: timeDisplay
         anchors.centerIn: parent
+        spacing: 16
         z: 10
 
         RowLayout {
+            Layout.alignment: Qt.AlignHCenter
+
             Item {
                 Layout.preferredWidth: seconds.width // compensate ss to center hh:mm
             }
+
             CLabel {
-                text: new Date(alarms.clockString).toLocaleString(Qt.locale(), "HH:mm")
-                color: ColorService.primary
+                text: AlarmService.now.toLocaleString(Qt.locale(), "HH:mm")
                 font.pixelSize: 150 * ctrl.timeScale
+                color: ColorService.primary
+
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    height: 3
+                    radius: height / 2
+                    width: parent.width
+                    color: ColorService.accent
+                }
             }
+
             CLabel {
                 id: seconds
                 Layout.alignment: Qt.AlignTop
-                text: new Date(alarms.clockString).toLocaleString(Qt.locale(), "ss")
-                color: ColorService.primary
+                text: AlarmService.now.toLocaleString(Qt.locale(), "ss")
                 font.pixelSize: 50 * ctrl.timeScale
+                color: ColorService.primary
             }
         }
 
-        Rectangle {
-            Layout.preferredHeight: 3
-            Layout.preferredWidth: dateDisplay.width
-            radius: height / 2
-            Layout.alignment: Qt.AlignHCenter
-            color: ColorService.accent
-        }
         CLabel {
             id: dateDisplay
-            text: new Date(alarms.clockString).toLocaleDateString(Qt.locale())
             Layout.alignment: Qt.AlignHCenter
-            color: ColorService.darkPrimary
-            font.pixelSize: 30 * ctrl.timeScale
-            style: Text.Outline
-            styleColor: ColorService.primary
+            text: AlarmService.now.toLocaleDateString(Qt.locale(), 'dddd, d. MMMM')
+            font.pixelSize: 36 * ctrl.timeScale
+            color: Qt.lighter(ColorService.primary, 0.8)
         }
     }
 

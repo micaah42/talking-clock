@@ -30,7 +30,7 @@ public:
     explicit Alarm();
     ~Alarm(){};
 
-    int nextTrigger(const QDateTime &after) const;
+    Q_INVOKABLE QDateTime nextTrigger(const QDateTime &after) const;
     bool repeats() const;
 
     const QString &name() const;
@@ -69,5 +69,7 @@ private:
     QStringList _arguments;
 };
 Q_DECLARE_METATYPE(Alarm)
+
+QDebug operator<<(QDebug debug, const Alarm &c);
 
 #endif // ALARM_H

@@ -6,13 +6,10 @@ from typing import Any
 
 class Configuration:
     def __init__(self):
-        # use '/etc/' if 'HOME' is not defined as in systemd init manager
-        folder = '.' if os.getenv('HOME') else '/etc/micaah42'
 
         # read the file
-        self.file = os.path.join(folder, 'scraping.conf')
         self.parser = configparser.ConfigParser()
-        self.parser.read(self.file)
+        self.parser.read('scraping.ini', f'{os.getenv("HOME")}/.config/micaah42/scraping.ini', '/etc/scraping.ini')
 
         self.set('DEFAULT', 'last_access', datetime.datetime.now().isoformat())
 

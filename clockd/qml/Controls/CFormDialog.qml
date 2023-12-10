@@ -34,7 +34,7 @@ Item {
                     id: search
                     placeholderText: "Search"
                     Layout.preferredWidth: 200
-                    onTextChanged: fontService.families.setFilterFixedString(text)
+                    onTextChanged: FontService.families.setFilterFixedString(text)
                 }
 
                 ListView {
@@ -42,7 +42,7 @@ Item {
                     Layout.preferredWidth: 200
                     clip: true
 
-                    model: fontService.families
+                    model: FontService.families
 
                     delegate: ItemDelegate {
                         width: ListView.view.width
@@ -115,7 +115,7 @@ Item {
         onClosed: {
             search.text = ""
             examples.family = ""
-            fontService.families.setFilterFixedString("")
+            FontService.families.setFilterFixedString("")
         }
     }
 }
