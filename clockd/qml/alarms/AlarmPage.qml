@@ -39,11 +39,12 @@ Item {
 
                 footer: Button {
                     width: parent.width
+                    Material.roundedScale: Material.ExtraSmallScale
+                    font.family: FontService.family
                     text: "New Alarm"
                     onClicked: {
                         AlarmService.model.push()
                     }
-                    font.family: FontService.family
                 }
             }
         }

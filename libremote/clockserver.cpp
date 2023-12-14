@@ -1,7 +1,9 @@
 #include "clockserver.h"
 
+#include <QFile>
 #include <QJsonDocument>
 #include <QLoggingCategory>
+#include <QSslKey>
 #include <QUuid>
 
 namespace {
@@ -9,13 +11,37 @@ Q_LOGGING_CATEGORY(self, "server");
 }
 
 ClockServer::ClockServer(QObject *parent)
-    : QObject{parent}, _server("tc-remote", QWebSocketServer::NonSecureMode)
+    : QObject{parent}
+    , _server("clock-secure", QWebSocketServer::SecureMode)
+    , _server("clock-secure", QWebSocketServer::SecureMode)
 {
+    QFile file;
+    QSslConfiguration ssl;
+
+    // read certificate
+    file.setFileName("./cert.pem");
+    if (!file.open(QIODevice::ReadOnly))
+        qFatal("failed to load certificate: %s", qUtf8Printable(file.errorString()));
+
+    QSslCertificate cert{&file, QSsl::Pem};
+    ssl.addCaCertificate(cert);
+    file.close();
+
+    // read key
+    file.setFileName("./key.pem");
+    if (!file.open(QIODevice::ReadOnly))
+        qFatal("failed to load key: %s", qUtf8Printable(file.errorString()));
+    QSslKey key{&file, QSsl::Rsa, QSsl::Pem};
+    ssl.setPrivateKey(key);
+    file.close();
+
+    _server.setSslConfiguration(ssl);
+
     connect(&_server, &QWebSocketServer::newConnection, this, &ClockServer::onNewConnection);
-    bool ok = _server.listen(QHostAddress::Any, 2112);
-    if (!ok) {
-        qCCritical(self) << "cannot listen:" << _server.errorString();
-    }
+
+    if (!_server.listen(QHostAddress::Any, 2112))
+        qFatal("cannot listen: %s", qUtf8Printable(_server.errorString()));
+
     qCInfo(self) << "running, available under:" << _server.serverUrl();
 }
 

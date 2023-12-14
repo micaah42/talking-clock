@@ -25,6 +25,9 @@ export class WebSocketService {
         next: () => {
           this.isOpen = true;
           console.log('connected!');
+        },
+        error: (e) => {
+          console.warn('failed to connecte:', e)
         }
       },
       closeObserver: {

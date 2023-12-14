@@ -14,8 +14,8 @@ TextField {
 
     CLabel {
         id: l
-        x: 0
-        y: 0
+        x: 8
+        y: 4
         font.pixelSize: 12
         background: Item {}
     }

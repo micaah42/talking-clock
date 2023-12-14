@@ -2,11 +2,12 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
-import QtGraphicalEffects 1.15
 
 import Clock 1.0
 
 Item {
+    property variant currentPage: null
+
     GridLayout {
         anchors.fill: parent
         columns: 3
@@ -52,12 +53,14 @@ Item {
                     width: 0.75 * parent.width
                     height: 0.75 * parent.height
                     Material.background: ColorService.darkPrimary
+                    Material.roundedScale: Material.ExtraSmallScale
 
-                    onClicked: {
-                        loader.source = model.component
-                        title.text = model.name
-                    }
+                    onClicked: currentPage = model
 
+                    //{
+                    //    loader.source = model.component
+                    //    title.text = model.name
+                    //}
                     contentItem: Item {
                         Column {
                             anchors.centerIn: parent
@@ -73,14 +76,6 @@ Item {
                                 fillMode: Image.PreserveAspectFit
                                 sourceSize.width: width
                                 sourceSize.height: height
-
-                                ColorOverlay {
-                                    anchors.fill: parent
-                                    antialiasing: true
-                                    source: parent
-                                    cached: true
-                                    color: "#ffffff"
-                                }
                             }
 
                             Label {
@@ -97,6 +92,7 @@ Item {
     }
 
     Card {
+        visible: currentPage !== null
         anchors.fill: parent
         anchors.margins: 10
 
@@ -116,18 +112,17 @@ Item {
                 }
 
                 Label {
-                    id: title
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
+                    text: currentPage ? currentPage.name : ''
                     font.pixelSize: 24
                 }
             }
 
             FeedbackLoader {
-                id: loader
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-
+                source: currentPage ? currentPage.component : ''
                 onLoaded: open.start()
             }
         }
@@ -135,16 +130,9 @@ Item {
         PropertyAnimation on scale {
             id: close
             easing.type: Easing.InOutQuad
-            onFinished: loader.source = ''
+            onFinished: currentPage = null
             duration: 250
             to: 0
-        }
-
-        Connections {
-            target: EventFilter
-            function onUserInactive() {
-                close.start()
-            }
         }
 
         PropertyAnimation on scale {
@@ -152,6 +140,13 @@ Item {
             easing.type: Easing.InOutQuad
             duration: 250
             to: 1
+        }
+
+        Connections {
+            target: EventFilter
+            function onUserInactive() {
+                close.start()
+            }
         }
     }
 }

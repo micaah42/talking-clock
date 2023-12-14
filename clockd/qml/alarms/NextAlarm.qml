@@ -65,6 +65,7 @@ Frame {
         anchors.margins: -40
         asynchronous: true
         height: 40
+        visible: false
 
         property real t
 

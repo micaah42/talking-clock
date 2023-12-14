@@ -138,7 +138,8 @@ std::function<QVariant(const QJsonValue &)> VariantSerializer::buildDeserializer
     // handle qgagets
     if (metaType.flags().testFlag(QMetaType::IsGadget)) {
         return [this, metaObject, typeId](const QJsonValue &value) {
-            void *gadget = QMetaType::create(typeId);
+            QMetaType metaType(typeId);
+            void *gadget = metaType.create();
             auto object = value.toObject();
             for (int i = 0; i < metaObject->propertyCount(); ++i) {
                 auto property = metaObject->property(i);
@@ -146,7 +147,11 @@ std::function<QVariant(const QJsonValue &)> VariantSerializer::buildDeserializer
                 auto propertyValue = object[property.name()];
                 property.writeOnGadget(gadget, this->deserialize(propertyType, propertyValue));
             }
+#if QT_VERSION_MAJOR == 5
             return QVariant(typeId, const_cast<void *>(gadget));
+#elif QT_VERSION_MAJOR == 6
+            return QVariant(metaType, const_cast<void *>(gadget));
+#endif
         };
     }
 

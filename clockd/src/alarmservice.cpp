@@ -32,9 +32,6 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
     _saveTimer.setSingleShot(true);
     _saveTimer.setInterval(2000);
 
-    // set clock format
-    _clockFormat = Qt::ISODate;
-
     // handle changes in the alarms
     connect(&_alarms,
             &AlarmModel::dataChanged,

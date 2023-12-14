@@ -6,19 +6,30 @@ CTextField {
     property alias model: input.model
     property alias currentIndex: input.currentIndex
     signal activated(var index)
-    onReleased: input.popup.open();
-    onFocusChanged: focus = false;
+
+    onReleased: input.popup.open()
+    onFocusChanged: focus = false
 
     ComboBox {
         id: input
-        anchors.fill: parent
         visible: false
-        displayText: ""
-        width: parent.width
+
+        anchors.fill: parent
         background: Item {}
+        displayText: ""
+
+        popup.y: parent.height + 2
+        popup.padding: 4
+
+        popup.background: Rectangle {
+            border.color: Material.frameColor
+            color: Material.dialogColor
+            radius: 3
+        }
+
         onActivated: {
-            ctrl.activated(index);
-            ctrl.text = model[index];
+            ctrl.text = model[currentIndex]
+            ctrl.activated(currentIndex)
         }
     }
 }

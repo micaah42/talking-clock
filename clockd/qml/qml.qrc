@@ -22,6 +22,7 @@
         <file>alarms/AlarmDialog.qml</file>
         <file>FeedbackLoader.qml</file>
         <file>alarms/NextAlarm.qml</file>
+        <file>Keyboard.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

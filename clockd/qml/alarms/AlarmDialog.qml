@@ -12,7 +12,9 @@ Dialog {
     anchors.centerIn: Overlay.overlay
     implicitWidth: 0.8 * window.width
     implicitHeight: 0.8 * window.height
+    Material.roundedScale: Material.ExtraSmallScale
     closePolicy: Popup.NoAutoClose
+    dim: false
 
     ColumnLayout {
         id: column
@@ -88,7 +90,9 @@ Dialog {
                     Layout.fillHeight: true
 
                     CComboBox {
-                        onActivated: alarm.sound = SoundService.availableSounds[index]
+                        onActivated: {
+                            alarm.sound = SoundService.availableSounds[currentIndex]
+                        }
                         model: SoundService.availableSounds
                         text: alarm.sound
                         label: "Sound"
@@ -121,6 +125,7 @@ Dialog {
                         Button {
                             onClicked: accept()
                             Layout.fillWidth: true
+                            Material.roundedScale: Material.ExtraSmallScale
                             highlighted: true
                             text: 'Done'
                         }

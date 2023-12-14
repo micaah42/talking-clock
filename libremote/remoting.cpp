@@ -262,8 +262,11 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
         gArgs.append(gArg);
     }
 
-    // return value
+#if QT_VERSION_MAJOR == 5
     QVariant returnValue(metaMethod.returnType(), static_cast<void *>(nullptr));
+#else
+    QVariant returnValue(metaMethod.returnMetaType(), static_cast<void *>(nullptr));
+#endif
     QGenericReturnArgument gReturn(metaMethod.typeName(),
                                    const_cast<void *>(returnValue.constData()));
     try {

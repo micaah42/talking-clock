@@ -68,7 +68,7 @@ private:
     QString _program;
     QStringList _arguments;
 };
-Q_DECLARE_METATYPE(Alarm)
+//Q_DECLARE_METATYPE(Alarm)
 
 QDebug operator<<(QDebug debug, const Alarm &c);
 

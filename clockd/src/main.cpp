@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
         qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     }
 
+    qRegisterMetaType<Alarm>();
+    qRegisterMetaType<Dataset>();
+
     QCoreApplication::setOrganizationName("micaah");
     QCoreApplication::setOrganizationDomain("org");
     QCoreApplication::setApplicationName("talking-clock");

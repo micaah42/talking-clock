@@ -1,8 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-import QtGraphicalEffects 1.14
-import QtMultimedia 5.15
+import QtMultimedia
 
 import Clock 1.0
 import ".."
@@ -22,30 +21,38 @@ Item {
 
     MediaPlayer {
         id: player
-        Component.onCompleted: play()
-        source: alarm.sound.length ? `file:///usr/share/clockd/sounds/${alarm.sound}` : ''
+        Component.onCompleted: {
+            console.log('playing', source)
+            play()
+        }
+        source: alarm.sound.length ? `qrc:/sounds/${alarm.sound}` : ''
         loops: MediaPlayer.Infinite
 
-        SequentialAnimation on volume {
-            running: true
+        onErrorOccurred: function (error, errorString) {
+            console.warn(error, errorString)
+        }
 
-            PropertyAnimation {
-                duration: 10 * 1000
-                from: 0.1
-                to: 1
+        audioOutput: AudioOutput {
+            SequentialAnimation on volume {
+                onFinished: player.stop()
+                running: true
+
+                PropertyAnimation {
+                    duration: 10 * 1000
+                    from: 0.1
+                    to: 1
+                }
+
+                PauseAnimation {
+                    duration: 8 * 1000
+                }
+
+                PropertyAnimation {
+                    duration: 5 * 1000
+                    from: 1
+                    to: 0
+                }
             }
-
-            PauseAnimation {
-                duration: 8 * 1000
-            }
-
-            PropertyAnimation {
-                duration: 5 * 1000
-                from: 1
-                to: 0
-            }
-
-            onFinished: player.stop()
         }
     }
 
@@ -69,8 +76,7 @@ Item {
 
         Label {
             text: alarm.name
-            Layout.fillHeight: true
-            font.pixelSize: 42
+            font.pixelSize: 72
             leftPadding: 8
         }
 
@@ -79,14 +85,16 @@ Item {
         }
 
         RowLayout {
-            Layout.maximumHeight: 72
+            id: row
+            Layout.preferredHeight: 72
+            Layout.fillWidth: true
             spacing: 24
 
             Slider {
                 id: slider
-                Layout.fillHeight: true
+                Layout.preferredHeight: parent.height
                 Layout.fillWidth: true
-                handle.height: height
+                handle.height: 0.8 * height
                 handle.width: 1.66 * height
                 background.transform: Scale {
                     yScale: 2
@@ -97,14 +105,16 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
-                    onPressed: mouse.accepted = !handleArea.containsMouse
+                    onPressed: function (mouse) {
+                        mouse.accepted = !handleArea.containsMouse
+                    }
                 }
 
                 MouseArea {
                     id: handleArea
                     hoverEnabled: true
                     anchors.fill: slider.handle
-                    onPressed: {
+                    onPressed: function (mouse) {
                         mouse.accepted = false
                     }
                 }
@@ -118,10 +128,9 @@ Item {
                 }
 
                 onPressedChanged: {
-                    if (value === 1) {
+                    if (value === 1)
                         moveOut.start()
-                    }
-                    if (!pressed)
+                    else if (!pressed)
                         snapback.start()
                 }
             }
@@ -129,8 +138,8 @@ Item {
             Button {
                 text: "Snooze"
                 highlighted: true
+                Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.width / 3
-                Layout.fillHeight: true
             }
         }
     }

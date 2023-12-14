@@ -8,6 +8,7 @@ Item {
         anchors.margins: 15
         anchors.fill: parent
         columnSpacing: 10
+        rowSpacing: 10
         columns: 4
 
         // rows: 10

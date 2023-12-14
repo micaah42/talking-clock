@@ -1,14 +1,15 @@
 #include "soundservice.h"
 
 #include <QLoggingCategory>
-#include <QMediaPlaylist>
+//#include <QMediaPlaylist>
 
 namespace {
 Q_LOGGING_CATEGORY(self, "sounds")
 }
 
 SoundService::SoundService(QObject *parent)
-    : QObject(parent), _soundsFolder{"/usr/share/clockd/sounds"}
+    : QObject(parent)
+    , _soundsFolder{":/sounds"}
 {
     // stop player automatically after specified amount of time
     connect(&_timer, &QTimer::timeout, this, &SoundService::stop);
@@ -27,25 +28,26 @@ QStringList SoundService::availableSounds()
 void SoundService::refresh()
 {
     _soundsFolder.refresh();
+
     _sounds = _soundsFolder.entryList({"*.mp3", "*.wav"});
-    qCInfo(self) << "found" << _sounds.size() << "sounds";
+    qCInfo(self) << "found" << _sounds.size() << "sounds" << _soundsFolder.exists();
     emit availableSoundsChanged();
 }
 
 void SoundService::play(const QString &sound)
 {
-    auto playlist = new QMediaPlaylist{};
-    playlist->setPlaybackMode(QMediaPlaylist::Loop);
+    //auto playlist = new QMediaPlaylist{};
+    //playlist->setPlaybackMode(QMediaPlaylist::Loop);
 
     if (!_soundsFolder.exists(sound)) {
         qCWarning(self) << "sound does not exist:" << _soundsFolder.filePath(sound);
         return;
     }
 
-    playlist->addMedia(QUrl{"file://" + _soundsFolder.filePath(sound)});
+    //playlist->addMedia(QUrl{"file://" + _soundsFolder.filePath(sound)});
 
-    _player.setPlaylist(playlist);
-    _player.setVolume(40);
+    //_player.setPlaylist(playlist);
+    //_player.setVolume(40);
     _player.play();
     _timer.start();
 }
@@ -58,14 +60,14 @@ void SoundService::stop()
 
 void SoundService::onPositionChanged(int position)
 {
-    if (position < _player.duration() || !_player.isAudioAvailable()) {
+    if (position < _player.duration() /* ||!_player.isAudioAvailable()*/) {
         // we actually want to handle the repeat-restarts only so return when not on end
         return;
     }
 
     // increment volume if possible
-    if (_player.volume() < 100) {
-        _player.setVolume(_player.volume() + 15);
-        qCInfo(self) << "playing louder..." << _player.volume();
-    }
+    //if (_player.volume() < 100) {
+    //    _player.setVolume(_player.volume() + 15);
+    //    qCInfo(self) << "playing louder..." << _player.volume();
+    //}
 }

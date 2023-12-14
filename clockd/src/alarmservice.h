@@ -48,7 +48,6 @@ private:
     QTimer _clock;
     QTimer _saveTimer;
     QDateTime _now;
-    QString _clockFormat;
 
     QList<int> _nextIds;
     void updateTriggerer(const QDateTime &after = QDateTime::currentDateTime());

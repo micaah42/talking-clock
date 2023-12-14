@@ -10,7 +10,9 @@ namespace {
 Q_LOGGING_CATEGORY(self, "alarm");
 }
 
-Alarm::Alarm() : _activated{true}, _time{QTime::currentTime()}
+Alarm::Alarm()
+    : _activated{true}
+    , _time{12, 0}
 {
     _repeatRule.fill(false);
 }

@@ -8,7 +8,11 @@ Q_LOGGING_CATEGORY(self, "templatemodel");
 
 TemplateModel::TemplateModel(const QMetaType &type, QObject *parent) : QAbstractTableModel(parent)
 {
-    Q_ASSERT(type.isValid() && type.isRegistered());
+    if (!type.isRegistered())
+        qFatal("unregistered type in template model %s", type.name());
+
+    if (!type.isValid())
+        qFatal("invalid type in template model %s", type.name());
 
     _classId = type.id();
 
@@ -66,9 +70,14 @@ bool TemplateModel::insertRows(int position, int rows, const QModelIndex &index)
     Q_UNUSED(index);
     beginInsertRows(QModelIndex(), position, position + rows - 1);
 
-    auto copy = QMetaType::create(_classId);
+    QMetaType metaType(_classId);
+    auto copy = metaType.create();
     for (int row = 0; row < rows; ++row) {
+#if QT_VERSION_MAJOR == 5
         _items.insert(position, QVariant(_classId, copy));
+#elif QT_VERSION_MAJOR == 6
+        _items.insert(position, QVariant(metaType, copy));
+#endif
     }
 
     endInsertRows();

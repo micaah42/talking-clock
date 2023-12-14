@@ -1,7 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Window 2.14
 import QtQuick.Layouts 1.14
-import QtQuick.VirtualKeyboard 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Controls.Material 2.14
 import QtMultimedia 5.15
@@ -25,6 +24,7 @@ ApplicationWindow {
     Material.accent: ColorService.accent
     Material.primary: ColorService.primary
     Material.background: ColorService.background
+    Material.roundedScale: Material.NotRounded
 
     property real divisionY: Qt.inputMethod.visible ? height - keyboard.height : height
 
@@ -65,8 +65,8 @@ ApplicationWindow {
         }
     }
 
-    InputPanel {
-        id: keyboard
+    Loader {
+        source: 'qrc:/Keyboard.qml'
         width: parent.width
         y: divisionY
     }
@@ -81,10 +81,8 @@ ApplicationWindow {
     Connections {
         target: AlarmService
         function onAlarmTriggered(id) {
-            var comp = Qt.createComponent("alarms/AlarmNotification.qml")
-
+            var comp = Qt.createComponent("alarms/AlarmNotification.qml", window)
             var alarm = AlarmService.model.at(id)
-
             var object = comp.createObject(window, {
                                                "alarm": alarm
                                            })

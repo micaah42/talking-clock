@@ -36,6 +36,7 @@ private:
     QMap<QUuid, QWebSocket *> _clients;
 
     QWebSocketServer _server;
+    QWebSocketServer _server2;
 };
 
 #endif // CLOCKSERVER_H
