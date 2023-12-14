@@ -13,7 +13,7 @@ Q_LOGGING_CATEGORY(self, "server");
 ClockServer::ClockServer(QObject *parent)
     : QObject{parent}
     , _server("clock-secure", QWebSocketServer::SecureMode)
-    , _server("clock-secure", QWebSocketServer::SecureMode)
+    , _server2("clock-secure", QWebSocketServer::NonSecureMode)
 {
     QFile file;
     QSslConfiguration ssl;
