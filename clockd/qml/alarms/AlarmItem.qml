@@ -13,8 +13,8 @@ ItemDelegate {
 
     Rectangle {
         anchors.fill: parent
-        opacity: 0
         border.color: ColorService.primary
+        opacity: 0
         radius: 5
     }
 

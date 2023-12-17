@@ -17,8 +17,6 @@ Dialog {
     x: (window.w - width) / 2
     height: 0.8 * window.h
     width: 0.8 * window.w
-
-    closePolicy: Popup.NoAutoClose
     dim: false
 
     ColumnLayout {
@@ -108,31 +106,17 @@ Dialog {
                 Frame {
                     Layout.fillWidth: true
 
-                    ColumnLayout {
-                        anchors.fill: parent
-
-                        DelayButton {
-                            property bool wasActivated: false
-                            onActivated: wasActivated = true
-
-                            onReleased: {
-                                if (wasActivated) {
-                                    AlarmService.model.remove(index)
-                                    accept()
-                                }
+                    DelayButton {
+                        width: parent.width
+                        property bool wasActivated: false
+                        text: "Remove"
+                        delay: 2000
+                        onActivated: wasActivated = true
+                        onReleased: {
+                            if (wasActivated) {
+                                AlarmService.model.remove(index)
+                                accept()
                             }
-
-                            Layout.fillWidth: true
-                            text: "Remove"
-                            delay: 2000
-                        }
-
-                        Button {
-                            onClicked: accept()
-                            Layout.fillWidth: true
-                            Material.roundedScale: Material.ExtraSmallScale
-                            highlighted: true
-                            text: 'Done'
                         }
                     }
                 }

@@ -7,6 +7,7 @@ import Clock 1.0
 
 Item {
     property variant currentPage: null
+    onCurrentPageChanged: console.log('current page', currentPage)
 
     GridLayout {
         anchors.fill: parent
@@ -26,10 +27,12 @@ Item {
                     name: "Data"
                 }
                 ListElement {
+                    component: ""
                     icon: "qrc:/neurology_FILL0_wght400_GRAD0_opsz48.svg"
                     name: "Brains"
                 }
                 ListElement {
+                    component: ""
                     icon: "qrc:/work_FILL0_wght400_GRAD0_opsz48.svg"
                     name: "Jobs"
                 }
@@ -39,6 +42,7 @@ Item {
                     name: "Settings"
                 }
                 ListElement {
+                    component: ""
                     icon: "qrc:/info_FILL0_wght400_GRAD0_opsz48.svg"
                     name: "About"
                 }
@@ -54,7 +58,6 @@ Item {
                     height: 0.75 * parent.height
                     Material.background: ColorService.darkPrimary
                     Material.roundedScale: Material.ExtraSmallScale
-
                     onClicked: currentPage = model
 
                     //{

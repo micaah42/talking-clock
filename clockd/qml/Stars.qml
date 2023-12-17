@@ -27,7 +27,7 @@ Item {
             Rectangle {
                 id: star
 
-                width: 3 * Math.random() + 0.5
+                width: 3 * Math.random() + 1.5
                 height: width
                 radius: width / 2
                 anchors.centerIn: parent
