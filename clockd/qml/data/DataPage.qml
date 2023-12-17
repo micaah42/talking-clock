@@ -36,10 +36,11 @@ Item {
         loops: MediaPlayer.Infinite
 
         onErrorOccurred: function (error, errorString) {
-            console.warn(error, errorString)
+            console.warn('player:', error, errorString)
         }
 
         audioOutput: AudioOutput {//SequentialAnimation on volume {
+
             //    onFinished: player.stop()
             //    running: true
 
@@ -63,7 +64,7 @@ Item {
     }
 
     Button {
-        text: 'PLAY TEST'
-        onClicked: player.play()
+        text: player.playbackState === MediaPlayer.PlayingState ? 'STOP' : 'PLAY'
+        onClicked: player.playbackState === MediaPlayer.PlayingState ? player.stop() : player.play()
     }
 }
