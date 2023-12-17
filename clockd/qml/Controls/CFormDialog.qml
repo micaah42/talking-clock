@@ -21,10 +21,12 @@ Item {
 
     Popup {
         id: popup
-        parent: Overlay.overlay
-        anchors.centerIn: Overlay.overlay
-        width: 0.9 * window.width
-        height: 0.9 * window.height
+        parent: window.contentItem
+        scale: window.s === 0 ? 1 : 1 / window.s
+        width: 0.9 * window.w
+        height: 0.9 * window.h
+        x: (window.w - width) / 2
+        y: (window.h - height) / 2
 
         RowLayout {
             anchors.fill: parent

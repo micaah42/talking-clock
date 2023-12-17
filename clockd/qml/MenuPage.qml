@@ -96,6 +96,10 @@ Item {
         anchors.fill: parent
         anchors.margins: 10
 
+        MouseArea {
+            anchors.fill: parent
+        }
+
         ColumnLayout {
             anchors.fill: parent
 

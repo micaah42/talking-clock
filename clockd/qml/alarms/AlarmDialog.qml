@@ -8,11 +8,16 @@ import Clock 1.0
 Dialog {
     property var alarm
 
-    visible: true
-    anchors.centerIn: Overlay.overlay
-    implicitWidth: 0.8 * window.width
-    implicitHeight: 0.8 * window.height
     Material.roundedScale: Material.ExtraSmallScale
+    visible: true
+
+    parent: window.contentItem
+    scale: window.s === 0 ? 1 : 1 / window.s
+    y: (window.h - height) / 2
+    x: (window.w - width) / 2
+    height: 0.8 * window.h
+    width: 0.8 * window.w
+
     closePolicy: Popup.NoAutoClose
     dim: false
 

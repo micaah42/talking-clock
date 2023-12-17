@@ -3,18 +3,26 @@ import QtQuick.Window 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 import QtQuick.Controls.Material 2.14
+import QtQuick.VirtualKeyboard
 import QtMultimedia 5.15
 
 import "alarms/"
 import Clock 1.0
 import Controls 1.0
 
-ApplicationWindow {
+Window {
     id: window
-    width: 1024
+
+    property int w: 1024
+    property int h: 600
+    property real s: Math.min(width / w, height / h)
+    contentItem.transformOrigin: Qt.TopLeftCorner
+    contentItem.scale: s
+
+    width: w
     onWidthChanged: console.warn(`window.width=${width}`)
 
-    height: 600
+    height: h
     onHeightChanged: console.warn(`window.height=${height}`)
 
     visible: true
@@ -26,49 +34,53 @@ ApplicationWindow {
     Material.background: ColorService.background
     Material.roundedScale: Material.NotRounded
 
-    property real divisionY: Qt.inputMethod.visible ? height - keyboard.height : height
+    property real divisionY: Qt.inputMethod.visible ? h - keyboard.height : h
 
     Behavior on divisionY {
         PropertyAnimation {
             easing.type: Easing.InOutQuad
+            duration: 250
         }
     }
 
-    ScrollView {
-        width: parent.width
-        height: divisionY
+    Item {
+        width: w
+        height: h
 
-        contentWidth: window.width
-        contentHeight: window.height
+        ScrollView {
+            width: parent.width
+            height: divisionY
 
-        clip: true
+            contentWidth: w
+            contentHeight: h
+            clip: true
 
-        Stars {
-            anchors.fill: parent
-        }
-
-        SwipeView {
-            id: mainView
-
-            width: window.width
-            height: window.height
-            currentIndex: 0
-
-            Clock {
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: mainView.currentIndex = (mainView.currentIndex + 1) % mainView.count
-                }
+            Stars {
+                anchors.fill: parent
             }
 
-            MenuPage {}
-        }
-    }
+            SwipeView {
+                id: mainView
 
-    Loader {
-        source: 'qrc:/Keyboard.qml'
-        width: parent.width
-        y: divisionY
+                width: w
+                height: h
+                currentIndex: 0
+
+                Clock {
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: mainView.currentIndex = (mainView.currentIndex + 1) % mainView.count
+                    }
+                }
+
+                MenuPage {}
+            }
+        }
+
+        Loader {
+            id: keyboard
+            source: 'qrc:/Keyboard.qml'
+        }
     }
 
     Connections {
