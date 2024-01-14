@@ -28,26 +28,16 @@ AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent
     _clock.start();
 
     // set up the save timer
-    connect(&_saveTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
-    _saveTimer.setSingleShot(true);
-    _saveTimer.setInterval(2000);
+    connect(&_persistTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
+    _persistTimer.setSingleShot(true);
+    _persistTimer.setInterval(500);
 
     // handle changes in the alarms
-    connect(&_alarms,
-            &AlarmModel::dataChanged,
-            this,
-            [this](const QModelIndex &index, const QVariant &value, const QVector<int> role) {
-                _saveTimer.start();
-            });
+    connect(&_alarms, &AlarmModel::dataChanged, this, [this](const QModelIndex &index, const QVariant &value, const QVector<int> role) {
+        _persistTimer.start();
+    });
 
-    connect(&_alarms,
-            &AlarmModel::rowsRemoved,
-            this,
-            [this](const QModelIndex &parent, const int &first, const int last) {
-                _saveTimer.start();
-            });
-
-    //QTimer::singleShot(1000, Qt::PreciseTimer, this, [this]() { emit alarmTriggered(0); });
+    connect(&_alarms, &AlarmModel::rowsRemoved, this, [this](const QModelIndex &parent, const int &first, const int last) { _persistTimer.start(); });
 
     // load arlams data
     _alarmsFile.setFileName(PathService::create("alarms.json"));

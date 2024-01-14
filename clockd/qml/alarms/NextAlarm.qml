@@ -7,23 +7,37 @@ import ".."
 import Clock 1.0
 import Controls 1.0
 
-Frame {
-    property var alarm: {
-        if (AlarmService.nextIds.length === 0)
-            return null
-        if (AlarmService.model.size() <= AlarmService.nextIds[0])
-            return null
-        return AlarmService.model.at(AlarmService.nextIds[0])
+Item {
+    property var alarm
+
+    Image {
+        anchors.right: parent.right
+        anchors.rightMargin: 24
+        anchors.top: parent.top
+        anchors.topMargin: 24
+
+        sourceSize.width: 128
+        sourceSize.height: 128
+
+        source: {
+            const hours = alarm.nextTrigger(new Date()).getHours()
+            if (8 <= hours && hours < 22)
+                return 'qrc:/sunny_FILL0_wght400_GRAD0_opsz24.svg'
+            else
+                return 'qrc:/clear_night_FILL0_wght400_GRAD0_opsz24.svg'
+        }
     }
 
     ColumnLayout {
+        anchors.fill: parent
+
         CLabel {
             text: "Next Alarm:"
             font.pixelSize: 24
         }
 
         CLabel {
-            text: alarm ? alarm.name : ' '
+            text: alarm.name
             font.pixelSize: 42
             bottomPadding: 16
         }
@@ -34,7 +48,7 @@ Frame {
         }
 
         CLabel {
-            text: alarm ? alarm.nextTrigger(new Date()).toLocaleTimeString() : ' '
+            text: alarm.nextTrigger(new Date()).toLocaleTimeString()
             font.pixelSize: 32
             bottomPadding: 16
         }
@@ -45,61 +59,13 @@ Frame {
         }
 
         CLabel {
-            text: alarm ? alarm.sound : ' '
+            text: alarm.sound === '' ? 'No Sound!' : alarm.sound.split('.')[0]
             font.pixelSize: 32
             bottomPadding: 16
         }
 
         Item {
             Layout.fillHeight: true
-        }
-    }
-
-    clip: true
-
-    Shape {
-        id: line
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.margins: -40
-        asynchronous: true
-        height: 40
-        visible: false
-
-        property real t
-
-        NumberAnimation on t {
-            loops: Animation.Infinite
-            running: true
-            from: 0
-            to: 2 * Math.PI
-            duration: 3500
-        }
-
-        ShapePath {
-            startX: 0
-            startY: 0
-            strokeWidth: 3
-            strokeColor: ColorService.accent
-            fillColor: 'transparent'
-
-            PathPolyline {
-                property int n: 36
-
-                path: {
-                    const piScale = 5 * Math.PI / n
-                    const xScale = line.width / n
-                    const yScale = line.height / 2
-                    const p = []
-
-                    for (var i = 0; i < n; i++) {
-                        p.push(Qt.point(xScale * i, yScale * Math.sin(line.t + piScale * i)))
-                    }
-
-                    return p
-                }
-            }
         }
     }
 }

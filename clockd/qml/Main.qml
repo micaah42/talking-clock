@@ -15,7 +15,7 @@ Window {
 
     property int w: 1024
     property int h: 600
-    property real s: Math.min(width / w, height / h)
+    property real s: 1 //Math.min(width / w, height / h)
     contentItem.transformOrigin: Qt.TopLeftCorner
     contentItem.scale: s
 

@@ -46,7 +46,7 @@ private:
     QTimer _triggerer;
 
     QTimer _clock;
-    QTimer _saveTimer;
+    QTimer _persistTimer;
     QDateTime _now;
 
     QList<int> _nextIds;

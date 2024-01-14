@@ -58,12 +58,11 @@ Item {
                     height: 0.75 * parent.height
                     Material.background: ColorService.darkPrimary
                     Material.roundedScale: Material.ExtraSmallScale
-                    onClicked: currentPage = model
+                    onClicked: {
+                        currentPage = model
+                        console.log(currentPage, model)
+                    }
 
-                    //{
-                    //    loader.source = model.component
-                    //    title.text = model.name
-                    //}
                     contentItem: Item {
                         Column {
                             anchors.centerIn: parent
@@ -95,7 +94,7 @@ Item {
     }
 
     Card {
-        visible: currentPage !== null
+        visible: scale !== 0
         anchors.fill: parent
         anchors.margins: 10
 
@@ -114,8 +113,8 @@ Item {
 
                 ToolButton {
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: close.start()
-                    icon.source: 'qrc:/navigate_before_FILL0_wght700_GRAD200_opsz48.png'
+                    icon.source: 'qrc:/navigate_before_FILL0_wght400_GRAD0_opsz24.svg'
+                    onClicked: currentPage = null
                 }
 
                 Label {
@@ -130,29 +129,22 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 source: currentPage ? currentPage.component : ''
-                onLoaded: open.start()
             }
         }
 
-        PropertyAnimation on scale {
-            id: close
-            easing.type: Easing.InOutQuad
-            onFinished: currentPage = null
-            duration: 250
-            to: 0
-        }
+        scale: currentPage ? 1 : 0
 
-        PropertyAnimation on scale {
-            id: open
-            easing.type: Easing.InOutQuad
-            duration: 250
-            to: 1
+        Behavior on scale {
+            PropertyAnimation {
+                easing.type: Easing.InOutQuad
+                duration: 250
+            }
         }
 
         Connections {
             target: EventFilter
             function onUserInactive() {
-                close.start()
+                currentPage = null
             }
         }
     }
