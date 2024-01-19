@@ -66,5 +66,6 @@ Item {
     Button {
         text: player.playbackState === MediaPlayer.PlayingState ? 'STOP' : 'PLAY'
         onClicked: player.playbackState === MediaPlayer.PlayingState ? player.stop() : player.play()
+        Material.roundedScale: Material.ExtraSmallScale
     }
 }

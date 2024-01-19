@@ -125,9 +125,10 @@ Item {
                 }
             }
 
-            FeedbackLoader {
+            Loader {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.margins: 8
                 source: currentPage ? currentPage.component : ''
             }
         }

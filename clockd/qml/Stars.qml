@@ -5,8 +5,14 @@ Item {
     id: ctrl
 
     property int stars
-    property int blinkUp
-    property int blinkDown
+    property int blinkUp: 5000
+    property int blinkDown: 1000
+
+    Repeater {
+        id: blinkers
+        model: 10
+        delegate: Item {}
+    }
 
     Repeater {
         id: starsRepeater
@@ -17,47 +23,32 @@ Item {
             x: parent.width * Math.random()
             y: parent.height * Math.random()
 
-            function blink() {
-                animation.start()
-            }
-
-            width: 20
-            height: width
-
             Rectangle {
                 id: star
 
-                width: 3 * Math.random() + 1.5
+                anchors.centerIn: parent
+                width: 2 * Math.random() + 1.1
                 height: width
                 radius: width / 2
-                anchors.centerIn: parent
-                opacity: 0.3
 
                 color: Qt.lighter(ColorService.primary, 2.5)
-            }
 
-            SequentialAnimation on opacity {
-                id: animation
-                PropertyAnimation {
-                    to: 1.0
-                    duration: ctrl.blinkUp
-                    easing.type: Easing.Linear
-                }
-                PropertyAnimation {
-                    to: 0.3
-                    duration: ctrl.blinkDown
-                    easing.type: Easing.Linear
-                }
-            }
-        }
-    }
+                SequentialAnimation on opacity {
+                    loops: Animation.Infinite
+                    running: true
 
-    Connections {
-        target: AlarmService
-        function onClockTicked() {
-            for (var i = 0; i < stars / 5; i++) {
-                const index = Math.floor(Math.random() * stars)
-                starsRepeater.itemAt(index).blink()
+                    OpacityAnimator {
+                        duration: (Math.random() + 0.5) * ctrl.blinkUp
+                        from: 0.3
+                        to: 0.8
+                    }
+
+                    OpacityAnimator {
+                        duration: (Math.random() + 0.5) * ctrl.blinkDown
+                        from: 0.8
+                        to: 0.3
+                    }
+                }
             }
         }
     }

@@ -95,12 +95,15 @@ void LogHandling::msgHandler(const QtMsgType type,
 
 void LogHandling::createNewFile(const QDateTime &now)
 {
+    QDir logdir{"./log"};
+    if (!logdir.mkpath("."))
+        std::cerr << "failed to create logdir!";
+
     auto date = now.date().toString(Qt::ISODate);
-    auto filePath = PathService::create(QString("%1.log").arg(date));
+    auto filePath = logdir.absoluteFilePath(QString("%1.log").arg(date));
     LogFile.setFileName(filePath);
     if (!LogFile.open(QIODevice::Append)) {
-        std::cerr << "cannot open log file:" << filePath.toStdString()
-                  << LogFile.errorString().toStdString() << std::endl;
+        std::cerr << "cannot open log file: " << filePath.toStdString() << LogFile.errorString().toStdString() << std::endl;
     }
 }
 

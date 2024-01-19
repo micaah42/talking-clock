@@ -28,6 +28,7 @@ Item {
 
                 Rectangle {
                     anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 20
                     height: 3
                     radius: height / 2
                     width: parent.width

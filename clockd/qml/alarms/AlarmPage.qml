@@ -11,7 +11,6 @@ import Controls 1.0
 Item {
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 8
         spacing: 16
 
         Frame {

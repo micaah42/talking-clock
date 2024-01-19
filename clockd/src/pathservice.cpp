@@ -12,9 +12,8 @@ QString PathService::create(const QString &filename, bool file)
         return QDir(AppHome).filePath(filename);
     }
     else {
-        auto path = QDir(AppHome).filePath(filename);
-        QDir().mkpath(path);
-        return path;
+        QDir(AppHome).mkpath(filename);
+        return QDir(AppHome).absoluteFilePath(filename);
     }
 }
 

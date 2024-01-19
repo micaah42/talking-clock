@@ -8,7 +8,7 @@
         <file>alarms/AlarmPage.qml</file>
         <file>alarms/AlarmNotification.qml</file>
         <file>alarms/TimeField.qml</file>
-        <file>MenuPage.qml</file>
+        <file>MainMenu.qml</file>
         <file>Stars.qml</file>
         <file>settings/SettingsPage.qml</file>
         <file>settings/SettingView.qml</file>

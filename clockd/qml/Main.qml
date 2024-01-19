@@ -13,16 +13,10 @@ import Controls 1.0
 Window {
     id: window
 
-    property int w: 1024
-    property int h: 600
-    property real s: 1 //Math.min(width / w, height / h)
-    contentItem.transformOrigin: Qt.TopLeftCorner
-    contentItem.scale: s
-
-    width: w
+    width: 1024
     onWidthChanged: console.warn(`window.width=${width}`)
 
-    height: h
+    height: 600
     onHeightChanged: console.warn(`window.height=${height}`)
 
     visible: true
@@ -34,7 +28,7 @@ Window {
     Material.background: ColorService.background
     Material.roundedScale: Material.NotRounded
 
-    property real divisionY: Qt.inputMethod.visible ? h - keyboard.height : h
+    property real divisionY: Qt.inputMethod.visible ? height - keyboard.height : height
 
     Behavior on divisionY {
         PropertyAnimation {
@@ -43,44 +37,39 @@ Window {
         }
     }
 
-    Item {
-        width: w
-        height: h
+    ScrollView {
+        width: parent.width
+        height: divisionY
 
-        ScrollView {
+        contentWidth: parent.width
+        contentHeight: parent.height
+        clip: true
+
+        Stars {
+            anchors.fill: parent
+        }
+
+        SwipeView {
+            id: mainView
+
+            height: parent.height
             width: parent.width
-            height: divisionY
+            currentIndex: 0
 
-            contentWidth: w
-            contentHeight: h
-            clip: true
-
-            Stars {
-                anchors.fill: parent
-            }
-
-            SwipeView {
-                id: mainView
-
-                width: w
-                height: h
-                currentIndex: 0
-
-                Clock {
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: mainView.currentIndex = (mainView.currentIndex + 1) % mainView.count
-                    }
+            Clock {
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: mainView.currentIndex = (mainView.currentIndex + 1) % mainView.count
                 }
-
-                MenuPage {}
             }
-        }
 
-        Loader {
-            id: keyboard
-            source: 'qrc:/Keyboard.qml'
+            MainMenu {}
         }
+    }
+
+    Loader {
+        id: keyboard
+        source: 'qrc:/Keyboard.qml'
     }
 
     Connections {
