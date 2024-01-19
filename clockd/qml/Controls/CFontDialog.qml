@@ -23,8 +23,8 @@ Item {
         id: popup
         parent: window.contentItem
         scale: window.s === 0 ? 1 : 1 / window.s
-        width: 0.9 * window.w
-        height: 0.9 * window.h
+        width: 0.9 * window.width
+        height: 0.9 * window.height
         x: (window.w - width) / 2
         y: (window.h - height) / 2
 

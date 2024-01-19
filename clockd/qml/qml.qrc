@@ -14,7 +14,7 @@
         <file>settings/SettingView.qml</file>
         <file>Controls/CCheckBox.qml</file>
         <file>Controls/CComboBox.qml</file>
-        <file>Controls/CFormDialog.qml</file>
+        <file>Controls/CFontDialog.qml</file>
         <file>Controls/CLabel.qml</file>
         <file>Controls/CTextField.qml</file>
         <file>Controls/qmldir</file>
@@ -23,6 +23,7 @@
         <file>FeedbackLoader.qml</file>
         <file>alarms/NextAlarm.qml</file>
         <file>Keyboard.qml</file>
+        <file>Pages/AboutPage.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

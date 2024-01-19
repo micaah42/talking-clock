@@ -5,9 +5,10 @@ Description=This unit starts the talking clock gui.
 Restart=always
 Type=simple
 ExecStartPre=/bin/sleep 1s
-ExecStart=/usr/bin/clockd
 Environment='QT_QPA_NO_SIGNAL_HANDLER=1'
 Environment='QT_QPA_PLATFORM=eglfs'
+Environment='QT_SCALE_FACTOR=2'
+ExecStart=/usr/bin/clockd
 
 [Install]
 WantedBy=multi-user.target

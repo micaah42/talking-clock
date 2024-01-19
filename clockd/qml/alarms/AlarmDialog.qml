@@ -13,10 +13,10 @@ Dialog {
 
     parent: window.contentItem
     scale: window.s === 0 ? 1 : 1 / window.s
-    y: (window.h - height) / 2
-    x: (window.w - width) / 2
-    height: 0.8 * window.h
-    width: 0.8 * window.w
+    y: (window.height - height) / 2
+    x: (window.width - width) / 2
+    height: 0.8 * window.height
+    width: 0.8 * window.width
     dim: false
 
     ColumnLayout {

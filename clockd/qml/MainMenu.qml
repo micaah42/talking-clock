@@ -42,7 +42,7 @@ Item {
                     name: "Settings"
                 }
                 ListElement {
-                    component: ""
+                    component: "qrc:/Pages/AboutPage.qml"
                     icon: "qrc:/info_FILL0_wght400_GRAD0_opsz48.svg"
                     name: "About"
                 }

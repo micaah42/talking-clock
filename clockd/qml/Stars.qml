@@ -6,7 +6,7 @@ Item {
 
     property int stars
     property int blinkUp: 5000
-    property int blinkDown: 1000
+    property int blinkDown: 5000
 
     Repeater {
         id: blinkers
@@ -35,7 +35,7 @@ Item {
 
                 SequentialAnimation on opacity {
                     loops: Animation.Infinite
-                    running: true
+                    running: Math.random() > 0.5
 
                     OpacityAnimator {
                         duration: (Math.random() + 0.5) * ctrl.blinkUp
@@ -68,8 +68,8 @@ Item {
     }
 
     Component.onCompleted: {
-        SettingsService.create("stars/stars", 150)
-        SettingsService.create("stars/blinkUp", 850)
-        SettingsService.create("stars/blinkDown", 2500)
+        SettingsService.create("stars/stars", 100)
+        SettingsService.create("stars/blinkUp", 5000)
+        SettingsService.create("stars/blinkDown", 5000)
     }
 }

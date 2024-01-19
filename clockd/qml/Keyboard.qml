@@ -10,10 +10,8 @@ Item {
         visible: Qt.inputMethod.visible
 
         parent: window.contentItem
-
-        scale: window.s === 0 ? 1 : 1 / window.s
         height: keyboard.height
-        width: window.w
+        width: window.width
         y: divisionY
 
         onClosed: Qt.inputMethod.hide()
