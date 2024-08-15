@@ -1,74 +1,71 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * alarm.h                                                               *
- *                                                                       *
- * Alarm implements the logic of repetition of alarms on weekdays and    *
- * can return the next DateTime this alarm should be triggered.          *
- * - michael, 2022-03                                                    *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 #ifndef ALARM_H
 #define ALARM_H
 
 #include <QDateTime>
-#include <QJsonArray>
-#include <QJsonObject>
+#include <QObject>
 #include <QTime>
+#include <QTimer>
 
-class Alarm
+class Alarm : public QObject
 {
-    Q_GADGET
-
-    Q_PROPERTY(bool activated READ activated WRITE setActivated)
-    Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(QTime time READ time WRITE setTime)
-    Q_PROPERTY(QVariantList repeatRule READ repeatRule WRITE setRepeatRule)
-    Q_PROPERTY(QString sound READ sound WRITE setSound)
-    Q_PROPERTY(QString program READ program WRITE setProgram)
-    Q_PROPERTY(QStringList arguments READ arguments WRITE setArguments)
+    Q_OBJECT
+    Q_PROPERTY(bool activated READ activated WRITE setActivated NOTIFY activatedChanged FINAL)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
+    Q_PROPERTY(QTime time READ time WRITE setTime NOTIFY timeChanged FINAL)
+    Q_PROPERTY(QVariantList repeatRule READ repeatRule WRITE setRepeatRule NOTIFY repeatRuleChanged FINAL)
+    Q_PROPERTY(bool repeats READ repeats NOTIFY repeatsChanged FINAL)
+    Q_PROPERTY(QString sound READ sound WRITE setSound NOTIFY soundChanged FINAL)
+    Q_PROPERTY(QDateTime nextTimeout READ nextTimeout NOTIFY nextTimeoutChanged FINAL)
 
 public:
-    explicit Alarm();
-    ~Alarm(){};
+    Q_INVOKABLE explicit Alarm(QObject *parent = nullptr);
 
-    Q_INVOKABLE QDateTime nextTrigger(const QDateTime &after) const;
-    bool repeats() const;
+    bool activated() const;
+    void setActivated(bool newActivated);
 
-    const QString &name() const;
+    QString name() const;
     void setName(const QString &newName);
 
     QTime time() const;
     void setTime(const QTime &newTime);
 
     QVariantList repeatRule() const;
-    void setRepeatRule(const QVariantList &newRepeat);
+    void setRepeatRule(const QVariantList &newRepeatRule);
 
-    bool activated() const;
-    void setActivated(bool newActivated);
-
-    const QString &sound() const;
+    QString sound() const;
     void setSound(const QString &newSound);
 
-    const QString &program() const;
-    void setProgram(const QString &newProgram);
+    QDateTime nextTimeout() const;
+    bool repeats() const;
 
-    const QStringList &arguments() const;
-    void setArguments(const QStringList &newArguments);
+public slots:
+    void findNextTimeout(QDateTime after = QDateTime::currentDateTime());
+    void snooze(int minutes);
+
+signals:
+    void activatedChanged();
+    void nameChanged();
+    void timeChanged();
+    void repeatRuleChanged();
+    void soundChanged();
+    void nextTimeoutChanged();
+    void repeatsChanged();
+
+protected:
+    void setNextTimeout(const QDateTime &newNextTimeout);
+    void setRepeats(bool newRepeats);
 
 private:
-    // whether or not the alarm is activated
     bool _activated;
-    // name or description
     QString _name;
-    // time to trigger
     QTime _time;
-    // on which days to trigger
-    std::array<bool, 7> _repeatRule;
-
+    QList<bool> _repeatRule;
     QString _sound;
-    QString _program;
-    QStringList _arguments;
+    QDateTime _nextTimeout;
+    bool _repeats;
+
+    QTimer _timer;
 };
-//Q_DECLARE_METATYPE(Alarm)
 
 QDebug operator<<(QDebug debug, const Alarm &c);
 

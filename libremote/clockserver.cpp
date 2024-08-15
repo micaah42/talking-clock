@@ -7,16 +7,16 @@
 #include <QUuid>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "server");
+Q_LOGGING_CATEGORY(self, "server", QtInfoMsg);
 }
 
 ClockServer::ClockServer(QObject *parent)
     : QObject{parent}
     , _server("clock-secure", QWebSocketServer::SecureMode)
-    , _server2("clock-secure", QWebSocketServer::NonSecureMode)
 {
     QFile file;
     QSslConfiguration ssl;
+    ssl.setPeerVerifyMode(QSslSocket::VerifyNone);
 
     // read certificate
     file.setFileName("./cert.pem");
@@ -24,7 +24,7 @@ ClockServer::ClockServer(QObject *parent)
         qFatal("failed to load certificate: %s", qUtf8Printable(file.errorString()));
 
     QSslCertificate cert{&file, QSsl::Pem};
-    ssl.addCaCertificate(cert);
+    ssl.setLocalCertificate(cert);
     file.close();
 
     // read key
@@ -93,7 +93,8 @@ void ClockServer::onMessageReceived(const QByteArray &message)
 
 void ClockServer::broadcastMessage(const QByteArray &message)
 {
-    // qCInfo(self) << "broadcasting message:" << message;
+    qCDebug(self) << "broadcasting message:" << message;
+
     for (auto const &client : _clients) {
         client->sendTextMessage(message);
     }

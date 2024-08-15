@@ -23,15 +23,10 @@ VariantSerializer *VariantSerializer::_instance = nullptr;
 VariantSerializer::VariantSerializer()
 {
     // handle unserializable basic types
-    _serializers[QMetaType::fromType<QDateTime>().id()] = [](const QVariant &variant) {
-        return variant.value<QDateTime>().toString(Qt::ISODate);
-    };
-    _serializers[QMetaType::fromType<QTime>().id()] = [](const QVariant &variant) {
-        return variant.value<QTime>().toString("HH:mm");
-    };
-    _serializers[QMetaType::fromType<void>().id()] = [](const QVariant &variant) {
-        return QJsonValue::Null;
-    };
+
+    _serializers[QMetaType::fromType<QDateTime>().id()] = [](const QVariant &variant) { return variant.value<QDateTime>().toString(Qt::ISODate); };
+    _serializers[QMetaType::fromType<QTime>().id()] = [](const QVariant &variant) { return variant.value<QTime>().toString("HH:mm"); };
+    _serializers[QMetaType::fromType<void>().id()] = [](const QVariant &variant) { return QJsonValue::Null; };
 
     // handle unserializable basic types
     _deserializers[QMetaType::fromType<QDateTime>().id()] = [](const QJsonValue &value) {
@@ -84,7 +79,9 @@ std::function<QJsonValue(const QVariant &)> VariantSerializer::buildSerializer(i
             for (int i = 0; i < metaObject->propertyCount(); i++) {
                 auto property = metaObject->property(i);
                 auto value = property.read(qobject);
-                object[property.name()] = this->serialize(value);
+                auto serializedValue = this->serialize(value);
+                object[property.name()] = serializedValue;
+                qCDebug(self) << "serialized" << property.typeName() << property.name() << serializedValue;
             }
 
             // serialize model items if object is of model type
@@ -125,33 +122,67 @@ std::function<QVariant(const QJsonValue &)> VariantSerializer::buildDeserializer
 
     auto metaObject = metaType.metaObject();
 
-    // handle basic types
     if (metaObject == nullptr) {
         return [](const QJsonValue &value) { return value.toVariant(); };
     }
 
-    // handle qobjects
     if (metaType.flags().testFlag(QMetaType::PointerToQObject)) {
-        qFatal("Deserialization into QObjects not implemented yet");
+        if (!metaType.isDefaultConstructible())
+            qCCritical(self) << "cannot create serializer for" << metaType.name() << "(default)";
+        if (!metaType.isMoveConstructible())
+            qCCritical(self) << "cannot create serializer for" << metaType.name() << "(move)";
+        if (!metaType.isCopyConstructible())
+            qCCritical(self) << "cannot create serializer for" << metaType.name() << "(copy)";
+
+        return [this, metaObject, typeId](const QJsonValue &value) {
+            static QMetaType metaType{typeId};
+
+            if (!value.isObject()) {
+                qCCritical(self) << "expected object for:" << metaType.name() << "got" << value;
+                return QVariant{};
+            }
+
+            auto object = value.toObject();
+            auto *qobject = metaObject->newInstance<QObject *>(nullptr);
+
+            if (qobject == nullptr) {
+                qCCritical(self) << "failed to create class:" << metaType.name();
+                return QVariant{};
+            }
+
+            for (int i = 0; i < metaObject->propertyCount(); ++i) {
+                auto property = metaObject->property(i);
+
+                if (!property.isWritable())
+                    continue;
+
+                auto propertyType = property.userType();
+                auto propertyValue = object[property.name()];
+
+                if (!property.write(qobject, this->deserialize(propertyType, propertyValue))) {
+                    qCCritical(self) << "failed to write" << propertyValue << "to" << metaType.name() << property.name();
+                }
+            }
+
+            return QVariant::fromValue(qobject);
+        };
     }
 
-    // handle qgagets
     if (metaType.flags().testFlag(QMetaType::IsGadget)) {
         return [this, metaObject, typeId](const QJsonValue &value) {
-            QMetaType metaType(typeId);
+            static QMetaType metaType(typeId);
+
             void *gadget = metaType.create();
             auto object = value.toObject();
+
             for (int i = 0; i < metaObject->propertyCount(); ++i) {
                 auto property = metaObject->property(i);
                 auto propertyType = property.userType();
                 auto propertyValue = object[property.name()];
                 property.writeOnGadget(gadget, this->deserialize(propertyType, propertyValue));
             }
-#if QT_VERSION_MAJOR == 5
-            return QVariant(typeId, const_cast<void *>(gadget));
-#elif QT_VERSION_MAJOR == 6
+
             return QVariant(metaType, const_cast<void *>(gadget));
-#endif
         };
     }
 

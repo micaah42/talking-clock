@@ -1,0 +1,2 @@
+module Clock.Pages.SettingsPage
+SettingsView 1.0 SettingsView.qml

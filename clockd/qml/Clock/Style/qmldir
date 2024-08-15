@@ -1,0 +1,4 @@
+module Clock.Style
+Card 1.0 Card.qml
+DarkCard 1.0 DarkCard.qml
+FeedbackLoader 1.0 FeedbackLoader.qml

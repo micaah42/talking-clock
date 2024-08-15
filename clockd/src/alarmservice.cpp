@@ -14,131 +14,112 @@ namespace {
 Q_LOGGING_CATEGORY(self, "alarms")
 }
 
-AlarmService::AlarmService(const int tickRate, QObject *parent) : QObject(parent)
+AlarmService::AlarmService(const int tickRate, QObject *parent)
+    : QObject(parent)
+    , _nextAlarm{nullptr}
 {
-    // set up the alarm triggerer
-    connect(&_triggerer, &QTimer::timeout, this, &AlarmService::onTriggererTriggered);
-    _triggerer.setTimerType(Qt::CoarseTimer);
-    _triggerer.setSingleShot(true);
-
-    // and the clock refresher
     connect(&_clock, &QTimer::timeout, this, &AlarmService::onClockTriggered);
     _clock.setInterval(tickRate);
-    _clock.setSingleShot(false);
     _clock.start();
 
-    // set up the save timer
-    connect(&_persistTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
-    _persistTimer.setSingleShot(true);
-    _persistTimer.setInterval(500);
+    connect(&_saveTimer, &QTimer::timeout, this, &AlarmService::saveAlarms);
+    _saveTimer.setSingleShot(true);
+    _saveTimer.setInterval(500);
 
-    // handle changes in the alarms
-    connect(&_alarms, &AlarmModel::dataChanged, this, [this](const QModelIndex &index, const QVariant &value, const QVector<int> role) {
-        _persistTimer.start();
-    });
-
-    connect(&_alarms, &AlarmModel::rowsRemoved, this, [this](const QModelIndex &parent, const int &first, const int last) { _persistTimer.start(); });
-
-    // load arlams data
     _alarmsFile.setFileName(PathService::create("alarms.json"));
-    loadAlarms();
-}
+    this->loadAlarms();
 
-QList<int> AlarmService::nextIds() const
-{
-    return _nextIds;
-}
-
-void AlarmService::updateTriggerer(const QDateTime &after)
-{
-    QDateTime next;
-
-    // find next ids
-    QList<int> nextIds;
-    for (int i = 0; i < _alarms.size(); i++) {
-        auto nextTimout = _alarms.at(i).nextTrigger(after);
-
-        if (!nextTimout.isValid()) {
-            continue;
-        }
-
-        else if (nextTimout < next || !next.isValid()) {
-            nextIds.clear();
-            nextIds.append(i);
-            next = nextTimout;
-        }
-
-        else if (nextTimout == next) {
-            nextIds.append(i);
-        }
-    }
-
-    // set timer for next alarm according to next ids
-
-    if (nextIds != _nextIds) {
-        qCInfo(self) << "nextIds:" << _nextIds << "->" << nextIds;
-        _nextIds = nextIds;
-        emit nextIdsChanged();
-    }
-
-    if (!next.isValid()) {
-        qCInfo(self) << "no next alarm. deactivate triggerer";
-        _triggerer.stop();
-    }
-
-    else {
-        qCInfo(self) << "trigger at:" << next;
-        auto now = QDateTime::currentDateTime();
-        _triggerer.setInterval(now.msecsTo(next));
-        _triggerer.start();
-    }
-}
-
-void AlarmService::onTriggererTriggered()
-{
-    QDateTime after;
-    auto now = QDateTime::currentDateTime();
-    for (auto id : qAsConst(_nextIds)) {
-        //
-        if (!_alarms.at(id).repeats()) {
-            auto deactivated = _alarms.at(id);
-            deactivated.setActivated(false);
-            _alarms.set(id, deactivated);
-        }
-
-        after = QDateTime{now.date(), _alarms.at(id).time()};
-        auto drift = now.time().msecsTo(_alarms.at(id).time());
-        qCInfo(self) << "triggered alarm:" << id << "with drift:" << drift;
-        emit alarmTriggered(id);
-    }
-
-    after = after.isValid() ? after : now;
-    updateTriggerer(after);
+    //QTimer::singleShot(1000, [this]() { emit alarmTriggered(_alarmModel[0]); });
 }
 
 void AlarmService::onClockTriggered()
 {
     _now = QDateTime::currentDateTime();
     emit clockTicked();
+
+    if (_alarmQueue.empty())
+        return;
+
+    QDateTime nextTimeout = _alarmQueue.firstKey();
+
+    while (!_alarmQueue.empty() && nextTimeout < _now) {
+        const auto alarm = *_alarmQueue.find(nextTimeout);
+
+        if (!alarm->repeats()) {
+            alarm->setActivated(false);
+        }
+
+        auto drift = _now.msecsTo(alarm->nextTimeout());
+        qCInfo(self) << "triggered alarm:" << *alarm << "with drift:" << drift;
+
+        emit alarmTriggered(alarm);
+
+        alarm->findNextTimeout(nextTimeout);
+
+        if (!_alarmQueue.empty())
+            nextTimeout = _alarmQueue.firstKey();
+    }
+}
+
+void AlarmService::onTimeoutChanged()
+{
+    auto alarm = qobject_cast<Alarm *>(sender());
+
+    qCInfo(self) << "new next timeout from:" << alarm << alarm->nextTimeout();
+
+    auto oldTime = *_timeoutMap.find(alarm);
+
+    _alarmQueue.remove(oldTime, alarm);
+    _timeoutMap.remove(alarm);
+
+    if (alarm->nextTimeout().isValid())
+        _alarmQueue.insert(alarm->nextTimeout(), alarm);
+
+    if (!_alarmQueue.empty())
+        this->setNextAlarm(_alarmQueue.first());
+    else
+        this->setNextAlarm(nullptr);
+}
+
+void AlarmService::registerAlarm(Alarm *alarm)
+{
+    /* persist alarms if property changed */
+
+    connect(alarm, &Alarm::activatedChanged, &_saveTimer, qOverload<>(&QTimer::start));
+    connect(alarm, &Alarm::nameChanged, &_saveTimer, qOverload<>(&QTimer::start));
+    connect(alarm, &Alarm::timeChanged, &_saveTimer, qOverload<>(&QTimer::start));
+    connect(alarm, &Alarm::repeatRuleChanged, &_saveTimer, qOverload<>(&QTimer::start));
+    connect(alarm, &Alarm::soundChanged, &_saveTimer, qOverload<>(&QTimer::start));
+
+    /* set up scheduling */
+
+    if (!alarm->nextTimeout().isValid()) {
+        _alarmQueue.insert(alarm->nextTimeout(), alarm);
+        _timeoutMap.insert(alarm, alarm->nextTimeout());
+    }
+
+    connect(alarm, &Alarm::nextTimeoutChanged, this, &AlarmService::onTimeoutChanged);
 }
 
 void AlarmService::saveAlarms()
 {
-    updateTriggerer();
-
     if (!_alarmsFile.open(QIODevice::WriteOnly)) {
         qCWarning(self) << "failed to open alarms file for saving!";
         return;
     }
 
     QJsonArray alarms;
-    for (int i = 0; i < _alarms.size(); ++i) {
-        Alarm alarm = _alarms.at(i);
+
+    for (int i = 0; i < _alarmModel.size(); i++) {
+        const Alarm *alarm = _alarmModel.at(i);
         alarms.append(VariantSerializer::I()->serialize(alarm));
+        qCDebug(self) << "serialized alarm:" << *alarm << alarms.last();
     }
+
     auto data = QJsonDocument(alarms).toJson(QJsonDocument::Indented);
     _alarmsFile.write(data);
     _alarmsFile.close();
+
     qCInfo(self) << "saved alarms!";
 }
 
@@ -169,13 +150,20 @@ void AlarmService::loadAlarms()
     }
 
     auto alarmsArray = alarms.array();
+
     for (auto const &alarmJson : qAsConst(alarmsArray)) {
-        auto alarm = VariantSerializer::I()->deserialize<Alarm>(alarmJson);
-        if (true) {
-            qCInfo(self) << "loaded:" << alarmJson;
-            _alarms.push(alarm);
-        }
+        auto alarm = VariantSerializer::I()->deserialize<Alarm *>(alarmJson);
+        qCInfo(self) << "loaded:" << *alarm << alarmJson;
+
+        this->registerAlarm(alarm);
+        _alarmModel.append(alarm);
+        alarm->setParent(this);
     }
+
+    if (!_alarmQueue.empty())
+        this->setNextAlarm(_alarmQueue.first());
+    else
+        this->setNextAlarm(nullptr);
 
     _alarmsFile.close();
 }
@@ -185,16 +173,42 @@ const QDateTime &AlarmService::now() const
     return _now;
 }
 
-QJsonArray AlarmService::nextIdsArray() const
+QListModel<Alarm *> *AlarmService::model()
 {
-    QJsonArray ids;
-    for (auto const id : _nextIds) {
-        ids.append(id);
-    }
-    return ids;
+    return &_alarmModel;
 }
 
-AlarmModel *AlarmService::model()
+Alarm *AlarmService::nextAlarm() const
 {
-    return &_alarms;
+    return _nextAlarm;
+}
+
+void AlarmService::removeAlarm(Alarm *alarm)
+{
+    _alarmModel.removeAll(alarm);
+    alarm->deleteLater();
+}
+
+Alarm *AlarmService::newAlarm()
+{
+    auto alarm = new Alarm{this};
+    this->registerAlarm(alarm);
+    _alarmModel.append(alarm);
+
+    if (!_alarmQueue.empty())
+        this->setNextAlarm(_alarmQueue.first());
+    else
+        this->setNextAlarm(nullptr);
+
+    return alarm;
+}
+
+void AlarmService::setNextAlarm(Alarm *newNextAlarm)
+{
+    if (_nextAlarm == newNextAlarm)
+        return;
+
+    qCInfo(self) << "new next alarm:" << newNextAlarm;
+    _nextAlarm = newNextAlarm;
+    emit nextAlarmChanged();
 }

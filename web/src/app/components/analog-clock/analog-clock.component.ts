@@ -56,10 +56,10 @@ export class AnalogClockComponent {
   now: Date = new Date();
 
   constructor(private http: HttpClient) {
-    this.http.get<any>('/assets/blobs.json').subscribe((value) => {
-      this.backgroundGraph = new ClockGraph(value.backgrounds);
-
+    this.http.get<any>('/assets/blobs.json').subscribe((value) => {      
       const now = new Date();
+      this.backgroundGraph = new ClockGraph(value.backgrounds);
+      this.backgroundGraph.t = -now.getTime() / 8000,
       this.secondsGraph = new ClockGraph(value.handles_s);
       this.secondsGraph.t = -now.getTime() / 1000;
       this.minutesGraph = new ClockGraph(value.handles_m);
@@ -68,8 +68,15 @@ export class AnalogClockComponent {
       this.hoursGraph.t = -now.getTime() / 3600000;
 
       setInterval(() => {
-        this.backgroundGraph!.t = new Date().getTime() / 5000;
+
         const now = new Date();
+
+        anime({
+          targets: this.backgroundGraph!,
+          t: -now.getTime() / 8000,
+          easing: 'easeOutElastic',
+          duration: 500
+        }).play();
 
         anime({
           targets: this.secondsGraph!,

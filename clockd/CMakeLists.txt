@@ -19,6 +19,9 @@ set(PROJECT_SOURCES
     src/defines.h
     src/constants.h
 
+
+
+
     src/alarm.h
     src/alarm.cpp
 
@@ -40,24 +43,27 @@ set(PROJECT_SOURCES
     src/pathservice.h
     src/pathservice.cpp
 
-    src/settingsservice.h
-    src/settingsservice.cpp
+    src/setting.h
+    src/setting.cpp
 
     src/soundservice.h
     src/soundservice.cpp
 
-    src/taskservice.h
-    src/taskservice.cpp
+    src/actionday.h
+    src/actionday.cpp
 
-    src/dataservice.h
-    src/dataservice.cpp
+    src/about.cpp
+    src/about.h
+
+    src/spacetheme.cpp
+    src/spacetheme.h
 
     src/main.cpp
 
-    qml/qml.qrc
-    fonts/fonts.qrc
-    icons/icons.qrc
     sounds/sounds.qrc
+    icons/icons.qrc
+    fonts/fonts.qrc
+    qml/qml.qrc
 )
 
 if (ANDROID)
@@ -73,6 +79,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Multimedia
+    qopenremote
     libremote
 )
 

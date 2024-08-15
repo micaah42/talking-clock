@@ -6,17 +6,18 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
+#include "about.h"
+#include "actionday.h"
 #include "alarmservice.h"
-#include "dataservice.h"
+
 #include "eventfilter.h"
 #include "fontservice.h"
 #include "loghandling.h"
 #include "palette.h"
 #include "pathservice.h"
 #include "remoting.h"
-#include "settingsservice.h"
 #include "soundservice.h"
-#include "taskservice.h"
+#include "spacetheme.h"
 
 void printApplicationStart();
 
@@ -28,11 +29,8 @@ int main(int argc, char *argv[])
         qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     }
 
-    qRegisterMetaType<Alarm>();
-    qRegisterMetaType<Dataset>();
-
-    QCoreApplication::setOrganizationName("micaah");
     QCoreApplication::setOrganizationDomain("org");
+    QCoreApplication::setOrganizationName("micaah");
     QCoreApplication::setApplicationName("talking-clock");
     QCoreApplication::setApplicationVersion("0.1");
     LogHandling::init();
@@ -56,37 +54,37 @@ int main(int argc, char *argv[])
     Remoting remoting;
     remoting.registerObject("remoting", &remoting);
 
-    SettingsService settingsService;
-    qmlRegisterSingletonInstance<SettingsService>("Clock", 1, 0, "SettingsService", &settingsService);
-    remoting.registerObject("settings", &settingsService);
-
-    Palette palette{&settingsService};
+    Palette palette;
     qmlRegisterSingletonInstance<Palette>("Clock", 1, 0, "ColorService", &palette);
 
-    FontService fontService{&settingsService, &engine};
+    FontService fontService{&engine};
     qmlRegisterSingletonInstance("Clock", 1, 0, "FontService", &fontService);
 
     AlarmService alarms(500);
+    qmlRegisterType<Alarm>("Clock", 1, 0, "Alarm");
     qmlRegisterSingletonInstance("Clock", 1, 0, "AlarmService", &alarms);
-    // qmlRegisterType<Alarm>("Clock", 1, 0, "Alarm");
     remoting.registerObject("alarms", &alarms);
 
     SoundService soundService(&alarms);
     qmlRegisterSingletonInstance("Clock", 1, 0, "SoundService", &soundService);
     remoting.registerObject("sounds", &soundService);
 
-    TaskService taskService;
-    qmlRegisterSingletonInstance("Clock", 1, 0, "TaskService", &taskService);
-
     EventFilter eventFilter;
     app.installEventFilter(&eventFilter);
     qmlRegisterSingletonInstance<EventFilter>("Clock", 1, 0, "EventFilter", &eventFilter);
 
-    DataService dataService;
-    qmlRegisterSingletonInstance<DataService>("Clock", 1, 0, "DataService", &dataService);
-    remoting.registerObject("data", &dataService);
+    ActionDayManager actionDayManager;
+    qmlRegisterSingletonInstance("Clock", 1, 0, "ActionDayManager", &actionDayManager);
+    remoting.registerObject("actiondays", &actionDayManager);
 
-    const QUrl url("qrc:/Main.qml");
+    About about;
+    qmlRegisterSingletonInstance("Clock", 1, 0, "About", &about);
+
+    SpaceTheme spaceTheme;
+    qmlRegisterUncreatableType<SpaceTheme>("Clock", 1, 0, "SpaceTheme", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "SpaceTheme", &spaceTheme);
+
+    const QUrl url("qrc:/Clock/Main.qml");
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,

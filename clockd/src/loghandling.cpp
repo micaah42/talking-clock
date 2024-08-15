@@ -6,9 +6,11 @@
 
 #include "pathservice.h"
 
+#ifdef MANUAL_LOGFILES
 QFile LogHandling::LogFile;
 QDate LogHandling::LastLogDate;
 int LogHandling::KeepLogDuration = 28;
+#endif
 
 void LogHandling::init()
 {
@@ -75,24 +77,25 @@ void LogHandling::msgHandler(const QtMsgType type,
                              const QString &msg)
 {
     QDateTime now = QDateTime::currentDateTime();
+
+#ifdef MANUAL_LOGFILES
     if (now.date() != LastLogDate) {
         createNewFile(now);
     }
+#endif
 
     LogRecord log{now, type, context.category, msg};
     auto line = log.toLine();
+    std::cerr << line.toStdString() << std::flush;
 
-    if (type == QtDebugMsg || type == QtInfoMsg)
-        std::cout << line.toStdString() << std::flush;
-    else {
-        std::cerr << line.toStdString() << std::flush;
-        LogFile.flush();
-    }
-
+#ifdef MANUAL_LOGFILES
     LogFile.write(line.toUtf8());
     LastLogDate = now.date();
+    LogFile.flush();
+#endif
 }
 
+#ifdef MANUAL_LOGFILES
 void LogHandling::createNewFile(const QDateTime &now)
 {
     QDir logdir{"./log"};
@@ -106,6 +109,7 @@ void LogHandling::createNewFile(const QDateTime &now)
         std::cerr << "cannot open log file: " << filePath.toStdString() << LogFile.errorString().toStdString() << std::endl;
     }
 }
+#endif
 
 LogHandling::LogHandling(){}
 

@@ -5,13 +5,21 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include "settingsservice.h"
+#include "setting.h"
 
 class Palette : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QColor primary READ primary WRITE setPrimary NOTIFY primaryChanged)
+    Q_PROPERTY(QColor darkPrimary READ darkPrimary WRITE setDarkPrimary NOTIFY darkPrimaryChanged)
+    Q_PROPERTY(QColor accent READ accent WRITE setAccent NOTIFY accentChanged)
+    Q_PROPERTY(QColor background READ background WRITE setBackground NOTIFY backgroundChanged)
+
+    Q_PROPERTY(int frontlight READ frontlight WRITE setFrontlight NOTIFY frontlightChanged)
+    Q_PROPERTY(int backlight READ backlight WRITE setBacklight NOTIFY backlightChanged)
+
 public:
-    Palette(SettingsService *settings);
+    Palette(QObject *parent = nullptr);
 
     const QVariantMap &colors() const;
 
@@ -39,27 +47,17 @@ signals:
     void backlightChanged();
 
     void primaryChanged();
-
     void darkPrimaryChanged();
-
     void accentChanged();
-
     void backgroundChanged();
 
 private:
-    SettingsService *_settings;
-
     QColor _primary, _darkPrimary, _accent, _darkAccent, _background;
-    int _frontlight, _backlight;
+    QSettings _settings;
+    Setting<double> _frontlight;
+    Setting<double> _backlight;
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-    Q_PROPERTY(QColor primary READ primary WRITE setPrimary NOTIFY primaryChanged)
-    Q_PROPERTY(QColor darkPrimary READ darkPrimary WRITE setDarkPrimary NOTIFY darkPrimaryChanged)
-    Q_PROPERTY(QColor accent READ accent WRITE setAccent NOTIFY accentChanged)
-    Q_PROPERTY(QColor background READ background WRITE setBackground NOTIFY backgroundChanged)
-
-    Q_PROPERTY(int frontlight READ frontlight WRITE setFrontlight NOTIFY frontlightChanged)
-    Q_PROPERTY(int backlight READ backlight WRITE setBacklight NOTIFY backlightChanged)
 };
 
 #endif // PALETTE_H

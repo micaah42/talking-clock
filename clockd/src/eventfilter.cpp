@@ -10,7 +10,7 @@ EventFilter::EventFilter(QObject *parent)
     : QObject{parent}
 {
     connect(&_inactivityTimer, &QTimer::timeout, this, &EventFilter::userInactive);
-    _inactivityTimer.setInterval(std::chrono::seconds{30});
+    _inactivityTimer.setInterval(std::chrono::seconds{60});
     _inactivityTimer.setSingleShot(true);
     _inactivityTimer.start();
 }

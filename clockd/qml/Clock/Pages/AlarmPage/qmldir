@@ -1,0 +1,5 @@
+module Clock.Pages.AlarmPage
+AlarmDialog 1.0 AlarmDialog.qml
+AlarmItem 1.0 AlarmItem.qml
+NextAlarm 1.0 NextAlarm.qml
+TimeField 1.0 TimeField.qml

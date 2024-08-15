@@ -7,58 +7,58 @@
 #include <QObject>
 #include <QTimer>
 
+#include <qlistmodel.h>
+
 #include "alarm.h"
-#include "templatemodel.h"
 
 #define MAX_ALARMS 1024
 #define ALARMS_FILE "./alarms.json"
 
-DECLARE_MODEL(Alarm)
-
 class AlarmService : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(Alarm *nextAlarm READ nextAlarm NOTIFY nextAlarmChanged FINAL)
+    Q_PROPERTY(QListModelBase *model READ model CONSTANT)
+    Q_PROPERTY(QDateTime now READ now NOTIFY clockTicked)
+
 public:
     AlarmService(const int tickRate = 500, QObject *parent = nullptr);
 
-    QList<int> nextIds() const;
     const QDateTime &now() const;
+    QListModel<Alarm *> *model();
+    Alarm *nextAlarm() const;
 
-    QJsonArray nextIdsArray() const;
-
-    //const QMap<int, Alarm> &alarms() const;
-
-    AlarmModel *model();
+public slots:
+    void removeAlarm(Alarm *alarm);
+    Alarm *newAlarm();
 
 signals:
-    void alarmTriggered(const int id);
-    void nextIdsChanged();
+    void alarmTriggered(Alarm *);
+    void nextAlarmChanged();
     void clockTicked();
 
-private slots:
-    void onTriggererTriggered();
-    void onClockTriggered();
+protected:
+    void setNextAlarm(Alarm *newNextAlarm);
 
+private slots:
+    void onClockTriggered();
+    void onTimeoutChanged();
+
+    void registerAlarm(Alarm *alarm);
     void saveAlarms();
     void loadAlarms();
 
 private:
-    QTimer _triggerer;
-
     QTimer _clock;
-    QTimer _persistTimer;
     QDateTime _now;
+    QTimer _saveTimer;
 
-    QList<int> _nextIds;
-    void updateTriggerer(const QDateTime &after = QDateTime::currentDateTime());
+    QMap<Alarm *, QDateTime> _timeoutMap;
+    QMultiMap<QDateTime, Alarm *> _alarmQueue;
 
-    AlarmModel _alarms;
+    QListModel<Alarm *> _alarmModel;
     QFile _alarmsFile;
-
-    // properties
-    Q_PROPERTY(QDateTime now READ now NOTIFY clockTicked)
-    Q_PROPERTY(QJsonArray nextIds READ nextIdsArray NOTIFY nextIdsChanged)
-    Q_PROPERTY(AlarmModel *model READ model CONSTANT)
+    Alarm *_nextAlarm;
 };
 
 #endif // ALARMSERVICE_H

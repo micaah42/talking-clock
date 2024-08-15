@@ -16,7 +16,7 @@ SoundService::SoundService(QObject *parent)
     _timer.setInterval(std::chrono::seconds(45));
 
     // make louder
-    connect(&_player, &QMediaPlayer::positionChanged, this, &SoundService::onPositionChanged);
+    //connect(&_player, &QMediaPlayer::positionChanged, this, &SoundService::onPositionChanged);
     refresh();
 }
 
@@ -48,22 +48,22 @@ void SoundService::play(const QString &sound)
 
     //_player.setPlaylist(playlist);
     //_player.setVolume(40);
-    _player.play();
-    _timer.start();
+    //_player.play();
+    //_timer.start();
 }
 
 void SoundService::stop()
 {
     // _player.setPlaylist(nullptr);
-    _player.stop();
+    //_player.stop();
 }
 
 void SoundService::onPositionChanged(int position)
 {
-    if (position < _player.duration() /* ||!_player.isAudioAvailable()*/) {
-        // we actually want to handle the repeat-restarts only so return when not on end
-        return;
-    }
+    //if (position < _player.duration() /* ||!_player.isAudioAvailable()*/) {
+    //    // we actually want to handle the repeat-restarts only so return when not on end
+    //    return;
+    //}
 
     // increment volume if possible
     //if (_player.volume() < 100) {

@@ -9,6 +9,7 @@
   position: relative;
   overflow: hidden;
   height: 100px;
+  top: -96px;
 
   .rocket {
     position: absolute;
@@ -34,7 +35,8 @@
 #other {
   display: flex;
   flex-flow: row;
-  gap: 10px;
+  gap: 8px;
+  height: 156px;
 
   mat-card {
     flex: 1;

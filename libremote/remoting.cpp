@@ -27,6 +27,9 @@ void Remoting::registerObject(const QString &name, QObject *object)
     _objects[name] = object;
     qCInfo(self) << "registering:" << name << object;
 
+    if (object == nullptr)
+        return;
+
     auto metaObject = object->metaObject();
 
     // register methods
@@ -36,9 +39,9 @@ void Remoting::registerObject(const QString &name, QObject *object)
         if (method.access() != QMetaMethod::Public || method.methodType() != QMetaMethod::Method)
             continue;
 
-        auto key = QString("%1.%2").arg(name, method.methodSignature());
-        _methods[key] = QPair{object, method};
-        qCInfo(self) << "+   method:" << key << method.typeName();
+        auto key = QString("%1.%2").arg(name, method.name());
+        _methods[key] = {object, method};
+        qCInfo(self) << "+   method:" << key << method.parameterNames() << method.typeName();
     }
 
     // we need a the notifier slot meta method for our connect signatures
@@ -53,10 +56,10 @@ void Remoting::registerObject(const QString &name, QObject *object)
         auto notify = property.hasNotifySignal() ? "notify" : "";
         qCInfo(self) << "+ property:" << key << property.typeName() << property.name() << notify;
 
-        _properties[key] = QPair{object, property};
+        _properties[key] = {object, property};
 
         if (property.hasNotifySignal()) {
-            _notifierCache[QPair{object, property.notifySignalIndex()}] = key;
+            _notifierCache[{object, property.notifySignalIndex()}] = key;
             connect(object, property.notifySignal(), this, notifierSlot);
         }
 
@@ -121,12 +124,12 @@ QStringList Remoting::properties()
 
 void Remoting::onNotifySignal()
 {
-    if (!_notifierCache.contains(QPair{sender(), senderSignalIndex()})) {
+    if (!_notifierCache.contains({sender(), senderSignalIndex()})) {
         qCCritical(self) << "could not find key of notifier signal";
         return;
     }
 
-    auto key = _notifierCache[QPair{sender(), senderSignalIndex()}];
+    auto key = _notifierCache[{sender(), senderSignalIndex()}];
     auto value = this->value(key);
 
     auto obj = QJsonObject{{"key", key}, {"value", value}};
@@ -211,14 +214,14 @@ QJsonObject Remoting::processCommand(const QJsonObject &cmd)
     // }
     // auto object = _objects[receiver];
 
-    auto method = cmd["method"].toString();
+    auto method = QString("%1.%2").arg(cmd["receiver"].toString(), cmd["method"].toString());
 
     if (!_methods.contains(method)) {
         qCCritical(self) << "no such method:" << method;
         return QJsonObject{{"id", id}, {"error", "invalid_method"}};
     }
 
-    auto pair = _methods[cmd["method"].toString()];
+    auto pair = _methods[method];
     auto object = pair.first;
     auto metaMethod = pair.second;
 

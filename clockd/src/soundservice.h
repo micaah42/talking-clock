@@ -28,7 +28,7 @@ private slots:
 private:
     QDir _soundsFolder;
     QStringList _sounds;
-    QMediaPlayer _player;
+    //QMediaPlayer _player;
     QTimer _timer;
 
     // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

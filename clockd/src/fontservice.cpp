@@ -6,26 +6,22 @@
 #include <QQmlApplicationEngine>
 #include <QTimer>
 
-#include "settingsservice.h"
+#include "setting.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "fonts")
 }
 
-FontService::FontService(SettingsService *settingsService, QQmlApplicationEngine *parent)
+FontService::FontService(QQmlApplicationEngine *parent)
     : QObject(parent)
     , _fontDirectories(QList<QDir>{QDir(":fonts")})
     , _engine(parent)
-    , _settingsService(settingsService)
+    , _settings{DEFAULT_SETTINGS_SCOPE}
+    , _family{"Font/Family", "Working Man", _settings}
 {
-    Q_ASSERT(settingsService);
-    refreshFamilies();
+    this->refreshFamilies();
     _families.setSourceModel(&__families);
-
-    _settingsService->create("fontfamily", "Working Man", Setting::FontDialog);
-    _settingsService->registerCallback("fontfamily", [this](const QVariant &value) {
-        setFamily(value.toString());
-    });
+    QGuiApplication::setFont(QFont{_family});
 }
 
 void FontService::refreshFamilies()
@@ -61,7 +57,7 @@ QSortFilterProxyModel *FontService::families()
     return &_families;
 }
 
-const QString &FontService::family() const
+QString FontService::family() const
 {
     return _family;
 }

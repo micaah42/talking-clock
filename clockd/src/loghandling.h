@@ -25,12 +25,15 @@ public:
     static QString msgType2string(QtMsgType type);
 
 private:
+#ifdef MANUAL_LOGFILES
     static QFile LogFile;
     static QDate LastLogDate;
+    static void createNewFile(const QDateTime &now);
+#endif
+
     static void msgHandler(const QtMsgType type,
                            const QMessageLogContext &context,
                            const QString &msg);
-    static void createNewFile(const QDateTime &now);
     LogHandling();
 };
 

@@ -1,0 +1,8 @@
+module Controls
+CCheckBox 1.0 CCheckBox.qml
+CComboBox 1.0 CComboBox.qml
+CFontDialog 1.0 CFontDialog.qml
+CLabel 1.0 CLabel.qml
+CTextField 1.0 CTextField.qml
+ValueDisplay 1.0 ValueDisplay.qml
+CSpinBox 1.0 CSpinBox.qml
