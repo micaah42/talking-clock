@@ -1,2 +1,4 @@
 module Clock.Pages.SettingsPage
-SettingsView 1.0 SettingsView.qml
+GeneralSection 1.0 GeneralSection.qml
+AppearenceSection 1.0 AppearenceSection.qml
+Section 1.0 Section.qml

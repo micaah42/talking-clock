@@ -146,7 +146,7 @@ void Alarm::findNextTimeout(QDateTime after)
             nextTimeout = nextTimeout.addDays(1);
         }
 
-    qCInfo(self) << "next timeout for:" << *this << nextTimeout;
+    qCInfo(self) << "next timeout for:" << *this << ":" << nextTimeout;
     this->setNextTimeout(nextTimeout);
 }
 

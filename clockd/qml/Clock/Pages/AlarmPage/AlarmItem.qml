@@ -21,11 +21,11 @@ ItemDelegate {
     RowLayout {
         anchors.fill: parent
         anchors.margins: 8
-        spacing: 10
+        spacing: 16
 
         Switch {
-            text: checked ? 'Active' : 'Disabled'
-            Layout.preferredWidth: 128
+            // text: checked ? 'Active' : 'Disabled'
+            Layout.preferredWidth: 64
             Layout.fillHeight: true
             checked: alarm.activated
             onClicked: alarm.activated = checked
@@ -36,16 +36,17 @@ ItemDelegate {
         CLabel {
             Layout.fillWidth: true
             text: alarm.name
-            font.pixelSize: 18
+            font.pixelSize: 24
         }
 
         CLabel {
             text: new Date(alarm.time).toLocaleTimeString(Qt.locale())
-            font.pixelSize: 18
+            font.pixelSize: 22
         }
 
         Row {
             id: weekdays
+            Layout.bottomMargin: 4
             function getRepeat(i) {
                 return alarm.repeatRule[i]
             }
@@ -56,11 +57,11 @@ ItemDelegate {
             }
             Repeater {
                 model: 7
-                delegate: CCheckBox {
-                    width: 25
-                    scale: 1.15
-                    checked: weekdays.getRepeat(modelData)
+                delegate: CheckBox {
                     onClicked: weekdays.setRepeat(modelData, checked)
+                    checked: weekdays.getRepeat(modelData)
+                    scale: 1.25
+                    width: 27
                 }
             }
         }

@@ -39,11 +39,8 @@ signals:
     void animatedStarsChanged();
     void starsChanged();
     void animationSpeedChanged();
-
     void spaceShipChanged();
-
     void clockSizeChanged();
-
     void fpsVisibleChanged();
 
 private:

@@ -15,6 +15,7 @@ Item {
         z: 10
 
         CLabel {
+            Layout.alignment: Qt.AlignHCenter
             text: AlarmService.now.toLocaleString(Qt.locale(), "HH:mm")
             font.pixelSize: 150 * ctrl.timeScale
             color: ColorService.primary

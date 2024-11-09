@@ -9,6 +9,7 @@ CTextField {
 
     onReleased: input.popup.open()
     onFocusChanged: focus = false
+    readOnly: true
 
     ComboBox {
         id: input

@@ -6,3 +6,6 @@ CLabel 1.0 CLabel.qml
 CTextField 1.0 CTextField.qml
 ValueDisplay 1.0 ValueDisplay.qml
 CSpinBox 1.0 CSpinBox.qml
+Button 1.0 Button.qml
+LargeSlider 1.0 LargeSlider.qml
+CToolButton 1.0 CToolButton.qml

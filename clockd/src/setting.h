@@ -16,10 +16,9 @@ template<class T>
 class Setting
 {
 public:
-    explicit Setting(const QString &key, const T &defaultValue, QSettings &settings)
-        : _key{key}
-        , _settings{settings}
-        , _t{settings.value(key, QVariant::fromValue(defaultValue)).template value<T>()} {};
+    explicit Setting(const QString &key, const T &defaultValue)
+        : _key{key} //
+        , _t{_settings().value(key, QVariant::fromValue(defaultValue)).template value<T>()} {};
 
     T get() const { return _t; };
 
@@ -28,7 +27,7 @@ public:
         if (t == _t)
             return;
 
-        _settings.setValue(_key, QVariant::fromValue(t));
+        _settings().setValue(_key, QVariant::fromValue(t));
         _t = t;
     };
 
@@ -36,9 +35,16 @@ public:
     operator T() const { return get(); };
 
 private:
+    static QSettings &_settings();
     QString _key;
-    QSettings &_settings;
     T _t;
 };
+
+template<class T>
+QSettings &Setting<T>::_settings()
+{
+    static QSettings settings{DEFAULT_SETTINGS_SCOPE};
+    return settings;
+}
 
 #endif // SETTING_H

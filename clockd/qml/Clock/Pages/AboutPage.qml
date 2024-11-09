@@ -10,7 +10,7 @@ RowLayout {
     spacing: 8
 
     Frame {
-        Layout.preferredWidth: 372
+        Layout.preferredWidth: 330
         Layout.fillHeight: true
 
         ColumnLayout {
@@ -20,16 +20,13 @@ RowLayout {
             RowLayout {
                 Layout.fillWidth: true
 
-                Label {
+               CLabel {
                     text: 'Talking Clock'
-                    font.pixelSize: 64
+                    font.pixelSize: 32
 
-                    Label {
+                   CLabel {
                         anchors.top: parent.bottom
-                        anchors.topMargin: -16
-
-                        anchors.right: parent.right
-                        anchors.rightMargin: 4
+                        anchors.topMargin: -8
 
                         font.pixelSize: 18
                         text: 'by micaah42'
@@ -62,12 +59,12 @@ RowLayout {
                 }
             }
 
-            Label {
+           CLabel {
                 text: `A fancy clock built with Qt and Yocto.\nVerison ${"0.1.0"}`
                 font.pixelSize: 18
             }
 
-            Label {
+           CLabel {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
@@ -83,7 +80,7 @@ RowLayout {
                 `
             }
 
-            Label {
+           CLabel {
                 Layout.fillWidth: true
                 textFormat: Text.RichText
                 wrapMode: Text.WordWrap
@@ -126,16 +123,16 @@ RowLayout {
             anchors.fill: parent
             spacing: 8
 
-            Label {
+           CLabel {
                 text: 'Open Source Licenses'
-                font.pixelSize: 64
+                font.pixelSize: 32
             }
 
             CTextField {
                 Component.onDestruction: About.packages.setFilterWildcard('')
                 onTextEdited: About.packages.setFilterWildcard(text)
                 Layout.fillWidth: true
-                label: 'Search'
+                labelText: 'Search'
             }
 
             ListView {
@@ -159,7 +156,7 @@ RowLayout {
 
                         RowLayout {
                             Layout.fillWidth: true
-                            Label {
+                           CLabel {
                                 text: list.packageName
                                 font.pixelSize: 24
                                 font.bold: true
@@ -184,7 +181,7 @@ RowLayout {
 
                             property string packageName
 
-                            delegate: Label {
+                            delegate:CLabel {
                                 font.family: 'Mono'
                                 width: list.width
                                 text: modelData

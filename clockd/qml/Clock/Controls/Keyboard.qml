@@ -5,11 +5,35 @@ import QtQuick.VirtualKeyboard 2.15
 Item {
     id: root
 
-    InputPanel {
-        id: keyboard
-
+    Popup {
+        id: popup
         visible: Qt.inputMethod.visible
-        anchors.bottom: parent.bottom
+        parent: window.contentItem
+        height: keyboard.height
         width: parent.width
+        background: Item {}
+        padding: 0
+
+        enter: Transition {
+            PropertyAnimation {
+                target: popup
+                property: 'y'
+                from: parent.height
+                to: parent.height - keyboard.height
+            }
+        }
+        exit: Transition {
+            PropertyAnimation {
+                target: popup
+                property: 'y'
+                to: parent.height
+                from: parent.height - keyboard.height
+            }
+        }
+
+        InputPanel {
+            id: keyboard
+            width: parent.width
+        }
     }
 }

@@ -7,8 +7,9 @@
 #include <QJsonDocument>
 #include <QLoggingCategory>
 
+#include "json.h"
+
 #include "pathservice.h"
-#include "serializer.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "alarms")
@@ -28,8 +29,6 @@ AlarmService::AlarmService(const int tickRate, QObject *parent)
 
     _alarmsFile.setFileName(PathService::create("alarms.json"));
     this->loadAlarms();
-
-    //QTimer::singleShot(1000, [this]() { emit alarmTriggered(_alarmModel[0]); });
 }
 
 void AlarmService::onClockTriggered()
@@ -43,7 +42,10 @@ void AlarmService::onClockTriggered()
     QDateTime nextTimeout = _alarmQueue.firstKey();
 
     while (!_alarmQueue.empty() && nextTimeout < _now) {
-        const auto alarm = *_alarmQueue.find(nextTimeout);
+        const auto alarm = _alarmQueue.first();
+
+        _alarmQueue.remove(alarm->nextTimeout(), alarm);
+        _timeoutMap.remove(alarm);
 
         if (!alarm->repeats()) {
             alarm->setActivated(false);
@@ -72,8 +74,10 @@ void AlarmService::onTimeoutChanged()
     _alarmQueue.remove(oldTime, alarm);
     _timeoutMap.remove(alarm);
 
-    if (alarm->nextTimeout().isValid())
+    if (alarm->nextTimeout().isValid()) {
         _alarmQueue.insert(alarm->nextTimeout(), alarm);
+        _timeoutMap.insert(alarm, alarm->nextTimeout());
+    }
 
     if (!_alarmQueue.empty())
         this->setNextAlarm(_alarmQueue.first());
@@ -90,10 +94,11 @@ void AlarmService::registerAlarm(Alarm *alarm)
     connect(alarm, &Alarm::timeChanged, &_saveTimer, qOverload<>(&QTimer::start));
     connect(alarm, &Alarm::repeatRuleChanged, &_saveTimer, qOverload<>(&QTimer::start));
     connect(alarm, &Alarm::soundChanged, &_saveTimer, qOverload<>(&QTimer::start));
+    _saveTimer.start();
 
     /* set up scheduling */
 
-    if (!alarm->nextTimeout().isValid()) {
+    if (alarm->nextTimeout().isValid()) {
         _alarmQueue.insert(alarm->nextTimeout(), alarm);
         _timeoutMap.insert(alarm, alarm->nextTimeout());
     }
@@ -111,8 +116,8 @@ void AlarmService::saveAlarms()
     QJsonArray alarms;
 
     for (int i = 0; i < _alarmModel.size(); i++) {
-        const Alarm *alarm = _alarmModel.at(i);
-        alarms.append(VariantSerializer::I()->serialize(alarm));
+        Alarm *alarm = _alarmModel.at(i);
+        alarms.append(JSON::serialize(alarm));
         qCDebug(self) << "serialized alarm:" << *alarm << alarms.last();
     }
 
@@ -125,7 +130,7 @@ void AlarmService::saveAlarms()
 
 void AlarmService::loadAlarms()
 {
-    qCInfo(self) << "loading alarms ...";
+    qCInfo(self) << "loading alarms ..." << QMetaType::fromType<Alarm *>().id() << QMetaType::fromType<const Alarm *>().id();
 
     // check wether we can open the file
     if (!_alarmsFile.open(QIODevice::ReadOnly)) {
@@ -152,9 +157,14 @@ void AlarmService::loadAlarms()
     auto alarmsArray = alarms.array();
 
     for (auto const &alarmJson : qAsConst(alarmsArray)) {
-        auto alarm = VariantSerializer::I()->deserialize<Alarm *>(alarmJson);
-        qCInfo(self) << "loaded:" << *alarm << alarmJson;
+        auto alarm = JSON::deserialize<Alarm *>(alarmJson);
 
+        if (!alarm) {
+            qCCritical(self) << "failed to load alarm from:" << alarmJson;
+            continue;
+        }
+
+        qCInfo(self) << "loaded:" << *alarm << alarmJson;
         this->registerAlarm(alarm);
         _alarmModel.append(alarm);
         alarm->setParent(this);

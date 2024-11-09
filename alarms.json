@@ -1,38 +1,21 @@
 [
     {
-        "activated": true,
-        "name": "Alarmo Uno",
-        "nextTimeout": "2024-08-15T22:25:00",
+        "__typeId": 65583,
+        "activated": false,
+        "name": "",
+        "nextTimeout": null,
         "objectName": "",
         "repeatRule": [
-            true,
-            true,
-            true,
-            true,
-            true,
+            false,
+            false,
+            false,
+            false,
+            false,
             false,
             false
         ],
-        "repeats": true,
-        "sound": "rooster.mp3",
-        "time": "22:25"
-    },
-    {
-        "activated": true,
-        "name": "Holy Cow!",
-        "nextTimeout": "2024-08-16T19:00:00",
-        "objectName": "",
-        "repeatRule": [
-            true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            true
-        ],
-        "repeats": true,
-        "sound": "cow.mp3",
-        "time": "19:00"
+        "repeats": false,
+        "sound": "",
+        "time": null
     }
 ]

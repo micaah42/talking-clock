@@ -6,32 +6,39 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
+#include <qobjectregistry.h>
+
 #include "about.h"
 #include "actionday.h"
 #include "alarmservice.h"
-
+#include "clockserver.h"
+#include "cpugraph.h"
+#include "cpumonitor.h"
 #include "eventfilter.h"
 #include "fontservice.h"
+#include "lighting.h"
 #include "loghandling.h"
 #include "palette.h"
 #include "pathservice.h"
-#include "remoting.h"
+#include "pixel.h"
+#include "prettyrandomlight.h"
+#include "pulsatinglight.h"
 #include "soundservice.h"
 #include "spacetheme.h"
+#include "staticlight.h"
+#include "wavinglight.h"
 
 void printApplicationStart();
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     if (true || qEnvironmentVariableIsEmpty("QT_IM_MODULE")) {
         qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     }
 
-    QCoreApplication::setOrganizationDomain("org");
-    QCoreApplication::setOrganizationName("micaah");
     QCoreApplication::setApplicationName("talking-clock");
+    QCoreApplication::setOrganizationName("micaah");
+    QCoreApplication::setOrganizationDomain("org");
     QCoreApplication::setApplicationVersion("0.1");
     LogHandling::init();
     PathService::init();
@@ -51,7 +58,8 @@ int main(int argc, char *argv[])
 
     QQuickStyle::setStyle("Material");
 
-    Remoting remoting;
+    QObjectRegistry remoting;
+    ClockServer server{remoting};
     remoting.registerObject("remoting", &remoting);
 
     Palette palette;
@@ -73,7 +81,7 @@ int main(int argc, char *argv[])
     app.installEventFilter(&eventFilter);
     qmlRegisterSingletonInstance<EventFilter>("Clock", 1, 0, "EventFilter", &eventFilter);
 
-    ActionDayManager actionDayManager;
+    ActionDayService actionDayManager;
     qmlRegisterSingletonInstance("Clock", 1, 0, "ActionDayManager", &actionDayManager);
     remoting.registerObject("actiondays", &actionDayManager);
 
@@ -83,6 +91,21 @@ int main(int argc, char *argv[])
     SpaceTheme spaceTheme;
     qmlRegisterUncreatableType<SpaceTheme>("Clock", 1, 0, "SpaceTheme", "");
     qmlRegisterSingletonInstance("Clock", 1, 0, "SpaceTheme", &spaceTheme);
+
+    CPUMonitor cpu;
+    qmlRegisterType<CPUGraph>("Clock", 1, 0, "CPUGraph");
+    qmlRegisterUncreatableType<CPUMonitor>("Clock", 1, 0, "CPUMonitor", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "CPUMonitor", &cpu);
+
+    Lighting lighting;
+    qmlRegisterUncreatableType<Pixel>("Clock", 1, 0, "Pixel", "");
+    qmlRegisterUncreatableType<Lighting>("Clock", 1, 0, "Lighting", "");
+    qmlRegisterUncreatableType<LightMode>("Clock", 1, 0, "LightMode", "");
+    qmlRegisterUncreatableType<StaticLight>("Clock", 1, 0, "StaticLight", "");
+    qmlRegisterUncreatableType<WavingLight>("Clock", 1, 0, "WavingLight", "");
+    qmlRegisterUncreatableType<PrettyRandomLight>("Clock", 1, 0, "PrettyRandomLight", "");
+    qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
 
     const QUrl url("qrc:/Clock/Main.qml");
     QObject::connect(

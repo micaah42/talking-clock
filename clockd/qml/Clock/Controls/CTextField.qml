@@ -5,14 +5,19 @@ import Clock 1.0
 
 TextField {
     id: input
-    property alias label: l.text
+    property alias labelText: l.text
+    property alias label: l
 
     onAccepted: Qt.inputMethod.hide()
     font.family: FontService.family
-    implicitHeight: 55
-    font.pixelSize: 20
+    implicitHeight: 56
+    font.pixelSize: 24
     leftPadding: 12
+    bottomPadding: 0
     topPadding: 16
+
+    implicitWidth: 244
+    width: implicitWidth
 
     CLabel {
         id: l
@@ -23,6 +28,6 @@ TextField {
         anchors.topMargin: 8
 
         background: Item {}
-        font.pixelSize: 18
+        font.pixelSize: 14
     }
 }

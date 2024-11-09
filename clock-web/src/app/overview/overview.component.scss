@@ -1,0 +1,61 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+}
+
+#canvas-container {
+  position: relative;
+  overflow: hidden;
+  height: 180px;
+  top: -96px;
+
+  .rocket {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    rotate: 90deg;
+    width: auto;
+    z-index: -1;
+  }
+
+  .wave {
+    position: absolute;
+    height: 50%;
+    width: 100%;
+    top: 0;
+  }
+
+  .mirrored {
+    rotate: 180deg;
+    top: 50%
+  }
+}
+
+#other {
+  display: flex;
+
+  justify-content: flex-start;
+
+  @media screen and (orientation:portrait) {
+    flex-flow: column;
+  }
+
+  @media screen and (orientation:landscape) {
+    flex-flow: row;
+  }
+
+  flex: 1;
+  padding: 32px;
+  padding-bottom: 0;
+  gap: 32px;
+
+
+  mat-card {
+    @media screen and (orientation:landscape) {
+      align-self: flex-start;
+    }
+    
+    flex: 1;
+  }
+}

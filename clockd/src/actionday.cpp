@@ -8,12 +8,18 @@ namespace {
 Q_LOGGING_CATEGORY(self, "actiondays")
 }
 
-ActionDayManager::ActionDayManager(QObject *parent)
+ActionDayService::ActionDayService(QObject *parent)
     : QObject{parent}
     , _file{QString("%1/action-days.csv").arg(PathService::AppHome)}
-{}
+{
+    connect(&_timer, &QTimer::timeout, this, &ActionDayService::onTimeout);
+    _timer.setTimerType(Qt::CoarseTimer);
+    _timer.setSingleShot(true);
 
-QList<ActionDay *> ActionDayManager::actionDays(const QDate &date, QObject *parent)
+    this->onTimeout();
+}
+
+QList<ActionDay *> ActionDayService::actionDays(const QDate &date, QObject *parent)
 {
     if (!_file.open(QIODevice::ReadOnly)) {
         qCCritical(self) << "failed to open action day file" << _file.errorString();
@@ -53,6 +59,24 @@ QList<ActionDay *> ActionDayManager::actionDays(const QDate &date, QObject *pare
 
     _file.close();
     return {};
+}
+
+void ActionDayService::onTimeout()
+{
+    auto oldDays = _days;
+
+    _days = this->actionDays(QDate::currentDate(), this);
+    emit daysChanged();
+
+    for (auto day : qAsConst(oldDays))
+        day->deleteLater();
+
+    auto today = QDate::currentDate();
+    auto now = QDateTime::currentDateTime();
+    auto midnight = QDateTime{today.addDays(1), QTime{0, 0, 10}};
+
+    _timer.start(now.msecsTo(midnight));
+    qCInfo(self) << "action days today:" << _days.size() << "next in" << _timer.remainingTime() / (60 * 60 * 1000) << 'h';
 }
 
 ActionDay::ActionDay(QObject *parent)
@@ -113,4 +137,9 @@ void ActionDay::setLink(const QString &newLink)
 
     m_link = newLink;
     emit linkChanged();
+}
+
+const QList<ActionDay *> &ActionDayService::days() const
+{
+    return _days;
 }

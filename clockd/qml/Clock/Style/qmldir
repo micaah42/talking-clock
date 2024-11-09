@@ -1,4 +1,6 @@
 module Clock.Style
+singleton Icons 1.0 Icons.qml
 Card 1.0 Card.qml
 DarkCard 1.0 DarkCard.qml
 FeedbackLoader 1.0 FeedbackLoader.qml
+Icon 1.0 Icon.qml

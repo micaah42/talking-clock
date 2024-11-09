@@ -11,13 +11,13 @@ ColumnLayout {
 
     spacing: 0
 
-    Label {
+   CLabel {
         id: l
-        font.pixelSize: 18
+        font.pixelSize: 14
         opacity: 0.72
     }
 
-    Label {
+   CLabel {
         id: v
         font.pixelSize: 32
         bottomPadding: -4

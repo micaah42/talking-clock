@@ -1,7 +1,8 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
 
-// import Clock 1.0
+import Clock.Controls
+
 Item {
     id: ctrl
     z: 100
@@ -59,11 +60,11 @@ Item {
             width: ctrl.width / 2
             spacing: 10
 
-            Text {
+            CLabel {
                 text: alarm["name"]
                 font.pixelSize: 82
             }
-            Text {
+            CLabel {
                 text: new Date(alarm["time"]).toLocaleTimeString()
                 font.pixelSize: 42
                 color: "#ffffff"

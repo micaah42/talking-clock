@@ -25,8 +25,8 @@ add_library(${PROJECT_NAME} SHARED
   remoting.h
   remoting.cpp
 
-  clockserver.h
-  clockserver.cpp
+
+
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

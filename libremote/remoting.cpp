@@ -18,7 +18,7 @@ QByteArray Remoting::boink()
 
 Remoting::Remoting(QObject *parent) : QObject{parent}
 {
-    connect(&_server, &ClockServer::messageReceived, this, &Remoting::onMessageReceived);
+    //connect(&_server, &ClockServer::messageReceived, this, &Remoting::onMessageReceived);
 }
 
 void Remoting::registerObject(const QString &name, QObject *object)
@@ -134,7 +134,7 @@ void Remoting::onNotifySignal()
 
     auto obj = QJsonObject{{"key", key}, {"value", value}};
     QJsonDocument doc{QJsonObject{{"notifications", QJsonArray{obj}}}};
-    _server.broadcastMessage(doc.toJson(QJsonDocument::Compact));
+    // _server.broadcastMessage(doc.toJson(QJsonDocument::Compact));
 }
 
 void Remoting::onModelChanged(const QModelIndex &from, const QModelIndex &to, QVector<int> roles)
@@ -155,7 +155,7 @@ void Remoting::onModelChanged(const QModelIndex &from, const QModelIndex &to, QV
     }
 
     QJsonDocument doc{QJsonObject{{"notifications", notifications}}};
-    _server.broadcastMessage(doc.toJson(QJsonDocument::Compact));
+    // _server.broadcastMessage(doc.toJson(QJsonDocument::Compact));
 }
 
 void Remoting::onModelRowsRemoved(const QModelIndex &parent, const int first, const int last)
@@ -170,7 +170,7 @@ void Remoting::onModelRowsRemoved(const QModelIndex &parent, const int first, co
     }
 
     QJsonDocument doc{QJsonObject{{"notifications", notifications}}};
-    _server.broadcastMessage(doc.toJson(QJsonDocument::Compact));
+    //   _server.broadcastMessage(doc.toJson(QJsonDocument::Compact));
 }
 
 void Remoting::onMessageReceived(const QByteArray &message, const QUuid &clientId)
@@ -187,13 +187,13 @@ void Remoting::onMessageReceived(const QByteArray &message, const QUuid &clientI
     // answer ping
     if (obj.contains("ping")) {
         qCInfo(self) << "received ping:" << obj;
-        _server.sendMessage(boink(), clientId);
+        //   _server.sendMessage(boink(), clientId);
     }
     // answer normal command
     else if (obj["receiver"].isString() && obj["method"].isString()) {
         auto answer = processCommand(obj);
         qCInfo(self) << "handled:" << obj << "->" << answer;
-        _server.sendObjectMessage(answer, clientId);
+        //    _server.sendObjectMessage(answer, clientId);
     }
     // error
     else {

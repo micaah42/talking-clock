@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.15
 
 import Clock 1.0
 import Clock.Style 1.0
+import Clock.Controls 1.0
 
 Item {
     property variant currentPage: null
@@ -12,76 +13,42 @@ Item {
 
     onCurrentPageChanged: console.log('current page', currentPage)
 
-    GridLayout {
+    RowLayout {
         anchors.fill: parent
-        anchors.margins: 24
+        anchors.rightMargin: 4
+        anchors.leftMargin: 4
+        spacing: 16
 
-        columnSpacing: 32
-        columns: 3
-
-        rowSpacing: 20
-        rows: 3
-
-        Button {
-            Material.background: ColorService.primary
-            Material.roundedScale: Material.SmallScale
-            Layout.preferredHeight: 64
-            Layout.bottomMargin: -8
+        Item {
             Layout.fillWidth: true
-            Layout.columnSpan: 3
-
-            font.pixelSize: 24
-            onClicked: back()
-            text: 'Main Menu'
-
-            ToolButton {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                icon.source: 'qrc:/navigate_before_FILL0_wght400_GRAD0_opsz24.svg'
-                onClicked: back()
-            }
         }
 
         Repeater {
             model: ListModel {
                 ListElement {
+                    component: "Lighting"
+                    icon: () => Icons.lightbulb_2
+                    //icon: "qrc:/calendar_month_24dp_E8EAED_FILL0_wght400_GRAD0_opsz48.svg"
+                    name: "Lighting"
+                }
+                ListElement {
                     component: "Alarm"
-                    icon: "qrc:/alarm_FILL0_wght400_GRAD0_opsz48.svg"
+                    icon: () => Icons.alarm
                     name: "Alarms"
                 }
                 ListElement {
-                    component: ""
-                    icon: "qrc:/database_FILL0_wght400_GRAD0_opsz48.svg"
-                    name: "Data"
-                }
-                ListElement {
-                    component: ""
-                    icon: "qrc:/neurology_FILL0_wght400_GRAD0_opsz48.svg"
-                    name: "Brains"
-                }
-                ListElement {
-                    component: ""
-                    icon: "qrc:/work_FILL0_wght400_GRAD0_opsz48.svg"
-                    name: "Jobs"
-                }
-                ListElement {
                     component: "Settings"
-                    icon: "qrc:/settings_FILL0_wght400_GRAD0_opsz48.svg"
+                    icon: () => Icons.settings
                     name: "Settings"
-                }
-                ListElement {
-                    component: "About"
-                    icon: "qrc:/info_FILL0_wght400_GRAD0_opsz48.svg"
-                    name: "About"
                 }
             }
 
             delegate: Button {
+                Layout.preferredWidth: (index === 1 ? 2 : 1) * height
                 Layout.fillHeight: true
-                Layout.fillWidth: true
 
                 Material.roundedScale: Material.SmallScale
-                Material.background: ColorService.darkPrimary
+                Material.background: ColorService.primary
                 enabled: model.component.length
 
                 onClicked: {
@@ -90,36 +57,26 @@ Item {
                 }
 
                 contentItem: Item {
-                    Column {
+                    Icon {
+                        id: icon
+
                         anchors.centerIn: parent
-                        width: 128
-
-                        Image {
-                            id: icon
-                            source: model.icon
-
-                            width: parent.width
-                            height: width
-
-                            fillMode: Image.PreserveAspectFit
-                            sourceSize.width: width
-                            sourceSize.height: height
-                        }
-
-                        Label {
-                            horizontalAlignment: Qt.AlignHCenter
-                            width: parent.width
-                            font.pixelSize: 24
-                            text: model.name
-                        }
+                        font.weight: Font.Thin
+                        font.pixelSize: 88
+                        text: model.icon()
                     }
                 }
             }
+        }
+
+        Item {
+            Layout.fillWidth: true
         }
     }
 
     Card {
         visible: scale !== 0
+        parent: window.contentItem
         anchors.fill: parent
         anchors.margins: 16
 
@@ -142,7 +99,7 @@ Item {
                     onClicked: currentPage = null
                 }
 
-                Label {
+                CLabel {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     text: currentPage ? currentPage.name : ''
@@ -151,10 +108,11 @@ Item {
             }
 
             Loader {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
                 Layout.margins: 8
+                Layout.fillHeight: true
+                Layout.fillWidth: true
                 source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
+                asynchronous: true
             }
         }
 

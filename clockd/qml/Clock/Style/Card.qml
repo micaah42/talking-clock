@@ -21,4 +21,8 @@ Item {
         border.width: 1.2
         radius: 5
     }
+
+    MouseArea {
+        anchors.fill: parent
+    }
 }

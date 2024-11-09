@@ -4,4 +4,4 @@ MainMenu 1.0 MainMenu.qml
 MajorAlarm 1.0 MajorAlarm.qml
 Stars 1.0 Stars.qml
 AlarmNotification 1.0 AlarmNotification.qml
-SpaceBackground 1.0 SpaceBackground.qml
+SpaceScene 1.0 SpaceScene.qml

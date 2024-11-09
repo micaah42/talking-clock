@@ -8,13 +8,16 @@ CheckBox {
     property alias label: l
 
     font.family: FontService.family
+    implicitHeight: 56
+    leftPadding: 0
+    topPadding: 0
 
     CLabel {
         id: l
-        anchors.leftMargin: parent.leftPadding
-        anchors.bottom: parent.top
+        anchors.top: parent.top
+        anchors.leftMargin: 2
         anchors.left: parent.left
         anchors.topMargin: 4
-        font.pixelSize: 18
+        font.pixelSize: 14
     }
 }

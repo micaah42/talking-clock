@@ -11,11 +11,6 @@ Item {
     property Alarm alarm
     property bool accepted: false
 
-    MouseArea {
-        // avoid events being passed through
-        anchors.fill: parent
-    }
-
     MediaPlayer {
         id: player
         Component.onCompleted: {
@@ -59,7 +54,6 @@ Item {
 
         anchors.fill: parent
         anchors.margins: 8
-        bright: false
 
         ColumnLayout {
             id: column
@@ -98,19 +92,20 @@ Item {
                 id: view
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                onCurrentIndexChanged: timer.restart()
                 clip: true
 
                 Repeater {
                     model: ActionDayManager.actionDays(new Date(), this)
 
                     delegate: ColumnLayout {
-                        Label {
+                       CLabel {
                             Layout.fillWidth: true
                             text: modelData.name
                             wrapMode: Text.Wrap
                             font.pixelSize: 32
                         }
-                        Label {
+                       CLabel {
                             Layout.fillWidth: true
                             text: modelData.desc
                             wrapMode: Text.Wrap
@@ -119,7 +114,7 @@ Item {
                         Item {
                             Layout.fillHeight: true
                         }
-                        Label {
+                       CLabel {
                             font.underline: true
                             font.pixelSize: 18
                             text: 'Link'
@@ -128,10 +123,10 @@ Item {
                 }
 
                 Timer {
+                    id: timer
                     onTriggered: view.currentIndex = (view.currentIndex + 1) % view.count
                     interval: 7500
                     running: true
-                    repeat: true
                 }
             }
 
@@ -232,7 +227,7 @@ Item {
                         color: bttn.pressed ? Qt.darker(ColorService.primary, 1.2) : ColorService.primary
                         radius: height / 4
 
-                        Label {
+                       CLabel {
                             anchors.centerIn: parent
                             font.family: FontService.family
                             font.pixelSize: 32

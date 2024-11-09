@@ -1,18 +1,25 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
+import QtQuick.Layouts
 
-SpinBox {
+ColumnLayout {
     property alias labelText: l.text
     property alias label: l
 
+    property alias spinBox: spinBox
+
     implicitWidth: 244
-    font.pixelSize: 32
+    width: implicitWidth
 
     CLabel {
         id: l
-
-        anchors.bottom: parent.top
-        font.pixelSize: 18
-        background: Item {}
+        font.pixelSize: 14
+    }
+    SpinBox {
+        id: spinBox
+        implicitWidth: 244
+        width: implicitWidth
+        font.pixelSize: 24
+        Component.onCompleted: console.log(height)
     }
 }

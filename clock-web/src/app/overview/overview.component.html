@@ -1,0 +1,34 @@
+
+<!--
+  <div style="height: 0;">
+    <div id="canvas-container">
+      @if (timeToFly){
+      <img @rocket class="rocket"  src="rocket.png">
+      }
+    </div>
+  </div>
+-->
+<div id="other" style="z-index: 1">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-subtitle>Next Alarm:</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div>
+        <b>{{nextAlarm.name}} {{nextAlarm.time}}</b>
+      </div>
+      
+    </mat-card-content>
+  </mat-card>
+
+  <app-analog-clock id="clock" style="flex: 3; z-index: 1;"></app-analog-clock>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-subtitle>Special Days</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      Text. Text text bla i dunno whadda hell to!
+    </mat-card-content>
+  </mat-card>
+</div>

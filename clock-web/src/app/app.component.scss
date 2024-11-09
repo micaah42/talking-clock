@@ -1,0 +1,25 @@
+:host {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.wrapper {
+    position: relative;
+    margin-top: 64px;
+    flex-grow: 1;
+    z-index: 1;
+    box-sizing: border-box;
+}
+
+app-navigation {
+    z-index: 2;
+    position: absolute;
+    width: 100%;
+}
+
+canvas, img {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+}

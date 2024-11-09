@@ -51,7 +51,7 @@ Item {
                         highlighted: examples.family === model.display
                         onClicked: examples.family = model.display
 
-                        Label {
+                       CLabel {
                             anchors.centerIn: parent
                             text: model.display
                         }
@@ -65,7 +65,7 @@ Item {
                 visible: family !== ""
                 spacing: 20
 
-                Label {
+               CLabel {
                     Layout.alignment: Qt.AlignHCenter
                     font.pixelSize: 32
                     font.family: examples.family
@@ -74,29 +74,29 @@ Item {
                     text: examples.family
                 }
 
-                Label {
+               CLabel {
                     font.family: examples.family
                     font.pixelSize: 18
                     text: "The quick brown fox jumps over a lazy dog."
                 }
-                Label {
+               CLabel {
                     font.family: examples.family
                     font.pixelSize: 22
                     font.bold: true
                     text: "Mr. Jock, TV quiz PhD., bags few lynx."
                 }
-                Label {
+               CLabel {
                     font.family: examples.family
                     font.pixelSize: 15
                     font.italic: true
                     text: "Two driven jocks help fax my big quiz."
                 }
-                Label {
+               CLabel {
                     font.family: examples.family
                     font.pixelSize: 8
                     text: "Waltz, nymph, for quick jigs vex Bud."
                 }
-                Label {
+               CLabel {
                     font.family: examples.family
                     font.pixelSize: 14
                     text: "My girl wove six dozen plaid jackets before she quit."

@@ -11,7 +11,6 @@
 #include <QObject>
 #include <QUuid>
 
-#include "clockserver.h"
 #include "libremote_global.h"
 
 class LIBREMOTE_EXPORT Remoting : public QObject
@@ -52,7 +51,7 @@ private:
 
     QMap<QPair<QObject *, int>, QString> _notifierCache;
 
-    ClockServer _server;
+    // ClockServer _server;
 };
 
 #endif // REMOTING_H

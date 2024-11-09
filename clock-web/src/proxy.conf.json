@@ -1,0 +1,8 @@
+{
+    "/ws": {
+        "logLevel": "debug",
+        "target": "http://127.0.0.1:21120",
+        "secure": false,
+        "ws": true
+    }
+}

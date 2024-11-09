@@ -11,10 +11,17 @@ Frame {
     Layout.fillWidth: true
     Layout.fillHeight: true
 
-    property int minuteStepSize: 5
-    property int secondStepSize: 5
+    enum Mode {
+        M5,
+        M1,
+        S1
+    }
+
+    property int mode: TimeField.Mode.M5
     property int visibleItems: 9
-    property bool seconds: false
+    readonly property int secondStepSize: mode === TimeField.S1 ? 1 : 60
+    readonly property int minuteStepSize: mode === TimeField.M5 ? 5 : 1
+    readonly property bool seconds: mode === TimeField.S1
 
     property date time
 
@@ -35,10 +42,19 @@ Frame {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             font.family: FontService.family
+            property Tumbler tumbler: Tumbler.tumbler
 
             font.pixelSize: {
                 var displacement = 2 * Math.abs(Tumbler.displacement) / visibleItems
                 return Math.max(64 - 32 * displacement, 24)
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    parent.tumbler.positionViewAtIndex(index, Tumbler.Center)
+                    parent.tumbler.currentIndex = index
+                }
             }
         }
     }
@@ -63,7 +79,7 @@ Frame {
             }
         }
 
-        Text {
+        CLabel {
             Layout.preferredWidth: 1 / 5
             horizontalAlignment: Text.AlignHCenter
             text: ":"
@@ -86,7 +102,7 @@ Frame {
             }
         }
 
-        Text {
+        CLabel {
             visible: seconds
             Layout.preferredWidth: 1 / 5
             horizontalAlignment: Text.AlignHCenter
@@ -114,26 +130,37 @@ Frame {
 
         ColumnLayout {
             Layout.alignment: Qt.AlignTop
-            Label {
+            CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: minuteStepSize === 5 ? 1 : 0.5
+                opacity: mode === TimeField.M5 ? 1 : 0.5
                 font.pixelSize: 24
                 text: '5m'
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: ctrl.minuteStepSize = 5
+                    onClicked: mode = TimeField.M5
                 }
             }
-            Label {
+            CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: minuteStepSize === 1 ? 1 : 0.5
+                opacity: mode === TimeField.M1 ? 1 : 0.5
                 font.pixelSize: 24
                 text: '1m'
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: ctrl.minuteStepSize = 1
+                    onClicked: mode = TimeField.M1
+                }
+            }
+            CLabel {
+                Layout.alignment: Qt.AlignRight
+                opacity: mode === TimeField.S1 ? 1 : 0.5
+                font.pixelSize: 24
+                text: '1s'
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: mode = TimeField.S1
                 }
             }
         }

@@ -16,11 +16,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core WebSockets Quick QuickControls2 Multim
 set(QML_IMPORT_PATH ${CMAKE_CURRENT_LIST_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "" FORCE)
 
 set(PROJECT_SOURCES
-    src/defines.h
     src/constants.h
-
-
-
+    src/defines.h
 
     src/alarm.h
     src/alarm.cpp
@@ -58,6 +55,12 @@ set(PROJECT_SOURCES
     src/spacetheme.cpp
     src/spacetheme.h
 
+    src/clockserver.cpp
+    src/clockserver.h
+
+    src/cpugraph.cpp
+    src/cpugraph.h
+
     src/main.cpp
 
     sounds/sounds.qrc
@@ -73,14 +76,18 @@ else()
     add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 endif()
 
+
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::WebSockets
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Multimedia
+    qperformance
     qopenremote
-    libremote
+    qlighting
+    ws2811
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

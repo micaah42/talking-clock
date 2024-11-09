@@ -11,89 +11,11 @@ Item {
     RowLayout {
         anchors.fill: parent
 
-        ColumnLayout {
+        NextAlarm {
             Layout.maximumWidth: 0.3 * parent.width
             Layout.fillHeight: true
             Layout.margins: 8
-            spacing: 8
-
-            Component {
-                id: nextAlarmComponent
-                NextAlarm {
-                    anchors.fill: parent
-                    alarm: AlarmService.nextAlarm
-                }
-            }
-
-            Component {
-                id: noNextAlarmComponent
-                ValueDisplay {
-                    labelText: 'No Alarms scheduled : )'
-                    valueText: 'Sleep tight!'
-                }
-            }
-
-            Loader {
-                id: nextAlarmLoader
-                Layout.fillWidth: true
-                sourceComponent: AlarmService.nextAlarm ? nextAlarmComponent : noNextAlarmComponent
-            }
-
-            Item {
-                Layout.fillHeight: true
-            }
-
-            Image {
-                id: bed
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.maximumHeight: 0.5 * parent.height
-                fillMode: Image.PreserveAspectFit
-                source: 'qrc:/bed_FILL0_wght400_GRAD0_opsz24.svg'
-                sourceSize.width: width
-                sourceSize.height: height
-
-                Repeater {
-                    id: zzz
-                    model: 3
-                    delegate: Item {
-                        CLabel {
-                            property real range
-
-                            PropertyAnimation on range {
-                                loops: Animation.Infinite
-                                duration: 8000
-                                from: 0
-                                to: 1
-                            }
-
-                            property real position: {
-                                const p = range + modelData / zzz.count
-                                if (p < 1)
-                                    return p
-                                else
-                                    return p - 1
-                            }
-
-                            x: 150 * (position * position) + 105
-                            y: -100 * position - 8
-
-                            opacity: {
-                                if (position < 0.2)
-                                    return 5 * position
-                                if (position > 0.8)
-                                    return 5 - (5 * position)
-
-                                return 1
-                            }
-
-                            font.pixelSize: 48 + 48 * position * position
-                            rotation: 15 * Math.random()
-                            text: 'z'
-                        }
-                    }
-                }
-            }
+            alarm: AlarmService.nextAlarm
         }
 
         Rectangle {
@@ -118,18 +40,20 @@ Item {
                 model: AlarmService.model
 
                 delegate: AlarmItem {
-                    width: view.width
                     alarm: model.value
+                    width: view.width
                 }
 
                 header: Button {
                     width: parent.width
+                    height: 64
+
                     Material.roundedScale: Material.ExtraSmallScale
                     font.family: FontService.family
+                    font.pixelSize: 24
+
+                    onClicked: AlarmService.newAlarm()
                     text: "New Alarm"
-                    onClicked: {
-                        AlarmService.newAlarm()
-                    }
                 }
             }
         }

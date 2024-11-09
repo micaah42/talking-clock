@@ -8,8 +8,8 @@ Palette::Palette(QObject *parent)
     , _accent{0xD9, 0x30, 0x30}
     , _darkAccent{0x73, 0x1F, 0x1F}
     , _background{0, 0, 0}
-    , _frontlight{"Palette/FrontLight", 1., _settings}
-    , _backlight{"Palette/BackLight", 1., _settings}
+    , _frontlight{"Palette/FrontLight", 1.}
+    , _backlight{"Palette/BackLight", 1.}
 {
 
 }

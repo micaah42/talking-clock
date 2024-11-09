@@ -3,11 +3,11 @@
 SpaceTheme::SpaceTheme(QObject *parent)
     : QObject{parent}
     , _settings{DEFAULT_SETTINGS_SCOPE}
-    , _clockSize{"SpaceBackground/ClockSize", 1.4, _settings}
-    , _spaceShip{"SpaceBackground/SpaceShip", false, _settings}
-    , _animatedStars{"SpaceBackground/AnimatedStars", 20, _settings}
-    , _stars{"SpaceBackground/Stars", 75, _settings}
-    , _animationSpeed{"SpaceBackground/AnimationSpeed", 5000, _settings}
+    , _clockSize{"SpaceBackground/ClockSize", 1.4}
+    , _spaceShip{"SpaceBackground/SpaceShip", false}
+    , _animatedStars{"SpaceBackground/AnimatedStars", 20}
+    , _stars{"SpaceBackground/Stars", 75}
+    , _animationSpeed{"SpaceBackground/AnimationSpeed", 5000}
     , _fpsVisible{false}
 {}
 

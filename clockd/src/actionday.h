@@ -4,20 +4,30 @@
 #include <QDate>
 #include <QFile>
 #include <QObject>
+#include <QTimer>
 
 class ActionDay;
 
-class ActionDayManager : public QObject
+class ActionDayService : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QList<ActionDay *> days READ days NOTIFY daysChanged FINAL)
 public:
-    explicit ActionDayManager(QObject *parent = nullptr);
+    explicit ActionDayService(QObject *parent = nullptr);
+
+    const QList<ActionDay *> &days() const;
 
 public slots:
     QList<ActionDay *> actionDays(const QDate &date = QDate::currentDate(), QObject *parent = nullptr);
+    void onTimeout();
+
+signals:
+    void daysChanged();
 
 private:
     QFile _file;
+    QTimer _timer;
+    QList<ActionDay *> _days;
 };
 
 class ActionDay : public QObject
