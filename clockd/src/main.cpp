@@ -85,6 +85,12 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Clock", 1, 0, "ActionDayManager", &actionDayManager);
     remoting.registerObject("actiondays", &actionDayManager);
 
+    QList<ActionDay *> ad;
+    qDebug() << QVariant::fromValue(actionDayManager.days()).canConvert<QVariantList>();
+    qDebug() << QVariant::fromValue(actionDayManager.days()).value<QVariantList>();
+    qDebug() << QVariant::fromValue(actionDayManager.days());
+    qDebug() << remoting.get("actiondays.days");
+
     About about;
     qmlRegisterSingletonInstance("Clock", 1, 0, "About", &about);
 

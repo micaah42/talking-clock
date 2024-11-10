@@ -41,6 +41,7 @@
         <file>Clock/Controls/LargeSlider.qml</file>
         <file>Clock/Controls/ColorPicker.qml</file>
         <file>Clock/Controls/CToolButton.qml</file>
+        <file>Clock/Style/Palettes.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

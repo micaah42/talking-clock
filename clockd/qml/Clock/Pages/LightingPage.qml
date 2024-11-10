@@ -14,8 +14,8 @@ ColumnLayout {
     spacing: 0
 
     RowLayout {
-        Layout.preferredHeight: 48
-        Layout.maximumHeight: 48
+        Layout.minimumHeight: 56
+        Layout.maximumHeight: 56
         Layout.bottomMargin: 24
         spacing: 24
 
@@ -101,37 +101,78 @@ ColumnLayout {
             spacing: 32
             clip: true
 
-            ColumnLayout {
+            RowLayout {
                 property LightMode lightMode: staticLight
-                LargeSlider {
-                    Layout.fillWidth: true
-                    onValueChanged: staticLight.red = value
-                    value: staticLight.red
-                    labelText: 'R'
-                }
-                LargeSlider {
-                    Layout.fillWidth: true
-                    onValueChanged: staticLight.green = value
-                    value: staticLight.green
-                    labelText: 'G'
-                }
-                LargeSlider {
-                    Layout.fillWidth: true
-                    onValueChanged: staticLight.blue = value
-                    value: staticLight.blue
-                    labelText: 'B'
-                }
-                LargeSlider {
-                    Layout.fillWidth: true
-                    onValueChanged: staticLight.white = value
-                    value: staticLight.white
-                    labelText: 'W'
-                }
-                Item {
+                spacing: 16
+
+                ColumnLayout {
                     Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    spacing: 16
+
+                    ColorPicker {
+                        onCurrentColorChanged: staticLight.color = currentColor
+                        value: staticLight.color
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                    }
+
+                    LargeSlider {
+                        Layout.fillWidth: true
+                        onValueChanged: staticLight.white = value
+                        value: staticLight.white
+                        labelText: 'W'
+                    }
+                }
+
+                ColumnLayout {
+                    id: palettes
+
+                    property var currentPalette: Palettes.palettes[currentIndex % Palettes.palettes.length]
+                    property int currentIndex: 0
+                    Layout.maximumWidth: 220
+                    Layout.fillHeight: true
+                    spacing: 12
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        CToolButton {
+                            onClicked: palettes.currentIndex -= 1
+                            text: Icons.chevron_backward
+                        }
+                        CLabel {
+                            horizontalAlignment: Text.AlignHCenter
+                            Layout.fillWidth: true
+                            text: palettes.currentPalette.name
+                        }
+
+                        CToolButton {
+                            onClicked: palettes.currentIndex += 1
+                            text: Icons.chevron_forward
+                        }
+                    }
+                    GridLayout {
+                        Layout.fillHeight: true
+
+                        columns: 2
+                        rows: 4
+
+                        Repeater {
+                            model: palettes.currentPalette.colors
+                            delegate: Button {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                onClicked: staticLight.color = modelData
+                                Material.background: modelData
+                                bottomInset: 0
+                                topInset: 0
+                            }
+                        }
+                    }
                 }
             }
             ColumnLayout {
+
                 property LightMode lightMode: wavingLight
                 CSpinBox {
                     labelText: 'Length'

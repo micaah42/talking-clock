@@ -78,8 +78,8 @@ Item {
         visible: scale !== 0
         parent: window.contentItem
         anchors.fill: parent
-        anchors.margins: 16
 
+        //anchors.margins: 16
         MouseArea {
             anchors.fill: parent
         }
@@ -88,15 +88,17 @@ Item {
             anchors.fill: parent
 
             Card {
-                Layout.preferredHeight: 50
+                Layout.preferredHeight: 56
                 Layout.fillWidth: true
                 Layout.margins: 8
                 bright: true
 
-                ToolButton {
+                CToolButton {
                     anchors.verticalCenter: parent.verticalCenter
-                    icon.source: 'qrc:/navigate_before_FILL0_wght400_GRAD0_opsz24.svg'
+                    x: 8
+                    text: Icons.chevron_backward
                     onClicked: currentPage = null
+                    font.pixelSize: 24
                 }
 
                 CLabel {
@@ -108,10 +110,13 @@ Item {
             }
 
             Loader {
-                Layout.margins: 8
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                Layout.margins: 8
+                Layout.rightMargin: 24
+                Layout.leftMargin: 24
                 source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
+                visible: status === Loader.Ready
                 asynchronous: true
             }
         }

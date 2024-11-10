@@ -6,10 +6,11 @@ import Clock
 import Clock.Controls
 
 Slider {
-    id: control
+    id: root
 
     property alias labelText: label.text
     property alias label: label
+    property real radius: 12
 
     snapMode: Slider.SnapAlways
     implicitHeight: 40
@@ -19,22 +20,22 @@ Slider {
         id: background
         anchors.fill: parent
         border.color: Material.foreground
-        border.width: control.pressed ? 2.5 : 2
+        border.width: root.pressed ? 2.5 : 2
 
         color: ColorService.primary
-        radius: height / 3
         opacity: enabled ? 1 : 0.72
+        radius: root.radius
 
         Item {
             anchors.fill: parent
             anchors.margins: parent.border.width
 
             Rectangle {
-                color: control.pressed ? Qt.lighter(ColorService.accent, 1.25) : ColorService.accent
+                color: root.pressed ? Qt.lighter(ColorService.accent, 1.25) : ColorService.accent
                 opacity: enabled ? 1 : 0.72
 
-                width: height + control.visualPosition * (parent.width - height)
-                radius: height / 3 - background.border.width
+                width: height + root.visualPosition * (parent.width - height)
+                radius: root.radius - background.border.width
                 height: parent.height
 
                 Behavior on color {

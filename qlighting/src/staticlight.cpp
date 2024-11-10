@@ -6,10 +6,7 @@
 StaticLight::StaticLight(Lighting &lighting)
     : LightMode{lighting}
     , m_white{0}
-    , m_red{0}
-    , m_green{0}
-    , m_blue{0}
-
+    , m_color{0xff, 0, 0}
 {}
 
 double StaticLight::white() const
@@ -32,9 +29,9 @@ void StaticLight::apply()
 {
     for (auto &pixel : _pixels) {
         pixel->setWhite(255 * m_white);
-        pixel->setGreen(255 * m_green);
-        pixel->setBlue(255 * m_blue);
-        pixel->setRed(255 * m_red);
+        pixel->setGreen(m_color.green());
+        pixel->setBlue(m_color.blue());
+        pixel->setRed(m_color.red());
     }
 
     _lighting.render();
@@ -42,15 +39,15 @@ void StaticLight::apply()
 
 double StaticLight::red() const
 {
-    return m_red;
+    return m_color.red();
 }
 
 void StaticLight::setRed(double newRed)
 {
-    if (qFuzzyCompare(m_red, newRed))
+    if (qFuzzyCompare((double) m_color.redF(), newRed))
         return;
 
-    m_red = newRed;
+    m_color.setRedF(newRed);
     emit redChanged();
 
     apply();
@@ -58,15 +55,15 @@ void StaticLight::setRed(double newRed)
 
 double StaticLight::green() const
 {
-    return m_green;
+    return m_color.green();
 }
 
 void StaticLight::setGreen(double newGreen)
 {
-    if (qFuzzyCompare(m_green, newGreen))
+    if (qFuzzyCompare((double) m_color.greenF(), newGreen))
         return;
 
-    m_green = newGreen;
+    m_color.setGreenF(newGreen);
     emit greenChanged();
 
     apply();
@@ -74,16 +71,32 @@ void StaticLight::setGreen(double newGreen)
 
 double StaticLight::blue() const
 {
-    return m_blue;
+    return m_color.blueF();
 }
 
 void StaticLight::setBlue(double newBlue)
 {
-    if (qFuzzyCompare(m_blue, newBlue))
+    if (qFuzzyCompare((double) m_color.blueF(), newBlue))
         return;
 
-    m_blue = newBlue;
+    m_color.setBlueF(newBlue);
     emit blueChanged();
+
+    apply();
+}
+
+QColor StaticLight::color() const
+{
+    return m_color;
+}
+
+void StaticLight::setColor(const QColor &newColor)
+{
+    if (m_color == newColor)
+        return;
+
+    m_color = newColor;
+    emit colorChanged();
 
     apply();
 }
