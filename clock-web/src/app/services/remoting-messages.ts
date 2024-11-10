@@ -1,4 +1,4 @@
-export type RemotingMessageType = 'call' | 'get' | 'set' | 'subscribe' | 'notify' | 'return';
+export type RemotingMessageType = 'call' | 'get' | 'set' | 'subscribe' | 'notify' | 'return' | 'unsubscribe';
 
 export interface RemotingMessage {
     type: RemotingMessageType;
@@ -21,6 +21,9 @@ export interface SetRemotingMessage extends RemotingMessage {
 
 export interface SubscribeRemotingMessage extends RemotingMessage {
     type: 'subscribe';
+}
+export interface UnsubscribeRemotingMessage extends RemotingMessage {
+    type: 'unsubscribe';
 }
 
 export interface NotifyRemotingMessage extends RemotingMessage {
