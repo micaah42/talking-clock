@@ -13,12 +13,9 @@ class Lighting : public QObject
     Q_PROPERTY(LightMode *mode READ mode WRITE setMode NOTIFY modeChanged FINAL)
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged FINAL)
     Q_PROPERTY(QList<LightMode *> modes READ modes CONSTANT FINAL)
-    Q_PROPERTY(QList<Pixel *> pixels READ pixels CONSTANT FINAL)
 
 public:
     explicit Lighting(QObject *parent = nullptr);
-
-    void render();
 
     LightMode *mode() const;
     void setMode(LightMode *newMode);
@@ -33,12 +30,13 @@ public:
 
     const QList<Pixel *> &pixels() const;
     QList<Pixel *> &pixels();
+    void render();
 
 signals:
     void modeChanged();
     void brightnessChanged();
     void enabledChanged();
-    void pixelsChanged();
+    void rendered();
 
 protected:
     QList<Pixel *> _pixels;

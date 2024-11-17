@@ -26,9 +26,9 @@ Popup {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.leftMargin: 10
-            Layout.rightMargin: 10
-            spacing: 10
+            Layout.rightMargin: 16
+            Layout.leftMargin: 16
+            spacing: 16
 
             Switch {
                 text: checked ? 'Active' : 'Disabled'
@@ -47,6 +47,8 @@ Popup {
             Row {
                 id: weekdays
                 Layout.bottomMargin: 6
+                spacing: 8
+
                 function getRepeat(i) {
                     return alarm.repeatRule[i]
                 }

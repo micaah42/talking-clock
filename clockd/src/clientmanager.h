@@ -1,6 +1,7 @@
 #ifndef CLIENTMANAGER_H
 #define CLIENTMANAGER_H
 
+#include <QDateTime>
 #include <QObject>
 
 #include "qlistmodel.h"

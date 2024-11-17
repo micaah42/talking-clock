@@ -1,5 +1,7 @@
 #include "clientmanager.h"
 
+#include <QWebSocket>
+
 #include "websocketserver.h"
 
 ClientManager::ClientManager(WebSocketServer &server, QObject *parent)
@@ -51,6 +53,7 @@ void Client::setLastOnline(const QDateTime &newLastOnline)
 {
     if (m_lastOnline == newLastOnline)
         return;
+
     m_lastOnline = newLastOnline;
     emit lastOnlineChanged();
 }
@@ -64,6 +67,7 @@ void Client::setPingable(bool newPingable)
 {
     if (m_pingable == newPingable)
         return;
+
     m_pingable = newPingable;
     emit pingableChanged();
 }
@@ -77,6 +81,7 @@ void Client::setOnline(bool newOnline)
 {
     if (m_online == newOnline)
         return;
+
     m_online = newOnline;
     emit onlineChanged();
 }
@@ -110,13 +115,19 @@ void ClientManager::onClientConnected(QWebSocket *socket)
     m_activeClientCount += 1;
     emit activeClientCountChanged();
 
-    connect(client, &QWebSocket::disconnected, this, [this, client]() {
+    auto onDisconnect = [this, client]() {
+        if (!client->online())
+            return;
+
         client->setLastOnline(QDateTime::currentDateTime());
         client->setOnline(false);
 
         m_activeClientCount -= 1;
         emit activeClientCountChanged();
-    });
+    };
+
+    connect(socket, &QWebSocket::disconnected, this, onDisconnect);
+    connect(socket, &QWebSocket::destroyed, this, onDisconnect);
 }
 
 int ClientManager::activeClientCount() const

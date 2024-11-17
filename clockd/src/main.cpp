@@ -11,12 +11,12 @@
 #include "about.h"
 #include "actionday.h"
 #include "alarmservice.h"
-#include "websocketserver.h"
 #include "cpugraph.h"
 #include "cpumonitor.h"
 #include "eventfilter.h"
 #include "fontservice.h"
 #include "lighting.h"
+#include "lightingdisplay.h"
 #include "loghandling.h"
 #include "palette.h"
 #include "pathservice.h"
@@ -27,6 +27,7 @@
 #include "spacetheme.h"
 #include "staticlight.h"
 #include "wavinglight.h"
+#include "websocketserver.h"
 
 void printApplicationStart();
 
@@ -111,6 +112,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<WavingLight>("Clock", 1, 0, "WavingLight", "");
     qmlRegisterUncreatableType<PrettyRandomLight>("Clock", 1, 0, "PrettyRandomLight", "");
     qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
+    qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
     qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
 
     const QUrl url("qrc:/Clock/Main.qml");

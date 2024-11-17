@@ -59,9 +59,7 @@ Item {
                 contentItem: Item {
                     Icon {
                         id: icon
-
                         anchors.centerIn: parent
-                        // font.weight: Font.DemiBold
                         font.pixelSize: 88
                         text: model.icon()
                     }
@@ -79,26 +77,25 @@ Item {
         parent: window.contentItem
         anchors.fill: parent
 
-        //anchors.margins: 16
         MouseArea {
             anchors.fill: parent
         }
 
         ColumnLayout {
             anchors.fill: parent
+            anchors.margins: 8
+            spacing: 16
 
             Card {
                 Layout.preferredHeight: 56
                 Layout.fillWidth: true
-                Layout.margins: 8
                 bright: true
 
                 CToolButton {
                     anchors.verticalCenter: parent.verticalCenter
-                    x: 8
                     text: Icons.chevron_backward
                     onClicked: currentPage = null
-                    font.pixelSize: 24
+                    font.pixelSize: 32
                 }
 
                 CLabel {
@@ -109,24 +106,24 @@ Item {
                 }
             }
 
-            Loader {
-                id: loader
+            Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Layout.margins: 8
-                Layout.rightMargin: 24
-                Layout.leftMargin: 24
-                source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
-                visible: status === Loader.Ready
-                asynchronous: true
-            }
-            Item {
-                visible: loader.status === Loader.Loading
-                Layout.fillHeight:true
-                Layout.fillWidth:true
-            BusyIndicator {
-                anchors.centerIn:parent
-            }
+
+                Loader {
+                    id: loader
+                    anchors.fill: parent
+                    source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
+                    visible: status === Loader.Ready
+                    asynchronous: true
+                }
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    opacity: loader.state === loader.Loading ? 1 : 0
+                    Behavior on opacity {
+                        PropertyAnimation {}
+                    }
+                }
             }
         }
 

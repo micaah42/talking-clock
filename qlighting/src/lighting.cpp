@@ -67,13 +67,15 @@ Lighting::Lighting(QObject *parent)
 
 void Lighting::render()
 {
-    ws2811_return_t ret;
+    emit rendered();
 
+    ws2811_return_t ret;
     if (!_d->ws2811.channel[0].leds)
         return;
 
     if ((ret = ws2811_render(&_d->ws2811)) != WS2811_SUCCESS) {
         qCCritical(self) << "ws2811_render failed:" << ws2811_get_return_t_str(ret);
+        return;
     }
 }
 

@@ -10,16 +10,14 @@ import Clock.Controls 1.0
 import Clock.Pages.SettingsPage 1.0
 
 Item {
-
     RowLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: 8
         clip: true
 
         ListView {
             Layout.preferredWidth: 200
             Layout.fillHeight: true
-            Layout.margins: 8
 
             model: sections.contentChildren
             currentIndex: sections.currentIndex
@@ -53,8 +51,6 @@ Item {
         Rectangle {
             Layout.preferredWidth: 1.5
             Layout.fillHeight: true
-            Layout.bottomMargin: 8
-            Layout.topMargin: 8
             radius: width / 2
             opacity: 0.5
         }
@@ -64,7 +60,6 @@ Item {
             orientation: Qt.Vertical
             Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.margins: 8
             interactive: false
             spacing: 8
             GeneralSection {}
