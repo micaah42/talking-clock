@@ -1,23 +1,12 @@
-
-<!--
-  <div style="height: 0;">
-    <div id="canvas-container">
-      @if (timeToFly){
-      <img @rocket class="rocket"  src="rocket.png">
-      }
-    </div>
-  </div>
--->
 <div id="other" style="z-index: 1">
   <mat-card>
-    <mat-card-header>
-      <mat-card-subtitle>Next Alarm:</mat-card-subtitle>
-    </mat-card-header>
     <mat-card-content>
-      <div>
-        <b>{{nextAlarm.name}} {{nextAlarm.time}}</b>
-      </div>
-      
+      @if(nextAlarm.value){
+      <app-value-display labelText="Name" [valueText]="nextAlarm.value.name"></app-value-display>
+      <app-value-display labelText="Time"></app-value-display>
+      <div style="font-size: 24px; margin-bottom: 8px;">{{nextAlarm.value.time | date :'shortTime'}}</div>
+      <app-value-display labelText="Sound" [valueText]="nextAlarm.value.sound"></app-value-display>
+      }
     </mat-card-content>
   </mat-card>
 
@@ -28,7 +17,10 @@
       <mat-card-subtitle>Special Days</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      Text. Text text bla i dunno whadda hell to!
+      @for (day of actionDays.value; track $index) {
+      {{day.name}}
+      {{day.desc}}
+      }
     </mat-card-content>
   </mat-card>
 </div>

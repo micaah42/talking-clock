@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, filter } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, filter } from 'rxjs';
 import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 
 import { NotifyRemotingMessage, RemotingMessage, SubscribeRemotingMessage } from './remoting-messages';
 
 type State = 'disconnected' | 'connecting' | 'connected'
 
+class SubscriptionSubject extends ReplaySubject<any> {
+  public counter: number = 1;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class RemotingService {
-  private subjects: Map<string, Subject<any>> = new Map<string, Subject<any>>()
-  private observables: Map<string, Observable<any>> = new Map<string, Observable<any>>()
+  private subjects: Map<string, SubscriptionSubject> = new Map<string, SubscriptionSubject>()
   private websocket$: WebSocketSubject<RemotingMessage>;
   private state$: BehaviorSubject<State> = new BehaviorSubject<State>('connecting')
 
@@ -42,8 +45,8 @@ export class RemotingService {
 
     this.state$.pipe(filter(x => x === 'connected')).subscribe(() => {
       // 'on connected'
-      
-      for (let key of this.observables.keys())
+
+      for (let key of this.subjects.keys())
         this.sendMessage({ type: 'subscribe', key })
     })
   }
@@ -69,16 +72,33 @@ export class RemotingService {
       return this.websocket$.next(message)
   }
 
-  subscribe<T>(key: string): Observable<T> {
+  subscribe<T>(key: string, destroy$: Observable<void>): Observable<T> {
 
-    if (!this.observables.has(key)) {
-      const newSubject = new Subject<T>()
+    if (!this.subjects.has(key)) {
+      const newSubject = new SubscriptionSubject()
       this.subjects.set(key, newSubject)
-      this.observables.set(key, newSubject.asObservable())
       this.sendMessage({ type: 'subscribe', key })
     }
 
-    return this.observables.get(key)!;
+    destroy$.subscribe(() => this.unsubscribe(key))
+
+    const subject = this.subjects.get(key)!;
+    subject.counter += 1;
+    return subject.asObservable();
+  }
+
+  unsubscribe<T>(key: string) {
+    if (!this.subjects.has(key))
+      return
+
+    const subject = this.subjects.get(key)!;
+    subject.counter -= 1;
+
+    if (subject.counter > 0)
+      return;
+
+      this.sendMessage({type: 'unsubscribe', key})
+
   }
 
 
