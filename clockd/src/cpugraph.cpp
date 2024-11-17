@@ -60,7 +60,7 @@ void CPUGraph::paint(QPainter *painter)
     QPen pen{QColor{"white"}, 1, Qt::SolidLine, Qt::RoundCap};
     painter->setPen(pen);
 
-    for (auto const &line : qAsConst(_usages)) {
+    for (auto const &line : std::as_const(_usages)) {
         QPainterPath path;
         path.moveTo(this->width(), this->height() - pxPerPercent * line.last());
 

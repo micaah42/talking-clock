@@ -156,7 +156,7 @@ void AlarmService::loadAlarms()
 
     auto alarmsArray = alarms.array();
 
-    for (auto const &alarmJson : qAsConst(alarmsArray)) {
+    for (auto const &alarmJson : std::as_const(alarmsArray)) {
         auto alarm = JSON::deserialize<Alarm *>(alarmJson);
 
         if (!alarm) {

@@ -31,7 +31,7 @@ QStringList About::licenseText(const QString &package)
 
     QStringList s;
 
-    for (const auto &fileName : qAsConst(files)) {
+    for (const auto &fileName : std::as_const(files)) {
         QFile file{packageDir.filePath(fileName)};
 
         if (!file.open(QIODevice::ReadOnly)) {

@@ -61,7 +61,7 @@ Item {
                         id: icon
 
                         anchors.centerIn: parent
-                        font.weight: Font.Thin
+                        // font.weight: Font.DemiBold
                         font.pixelSize: 88
                         text: model.icon()
                     }
@@ -110,6 +110,7 @@ Item {
             }
 
             Loader {
+                id: loader
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.margins: 8
@@ -118,6 +119,14 @@ Item {
                 source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
                 visible: status === Loader.Ready
                 asynchronous: true
+            }
+            Item {
+                visible: loader.status === Loader.Loading
+                Layout.fillHeight:true
+                Layout.fillWidth:true
+            BusyIndicator {
+                anchors.centerIn:parent
+            }
             }
         }
 

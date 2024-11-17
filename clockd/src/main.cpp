@@ -11,7 +11,7 @@
 #include "about.h"
 #include "actionday.h"
 #include "alarmservice.h"
-#include "clockserver.h"
+#include "websocketserver.h"
 #include "cpugraph.h"
 #include "cpumonitor.h"
 #include "eventfilter.h"
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Material");
 
     QObjectRegistry remoting;
-    ClockServer server{remoting};
+    WebSocketServer server{remoting};
     remoting.registerObject("remoting", &remoting);
 
     Palette palette;

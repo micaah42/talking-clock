@@ -55,12 +55,11 @@ set(PROJECT_SOURCES
     src/spacetheme.cpp
     src/spacetheme.h
 
-    src/clockserver.cpp
-    src/clockserver.h
-
     src/cpugraph.cpp
     src/cpugraph.h
 
+    src/clientmanager.cpp
+    src/clientmanager.h
     src/main.cpp
 
     sounds/sounds.qrc

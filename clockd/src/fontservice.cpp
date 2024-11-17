@@ -28,7 +28,7 @@ void FontService::refreshFamilies()
 {
     int loaded = 0;
     qCInfo(self) << "loading fonts...";
-    for (auto const &fonts : qAsConst(_fontDirectories)) {
+    for (auto const &fonts : std::as_const(_fontDirectories)) {
         if (!fonts.exists()) {
             qCCritical(self) << "fonts directory does not exist:" << fonts.path();
         }

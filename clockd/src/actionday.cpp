@@ -68,7 +68,7 @@ void ActionDayService::onTimeout()
     _days = this->actionDays(QDate::currentDate(), this);
     emit daysChanged();
 
-    for (auto day : qAsConst(oldDays))
+    for (auto day : std::as_const(oldDays))
         day->deleteLater();
 
     auto today = QDate::currentDate();
