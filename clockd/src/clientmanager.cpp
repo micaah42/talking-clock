@@ -1,12 +1,16 @@
 #include "clientmanager.h"
 
+#include <QWebSocket>
+
 #include "websocketserver.h"
 
-ClientManager::ClientManager(WebSocketServer &server, QObject *parent)
+ClientService::ClientService(WebSocketServer &server, QObject *parent)
     : QObject{parent}
     , _server{server}
     , m_activeClientCount{0}
-{}
+{
+    connect(&_server, &WebSocketServer::clientConnected, this, &ClientService::onClientConnected);
+}
 
 Client::Client(QObject *parent)
     : QObject{parent}
@@ -81,19 +85,18 @@ void Client::setOnline(bool newOnline)
     emit onlineChanged();
 }
 
-QListModel<Client *> *ClientManager::clients()
+QListModel<Client *> *ClientService::clients()
 {
     return &_clients;
 }
 
-Client *ClientManager::findById(const QString &id)
+Client *ClientService::findById(const QString &id)
 {
     auto it = std::find_if(_clients.cbegin(), _clients.cend(), [&id](const Client *client) { return id == client->ip(); });
-
     return it == _clients.cend() ? nullptr : *it;
 }
 
-void ClientManager::onClientConnected(QWebSocket *socket)
+void ClientService::onClientConnected(QWebSocket *socket)
 {
     const auto peerAddress = socket->peerAddress().toString();
     auto client = findById(peerAddress);
@@ -110,21 +113,23 @@ void ClientManager::onClientConnected(QWebSocket *socket)
     m_activeClientCount += 1;
     emit activeClientCountChanged();
 
-    connect(client, &QWebSocket::disconnected, this, [this, client]() {
+    connect(socket, &QWebSocket::disconnected, this, [this, client]() {
         client->setLastOnline(QDateTime::currentDateTime());
         client->setOnline(false);
 
         m_activeClientCount -= 1;
         emit activeClientCountChanged();
     });
+
+    _clients.append(client);
 }
 
-int ClientManager::activeClientCount() const
+int ClientService::activeClientCount() const
 {
     return m_activeClientCount;
 }
 
-void ClientManager::setActiveClientCount(int newActiveClientCount)
+void ClientService::setActiveClientCount(int newActiveClientCount)
 {
     if (m_activeClientCount == newActiveClientCount)
         return;
