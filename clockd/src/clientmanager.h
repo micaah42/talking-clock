@@ -10,13 +10,13 @@ class Client;
 class WebSocketServer;
 class QWebSocket;
 
-class ClientManager : public QObject
+class ClientService : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int activeClientCount READ activeClientCount NOTIFY activeClientCountChanged FINAL)
     Q_PROPERTY(QListModelBase *clients READ clients CONSTANT FINAL)
 public:
-    explicit ClientManager(WebSocketServer &server, QObject *parent = nullptr);
+    explicit ClientService(WebSocketServer &server, QObject *parent = nullptr);
     QListModel<Client *> *clients();
 
     int activeClientCount() const;
@@ -74,7 +74,7 @@ signals:
 protected:
     void setPingable(bool newPingable);
     void setOnline(bool newOnline);
-    friend class ClientManager;
+    friend class ClientService;
 
 private:
     QString m_id;

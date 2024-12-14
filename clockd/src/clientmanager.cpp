@@ -4,11 +4,13 @@
 
 #include "websocketserver.h"
 
-ClientManager::ClientManager(WebSocketServer &server, QObject *parent)
+ClientService::ClientService(WebSocketServer &server, QObject *parent)
     : QObject{parent}
     , _server{server}
     , m_activeClientCount{0}
-{}
+{
+    connect(&_server, &WebSocketServer::clientConnected, this, &ClientService::onClientConnected);
+}
 
 Client::Client(QObject *parent)
     : QObject{parent}
@@ -53,7 +55,6 @@ void Client::setLastOnline(const QDateTime &newLastOnline)
 {
     if (m_lastOnline == newLastOnline)
         return;
-
     m_lastOnline = newLastOnline;
     emit lastOnlineChanged();
 }
@@ -67,7 +68,6 @@ void Client::setPingable(bool newPingable)
 {
     if (m_pingable == newPingable)
         return;
-
     m_pingable = newPingable;
     emit pingableChanged();
 }
@@ -81,24 +81,23 @@ void Client::setOnline(bool newOnline)
 {
     if (m_online == newOnline)
         return;
-
     m_online = newOnline;
     emit onlineChanged();
 }
 
-QListModel<Client *> *ClientManager::clients()
+QListModel<Client *> *ClientService::clients()
 {
     return &_clients;
 }
 
-Client *ClientManager::findById(const QString &id)
+Client *ClientService::findById(const QString &id)
 {
     auto it = std::find_if(_clients.cbegin(), _clients.cend(), [&id](const Client *client) { return id == client->ip(); });
 
     return it == _clients.cend() ? nullptr : *it;
 }
 
-void ClientManager::onClientConnected(QWebSocket *socket)
+void ClientService::onClientConnected(QWebSocket *socket)
 {
     const auto peerAddress = socket->peerAddress().toString();
     auto client = findById(peerAddress);
@@ -106,6 +105,7 @@ void ClientManager::onClientConnected(QWebSocket *socket)
     if (client == nullptr) {
         client = new Client(this);
         client->setIp(peerAddress);
+        _clients.append(client);
     }
 
     client->setLastOnline(QDateTime::currentDateTime());
@@ -116,26 +116,25 @@ void ClientManager::onClientConnected(QWebSocket *socket)
     emit activeClientCountChanged();
 
     auto onDisconnect = [this, client]() {
-        if (!client->online())
-            return;
+        if (!client->online()) {
+            m_activeClientCount -= 1;
+            emit activeClientCountChanged();
+        }
 
         client->setLastOnline(QDateTime::currentDateTime());
         client->setOnline(false);
-
-        m_activeClientCount -= 1;
-        emit activeClientCountChanged();
     };
 
     connect(socket, &QWebSocket::disconnected, this, onDisconnect);
     connect(socket, &QWebSocket::destroyed, this, onDisconnect);
 }
 
-int ClientManager::activeClientCount() const
+int ClientService::activeClientCount() const
 {
     return m_activeClientCount;
 }
 
-void ClientManager::setActiveClientCount(int newActiveClientCount)
+void ClientService::setActiveClientCount(int newActiveClientCount)
 {
     if (m_activeClientCount == newActiveClientCount)
         return;

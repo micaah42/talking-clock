@@ -6,4 +6,6 @@ import Clock.Style
 
 ToolButton {
     font.family: Icons.fontFamily
+    implicitHeight: 64
+    implicitWidth: 64
 }

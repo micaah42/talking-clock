@@ -6,15 +6,15 @@
 #include "pixel.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "waving")
+Q_LOGGING_CATEGORY(self, "waving", QtInfoMsg)
 }
 
 WavingLight::WavingLight(Lighting &lighting)
     : LightMode{lighting}
     , m_speed{1}
     , m_length{48}
-    , m_a{0xff, 0, 0, 0}
-    , m_b{0, 0, 0xff, 0}
+    , m_a{0xff, 0, 0}
+    , m_b{0, 0, 0xff}
 {
     connect(&_timer, &QTimer::timeout, this, &WavingLight::onTimeout);
     _timer.setTimerType(Qt::PreciseTimer);
@@ -110,12 +110,7 @@ void WavingLight::onTimeout()
     for (int i = 0; i < _pixels.size(); ++i) {
         int sourceIndex = (i + m_shift) % (2 * _colors.size() - 1);
         sourceIndex = sourceIndex < _colors.size() ? sourceIndex : 2 * _colors.size() - sourceIndex - 1;
-        auto color = _colors[sourceIndex];
-        auto &pixel = _pixels[i];
-        pixel->setWhite(color.alpha());
-        pixel->setRed(color.red());
-        pixel->setGreen(color.green());
-        pixel->setBlue(color.blue());
+        _pixels[i]->setColor(_colors[sourceIndex]);
     }
 
     _lighting.render();

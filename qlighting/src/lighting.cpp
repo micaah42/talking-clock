@@ -17,7 +17,7 @@
 #include "wavinglight.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "lighting")
+Q_LOGGING_CATEGORY(self, "lighting", QtInfoMsg)
 }
 
 struct LightingPrivate

@@ -96,6 +96,8 @@ Item {
                     text: Icons.chevron_backward
                     onClicked: currentPage = null
                     font.pixelSize: 32
+                    height: 64
+                    width: 64
                 }
 
                 CLabel {
@@ -113,13 +115,20 @@ Item {
                 Loader {
                     id: loader
                     anchors.fill: parent
-                    source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
-                    visible: status === Loader.Ready
                     asynchronous: true
+
+                    source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
+                    opacity: status === Loader.Ready ? 1 : 0
+
+                    Behavior on opacity {
+                        PropertyAnimation {}
+                    }
                 }
+
                 BusyIndicator {
                     anchors.centerIn: parent
-                    opacity: loader.state === loader.Loading ? 1 : 0
+                    opacity: loader.status === Loader.Loading ? 1 : 0
+
                     Behavior on opacity {
                         PropertyAnimation {}
                     }

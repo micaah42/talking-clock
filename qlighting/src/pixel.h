@@ -15,16 +15,16 @@ public:
     explicit Pixel(ws2811_led_t &ws2811_led, QObject *parent = nullptr);
 
     int white() const;
-    void setWhite(int v);
+    // void setWhite(int v);
 
     int green() const;
-    void setGreen(int v);
+    // void setGreen(int v);
 
     int blue() const;
-    void setBlue(int v);
+    // void setBlue(int v);
 
     int red() const;
-    void setRed(int v);
+    // void setRed(int v);
 
     const ws2811_led_t &ws2811_led() const;
 

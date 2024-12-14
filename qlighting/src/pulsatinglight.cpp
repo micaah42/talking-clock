@@ -11,28 +11,22 @@
 PulsatingLight::PulsatingLight(Lighting &parent)
     : AnimatedLightMode{parent}
     , m_length{64}
+    , m_f1{0.1}
+    , m_f2{0.1}
+    , m_f3{0.1}
 {
     initGradient();
-    initSine();
 }
 
 void PulsatingLight::animate(double delta)
 {
-    _t += 0.00000000000001 * delta;
-
-    if (_sine.size() != _pixels.size())
-        initSine();
-
-    //double f = _t - std::floor(_t);
-    double f = (sin(_t) + 1.) / 2.;
+    _t += delta / 1e15;
 
     for (int i = 0; i < _pixels.size(); ++i) {
-        double value = f * _sine[i];
+        double x = i / (double) _pixels.size();
+        double value = (sin(m_f1 * M_PI * sin(x + m_f3 * _t) + m_f2 * x) + 1.) / 2.;
         auto color = _gradient[(_gradient.size() - 1) * value];
-        _pixels[i]->setWhite(color.alpha());
-        _pixels[i]->setGreen(color.green());
-        _pixels[i]->setBlue(color.blue());
-        _pixels[i]->setRed(color.red());
+        _pixels[i]->setColor(color);
     }
 
     _lighting.render();
@@ -54,16 +48,78 @@ void PulsatingLight::setLength(int newLength)
 
 void PulsatingLight::initGradient()
 {
-    _gradient = gradient(32, QColor{Qt::blue}, QColor{Qt::red});
+    _gradient = gradient(64, m_a, m_b);
 }
 
-void PulsatingLight::initSine()
+double PulsatingLight::f1() const
 {
-    _sine.resize(_pixels.size());
+    return m_f1;
+}
 
-    double stepSize = 2. * M_PI / (double) m_length;
-    for (int i = 0; i < _sine.size(); ++i)
-        _sine[i] = (sin(i * stepSize) + 1.) / 2.;
+void PulsatingLight::setF1(double newF1)
+{
+    if (qFuzzyCompare(m_f1, newF1))
+        return;
 
-    qDebug() << _sine;
+    m_f1 = newF1;
+    emit f1Changed();
+}
+
+double PulsatingLight::f2() const
+{
+    return m_f2;
+}
+
+void PulsatingLight::setF2(double newF2)
+{
+    if (qFuzzyCompare(m_f2, newF2))
+        return;
+
+    m_f2 = newF2;
+    emit f2Changed();
+}
+
+QColor PulsatingLight::a() const
+{
+    return m_a;
+}
+
+void PulsatingLight::setA(const QColor &newA)
+{
+    if (m_a == newA)
+        return;
+
+    m_a = newA;
+    emit aChanged();
+
+    initGradient();
+}
+
+QColor PulsatingLight::b() const
+{
+    return m_b;
+}
+
+void PulsatingLight::setB(const QColor &newB)
+{
+    if (m_b == newB)
+        return;
+
+    m_b = newB;
+    emit bChanged();
+
+    initGradient();
+}
+
+double PulsatingLight::f3() const
+{
+    return m_f3;
+}
+
+void PulsatingLight::setF3(double newF3)
+{
+    if (qFuzzyCompare(m_f3, newF3))
+        return;
+    m_f3 = newF3;
+    emit f3Changed();
 }

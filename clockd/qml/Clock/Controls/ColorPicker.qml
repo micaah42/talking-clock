@@ -5,10 +5,9 @@ import QtQuick.Effects
 Item {
     id: root
 
-    property color value: 'red'
-
     property color borderColor: 'white'
-    property real borderWidth: 2.5
+    property color value: 'red'
+    property real borderWidth: 1.5
     property real radius: 12
     property real spacing: 8
 
@@ -30,6 +29,7 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         spacing: root.spacing
+        opacity: enabled ? 1 : 0.16
 
         RowLayout {
             Layout.fillHeight: true
@@ -37,7 +37,7 @@ Item {
             spacing: root.spacing
 
             Rectangle {
-                Layout.preferredWidth: height
+                Layout.preferredWidth: 48
                 Layout.fillHeight: true
                 border.width: borderWidth
                 border.color: borderColor
@@ -50,8 +50,10 @@ Item {
                 Layout.fillWidth: true
 
                 Rectangle {
+                    id: horizontalGradient
                     anchors.fill: parent
                     radius: root.radius
+                    layer.enabled: true
 
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
@@ -66,10 +68,12 @@ Item {
                     }
                 }
                 Rectangle {
+                    id: verticalGradient
                     anchors.fill: parent
                     border.width: borderWidth
                     border.color: 'white'
                     radius: root.radius
+
                     gradient: Gradient {
                         GradientStop {
                             position: 0.0
@@ -83,20 +87,30 @@ Item {
                 }
 
                 Item {
+                    id: coord
                     anchors.fill: parent
-                    anchors.margins: borderWidth
+                    anchors.margins: 2 * borderWidth
+                    visible: false
+
                     Rectangle {
                         color: borderColor
                         height: parent.height
                         x: s * parent.width
-                        width: 1
+                        width: borderWidth
                     }
                     Rectangle {
                         color: borderColor
                         width: parent.width
                         y: (1 - v) * parent.height
-                        height: 1
+                        height: borderWidth
                     }
+                }
+
+                MultiEffect {
+                    anchors.fill: parent
+                    maskSource: horizontalGradient
+                    maskEnabled: true
+                    source: coord
                 }
 
                 MouseArea {

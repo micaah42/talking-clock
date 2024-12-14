@@ -20,11 +20,11 @@ RowLayout {
             RowLayout {
                 Layout.fillWidth: true
 
-               CLabel {
+                CLabel {
                     text: 'Talking Clock'
                     font.pixelSize: 32
 
-                   CLabel {
+                    CLabel {
                         anchors.top: parent.bottom
                         anchors.topMargin: -8
 
@@ -59,12 +59,12 @@ RowLayout {
                 }
             }
 
-           CLabel {
+            CLabel {
                 text: `A fancy clock built with Qt and Yocto.\nVerison ${"0.1.0"}`
                 font.pixelSize: 18
             }
 
-           CLabel {
+            CLabel {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
@@ -80,7 +80,7 @@ RowLayout {
                 `
             }
 
-           CLabel {
+            CLabel {
                 Layout.fillWidth: true
                 textFormat: Text.RichText
                 wrapMode: Text.WordWrap
@@ -123,7 +123,7 @@ RowLayout {
             anchors.fill: parent
             spacing: 8
 
-           CLabel {
+            CLabel {
                 text: 'Open Source Licenses'
                 font.pixelSize: 32
             }
@@ -132,7 +132,7 @@ RowLayout {
                 Component.onDestruction: About.packages.setFilterWildcard('')
                 onTextEdited: About.packages.setFilterWildcard(text)
                 Layout.fillWidth: true
-                labelText: 'Search'
+                placeholderText: 'Search'
             }
 
             ListView {
@@ -156,7 +156,7 @@ RowLayout {
 
                         RowLayout {
                             Layout.fillWidth: true
-                           CLabel {
+                            CLabel {
                                 text: list.packageName
                                 font.pixelSize: 24
                                 font.bold: true
@@ -181,7 +181,7 @@ RowLayout {
 
                             property string packageName
 
-                            delegate:CLabel {
+                            delegate: CLabel {
                                 font.family: 'Mono'
                                 width: list.width
                                 text: modelData

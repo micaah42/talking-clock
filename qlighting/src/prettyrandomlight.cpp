@@ -28,10 +28,7 @@ void PrettyRandomLight::onTimeout()
         _values[i] += m_speed * (2 * change - 1);
         _values[i] = std::clamp(_values[i], 0., 1.);
         auto color = _gradient[_values[i] * (_gradient.size() - 1)];
-        _pixels[i]->setBlue(color.blue());
-        _pixels[i]->setRed(color.red());
-        _pixels[i]->setGreen(color.green());
-        _pixels[i]->setWhite(color.alpha());
+        _pixels[i]->setColor(color);
     }
 
     _lighting.render();

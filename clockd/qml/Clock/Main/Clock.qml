@@ -17,7 +17,7 @@ Item {
         CLabel {
             Layout.alignment: Qt.AlignHCenter
             text: AlarmService.now.toLocaleString(Qt.locale(), "HH:mm")
-            font.pixelSize: 150 * ctrl.timeScale
+            font.pixelSize: 160 * ctrl.timeScale
             color: ColorService.primary
             bottomPadding: -24
 
@@ -38,7 +38,7 @@ Item {
                 anchors.top: parent.top
                 anchors.topMargin: 16
                 text: AlarmService.now.toLocaleString(Qt.locale(), "ss")
-                font.pixelSize: 50 * ctrl.timeScale
+                font.pixelSize: 64 * ctrl.timeScale
                 color: ColorService.primary
             }
         }
@@ -47,7 +47,7 @@ Item {
             id: dateDisplay
             Layout.alignment: Qt.AlignHCenter
             text: AlarmService.now.toLocaleDateString(Qt.locale(), 'dddd, d. MMMM')
-            font.pixelSize: 36 * ctrl.timeScale
+            font.pixelSize: 42 * ctrl.timeScale
             color: Qt.lighter(ColorService.primary, 0.8)
             topPadding: -24
         }

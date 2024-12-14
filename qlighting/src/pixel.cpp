@@ -5,6 +5,7 @@ Pixel::Pixel(ws2811_led_t &ws2811_led, QObject *parent)
     , _ws2811_led{ws2811_led}
 {}
 
+#if 0
 void Pixel::setWhite(int v)
 {
     _setWhite(v);
@@ -32,6 +33,7 @@ void Pixel::setBlue(int v)
     _color.setBlue(v);
     emit colorChanged();
 }
+#endif
 
 void Pixel::_setWhite(int v)
 {
@@ -72,11 +74,17 @@ void Pixel::setColor(const QColor &newColor)
     if (_color == newColor)
         return;
 
+    auto r = newColor.red();
+    auto g = newColor.green();
+    auto b = newColor.blue();
+    auto min = std::min({r, g, b});
+    auto f = 255. / (255. - min + 1.);
+
+    this->_setGreen(f * (g - min));
+    this->_setBlue(f * (b - min));
+    this->_setRed(f * (r - min));
+    this->_setWhite(min);
+
     _color = newColor;
     emit colorChanged();
-
-    this->_setWhite(_color.alpha());
-    this->_setGreen(_color.green());
-    this->_setBlue(_color.blue());
-    this->_setRed(_color.red());
 }

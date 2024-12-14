@@ -4,14 +4,22 @@
 #include <QLoggingCategory>
 #include <QPainter>
 #include <QPainterPath>
+#include <QQuickItemGrabResult>
 
 namespace {
 Q_LOGGING_CATEGORY(self, "cpugraph")
 }
 
-CPUGraph::CPUGraph()
+LiveGraph::LiveGraph()
     : m_duration{5000}
-{}
+    , m_color{Qt::white}
+{
+    connect(this, &QQuickItem::heightChanged, this, &LiveGraph::reset);
+    connect(this, &QQuickItem::widthChanged, this, &LiveGraph::reset);
+    this->reset();
+}
+
+CPUGraph::CPUGraph() {}
 
 CPUGraph::~CPUGraph()
 {
@@ -43,70 +51,100 @@ void CPUGraph::setCpu(CPUMonitor *newCpu)
     }
 }
 
-void CPUGraph::paint(QPainter *painter)
+void CPUGraph::onUsagesChanged()
 {
-    if (_ts.empty()) {
-        qCWarning(self) << "too few samples to paint";
+    this->newValues(m_cpu->usages().mid(1), QDateTime::currentMSecsSinceEpoch());
+}
+
+void LiveGraph::paint(QPainter *painter)
+{
+    if (_prevValues.size() != _values.size()) {
+        qCWarning(self) << "value size mismatch!";
         return;
     }
-
-    auto now = _ts.last();
 
     painter->setRenderHint(QPainter::Antialiasing);
 
     double pxPerMs = this->width() / (double) m_duration;
     double pxPerPercent = this->height() / 100.;
+    double changedPx = pxPerMs * (_t - _prevT);
 
-    QPen pen{QColor{"white"}, 1, Qt::SolidLine, Qt::RoundCap};
-    painter->setPen(pen);
+    QImage newImage(width(), height(), QImage::Format_ARGB32_Premultiplied);
+    newImage.fill(Qt::transparent);
 
-    for (auto const &line : std::as_const(_usages)) {
-        QPainterPath path;
-        path.moveTo(this->width(), this->height() - pxPerPercent * line.last());
+    QPainter pp{&newImage};
+    pp.setRenderHint(QPainter::Antialiasing);
 
-        for (int i = line.size() - 1; i >= 0; --i)
-            path.lineTo(this->width() - pxPerMs * (now - _ts[i]), this->height() - pxPerPercent * line[i]);
+    QRectF target{0, 0, width() - changedPx, height()};
+    QRectF source{changedPx, 0, width() - changedPx, height()};
+    pp.drawImage(target, _image, source);
 
-        painter->drawPath(path);
+    for (int i = 0; i < _values.size(); ++i) {
+        QPointF from{this->width() - changedPx, this->height() - pxPerPercent * _prevValues[i]};
+        QPointF to{this->width(), this->height() - pxPerPercent * _values[i]};
+
+        QPen pen{i < m_colors.size() ? m_colors[i] : m_color, 1, Qt::SolidLine, Qt::RoundCap};
+        pp.setPen(pen);
+        pp.drawLine(from, to);
     }
+
+    painter->drawImage(_image.rect(), newImage, _image.rect());
+    _image = newImage;
 }
 
-void CPUGraph::onUsagesChanged()
+void LiveGraph::newValues(const QList<double> &values, qint64 t)
 {
-    auto now = QDateTime::currentMSecsSinceEpoch();
-    _ts.append(now);
+    _prevValues = _values;
+    _values = values;
 
-    auto newUsages = m_cpu->usages();
-
-    if (newUsages.size() != _usages.size()) {
-        qCWarning(self) << "plotting history for" << newUsages.size() << "cores";
-        _usages.resize(newUsages.size());
-    }
-
-    for (int i = 0; i < newUsages.size(); ++i) {
-        _usages[i].append(newUsages[i]);
-    }
-
-    while (!_ts.empty() && _ts.first() < now - m_duration) {
-        for (int i = 0; i < _usages.size(); ++i)
-            _usages[i].removeFirst();
-
-        _ts.removeFirst();
-    }
+    _prevT = _t;
+    _t = t;
 
     this->update();
 }
 
-int CPUGraph::duration() const
+void LiveGraph::reset()
+{
+    _image = QImage{QSize(this->width(), this->height()), QImage::Format_ARGB32_Premultiplied};
+    _image.fill(Qt::transparent);
+}
+
+double LiveGraph::duration() const
 {
     return m_duration;
 }
 
-void CPUGraph::setDuration(int newDuration)
+void LiveGraph::setDuration(double newDuration)
 {
     if (m_duration == newDuration)
         return;
 
     m_duration = newDuration;
     emit durationChanged();
+}
+
+QList<QColor> LiveGraph::colors() const
+{
+    return m_colors;
+}
+
+void LiveGraph::setColors(const QList<QColor> &newColors)
+{
+    if (m_colors == newColors)
+        return;
+    m_colors = newColors;
+    emit colorsChanged();
+}
+
+QColor LiveGraph::color() const
+{
+    return m_color;
+}
+
+void LiveGraph::setColor(const QColor &newColor)
+{
+    if (m_color == newColor)
+        return;
+    m_color = newColor;
+    emit colorChanged();
 }

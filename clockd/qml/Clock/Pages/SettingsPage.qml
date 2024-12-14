@@ -70,9 +70,19 @@ Item {
                 icon: Icons.monitoring
                 property bool isCurrentItem: SwipeView.isCurrentItem
 
-                CLabel {
-                    text: 'CPU Usage'
-                    font.pixelSize: 24
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    CLabel {
+                        text: 'CPU Usage'
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    CLabel {
+                        readonly property var infos: [CPUMonitor.model, CPUMonitor.vendor, CPUMonitor.architecture]
+                        text: infos.filter(x => x.length).join(' \u2022 ')
+                    }
                 }
 
                 Loader {
@@ -105,14 +115,8 @@ Item {
                         CPUGraph {
                             id: graph
                             anchors.fill: parent
+                            colors: Palettes.palettes[2]["colors"]
                             cpu: CPUMonitor
-                        }
-
-                        CLabel {
-                            anchors.right: parent.right
-                            anchors.bottom: parent.top
-
-                            text: [CPUMonitor.model, CPUMonitor.vendor, CPUMonitor.architecture].join(' \u2022 ')
                         }
                     }
                 }
@@ -148,6 +152,9 @@ Item {
                         labelText: 'CPU Temp'
                         valueText: CPUMonitor.temperature
                     }
+                }
+                Item {
+                    Layout.fillHeight: true
                 }
             }
 

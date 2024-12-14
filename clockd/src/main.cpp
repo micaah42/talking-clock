@@ -11,6 +11,7 @@
 #include "about.h"
 #include "actionday.h"
 #include "alarmservice.h"
+#include "clientmanager.h"
 #include "cpugraph.h"
 #include "cpumonitor.h"
 #include "eventfilter.h"
@@ -114,6 +115,10 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
     qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
     qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
+
+    ClientService clientService{server};
+    qmlRegisterUncreatableType<ClientService>("Clock", 1, 0, "ClientService", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "ClientService", &clientService);
 
     const QUrl url("qrc:/Clock/Main.qml");
     QObject::connect(

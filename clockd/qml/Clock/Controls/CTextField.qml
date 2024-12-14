@@ -10,12 +10,12 @@ TextField {
 
     onAccepted: Qt.inputMethod.hide()
     font.family: FontService.family
-    implicitHeight: 56
+    //implicitHeight: 56
     font.pixelSize: 24
-    leftPadding: 12
-    bottomPadding: 0
-    topPadding: 16
 
+    //leftPadding: 12
+    //bottomPadding: 0
+    //topPadding: 16
     implicitWidth: 244
     width: implicitWidth
 
