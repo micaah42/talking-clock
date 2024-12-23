@@ -11,18 +11,25 @@ Section {
     icon: Icons.home
 
     CTextField {
-        labelText: 'Device Name'
+        id: textField
+        placeholderText: 'Device Name'
         text: 'Talking Clock'
     }
-    CCheckBox {
-        labelText: 'Special Days'
+    ConfirmButton {
+        Layout.preferredWidth: textField.width
+        onAccepted: System.powerOff()
+
+        text: 'Power Off'
+        dialogTitle: text
+        dialogBodyText: 'Are you sure you want to power off the device?'
     }
-    CCheckBox {
-        labelText: 'Wheather'
-    }
-    Switch {
-        Layout.fillWidth: true
-        text: 'Am i aligned?'
+    ConfirmButton {
+        Layout.preferredWidth: textField.width
+        onAccepted: System.reboot()
+
+        text: 'Reboot'
+        dialogTitle: text
+        dialogBodyText: 'Are you sure you want to reboot the device?'
     }
 
     Item {

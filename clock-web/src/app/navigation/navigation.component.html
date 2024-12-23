@@ -1,14 +1,16 @@
 <mat-toolbar style="padding-left: 32px;">
+
   <button mat-icon-button routerLink='/' style="scale: 1.25;">
     <mat-icon id="icon">alarm</mat-icon>
   </button>
+
+  @if(!isPortrait) {
   <button mat-button routerLink="/alarms">Alarms</button>
   <mat-divider style="height: 24px;" [vertical]="true"></mat-divider>
+  <button mat-button routerLink="/lighting">Lighing</button>
+  <mat-divider style="height: 24px;" [vertical]="true"></mat-divider>
   <button mat-button routerLink="/devtools">Dev Tools</button>
-
+  }
   <div style="flex: 1;"></div>
 
 </mat-toolbar>
-
-<!-- WORKAROUND: inflate height to receive mouse on dropdown menu's -->
-<div style="height: 100px;"></div>

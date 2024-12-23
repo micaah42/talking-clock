@@ -11,10 +11,6 @@
 #define LED_COUNT (WIDTH * HEIGHT)
 
 #include "pixel.h"
-#include "prettyrandomlight.h"
-#include "pulsatinglight.h"
-#include "staticlight.h"
-#include "wavinglight.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "lighting", QtInfoMsg)
@@ -45,9 +41,11 @@ struct LightingPrivate
 Lighting::Lighting(QObject *parent)
     : QObject{parent}
     , _d{new LightingPrivate}
-    , m_modes{new StaticLight{*this}, new WavingLight{*this}, new PrettyRandomLight{*this}, new PulsatingLight{*this}}
-    , m_brightness{0.5}
-    , m_enabled{true}
+    , _brightness{0.5}
+    , _enabled{true}
+    , _staticLight{new StaticLight{*this}}
+    , _wavingLight{new WavingLight{*this}}
+    , _pulsatingLight{new PulsatingLight{*this}}
 {
     ws2811_return_t ret;
 
@@ -60,9 +58,6 @@ Lighting::Lighting(QObject *parent)
 
     for (int i = 0; i < LED_COUNT; i++)
         _pixels.append(new Pixel{leds[i]});
-
-    if (!m_modes.empty())
-        this->setMode(m_modes.first());
 }
 
 void Lighting::render()
@@ -82,64 +77,59 @@ void Lighting::render()
 
 LightMode *Lighting::mode() const
 {
-    return m_mode;
+    return _mode;
 }
 
 void Lighting::setMode(LightMode *newMode)
 {
-    if (m_mode == newMode)
+    if (_mode == newMode)
         return;
 
-    if (m_mode)
-        m_mode->setActive(false);
+    if (_mode)
+        _mode->setActive(false);
 
-    m_mode = newMode;
+    _mode = newMode;
     emit modeChanged();
 
-    if (m_mode && m_enabled)
-        m_mode->setActive(true);
-}
-
-QList<LightMode *> Lighting::modes() const
-{
-    return m_modes;
+    if (_mode && _enabled)
+        _mode->setActive(true);
 }
 
 
 double Lighting::brightness() const
 {
-    return m_brightness;
+    return _brightness;
 }
 
 void Lighting::setBrightness(double newBrightness)
 {
-    if (qFuzzyCompare(m_brightness, newBrightness))
+    if (qFuzzyCompare(_brightness, newBrightness))
         return;
 
-    m_brightness = newBrightness;
+    _brightness = newBrightness;
     emit brightnessChanged();
 
-    _d->ws2811.channel[0].brightness = 255 * m_brightness;
+    _d->ws2811.channel[0].brightness = 255 * _brightness;
     render();
 }
 
 bool Lighting::enabled() const
 {
-    return m_enabled;
+    return _enabled;
 }
 
 void Lighting::setEnabled(bool newEnabled)
 {
-    if (m_enabled == newEnabled)
+    if (_enabled == newEnabled)
         return;
 
-    m_enabled = newEnabled;
+    _enabled = newEnabled;
     emit enabledChanged();
 
-    if (m_mode)
-        m_mode->setActive(m_enabled);
+    if (_mode)
+        _mode->setActive(_enabled);
 
-    _d->ws2811.channel[0].brightness = m_enabled ? 255 * m_brightness : 0;
+    _d->ws2811.channel[0].brightness = _enabled ? 255 * _brightness : 0;
     render();
 }
 
@@ -151,4 +141,19 @@ const QList<Pixel *> &Lighting::pixels() const
 QList<Pixel *> &Lighting::pixels()
 {
     return _pixels;
+}
+
+StaticLight *Lighting::staticLight() const
+{
+    return _staticLight;
+}
+
+WavingLight *Lighting::wavingLight() const
+{
+    return _wavingLight;
+}
+
+PulsatingLight *Lighting::pulsatingLight() const
+{
+    return _pulsatingLight;
 }

@@ -99,13 +99,13 @@ Item {
                     model: ActionDayManager.actionDays(new Date(), this)
 
                     delegate: ColumnLayout {
-                       CLabel {
+                        CLabel {
                             Layout.fillWidth: true
                             text: modelData.name
                             wrapMode: Text.Wrap
                             font.pixelSize: 32
                         }
-                       CLabel {
+                        CLabel {
                             Layout.fillWidth: true
                             text: modelData.desc
                             wrapMode: Text.Wrap
@@ -114,7 +114,7 @@ Item {
                         Item {
                             Layout.fillHeight: true
                         }
-                       CLabel {
+                        CLabel {
                             font.underline: true
                             font.pixelSize: 18
                             text: 'Link'
@@ -227,7 +227,7 @@ Item {
                         color: bttn.pressed ? Qt.darker(ColorService.primary, 1.2) : ColorService.primary
                         radius: height / 4
 
-                       CLabel {
+                        CLabel {
                             anchors.centerIn: parent
                             font.family: FontService.family
                             font.pixelSize: 32

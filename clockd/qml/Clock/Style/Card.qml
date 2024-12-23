@@ -19,7 +19,7 @@ Item {
 
         border.color: Qt.lighter(color, 1.15)
         border.width: 1.2
-        radius: 5
+        radius: 8
     }
 
     MouseArea {

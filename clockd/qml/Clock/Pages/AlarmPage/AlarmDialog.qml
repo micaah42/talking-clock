@@ -71,7 +71,7 @@ Popup {
 
         CTextField {
             Layout.fillWidth: true
-            labelText: 'Name'
+            placeholderText: 'Name'
             text: alarm.name
             onTextEdited: alarm.name = text
         }

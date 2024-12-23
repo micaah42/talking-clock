@@ -7,9 +7,9 @@ import Clock.Style
 import Clock.Controls
 
 ColumnLayout {
-    property StaticLight staticLight: Lighting.modes[0]
-    property WavingLight wavingLight: Lighting.modes[1]
-    property PulsatingLight pulsatingLight: Lighting.modes[3]
+    property StaticLight staticLight: Lighting.staticLight
+    property WavingLight wavingLight: Lighting.wavingLight
+    property PulsatingLight pulsatingLight: Lighting.pulsatingLight
     readonly property var availableLightModes: Array.from(swipeView.contentChildren).map(x => x.lightMode)
     spacing: 0
 

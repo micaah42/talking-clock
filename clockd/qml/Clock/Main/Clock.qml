@@ -1,5 +1,6 @@
 import QtQuick 2.14
 import QtQuick.Layouts 1.14
+import QtQuick.Effects
 
 import Clock 1.0
 import Clock.Controls 1.0
@@ -12,8 +13,7 @@ Item {
         id: timeDisplay
         anchors.centerIn: parent
         spacing: 16
-        z: 10
-
+        z: 1
         CLabel {
             Layout.alignment: Qt.AlignHCenter
             text: AlarmService.now.toLocaleString(Qt.locale(), "HH:mm")
@@ -48,7 +48,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             text: AlarmService.now.toLocaleDateString(Qt.locale(), 'dddd, d. MMMM')
             font.pixelSize: 42 * ctrl.timeScale
-            color: Qt.lighter(ColorService.primary, 0.8)
+            color: ColorService.primary
             topPadding: -24
         }
     }

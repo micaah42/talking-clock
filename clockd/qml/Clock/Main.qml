@@ -30,6 +30,9 @@ Window {
     Material.background: ColorService.background
     Material.roundedScale: Material.NotRounded
 
+    property real drawerHeight: height / 4
+    property real sidebarWidth: width / 3 + 2 * 16 / 3
+
     SpaceScene {
         anchors.fill: parent
     }
@@ -63,23 +66,9 @@ Window {
     }
 
     Clock {
-        anchors.right: parent.right
-
-        width: alarmStack.depth <= 1 ? parent.width : parent.width - alarmStack.width + 64
-        Behavior on width {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
-            }
-        }
-
-        height: !drawer.open ? parent.height : parent.height - drawer.height
-        Behavior on height {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
-            }
-        }
-
-        scale: drawer.open ? 0.6 : 1
+        anchors.fill: parent
+        transformOrigin: Item.Top
+        scale: drawer.open ? 1 / 2 : 1
         Behavior on scale {
             PropertyAnimation {
                 easing.type: Easing.InOutQuad
@@ -98,7 +87,7 @@ Window {
 
         property bool open: false
         width: parent.width
-        height: 200
+        height: drawerHeight
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: open ? 0 : -height
@@ -109,18 +98,10 @@ Window {
             }
         }
 
-        Card {
+        MainMenu {
+            id: mainMenu
+            onCurrentPageChanged: drawer.open = false
             anchors.fill: parent
-            anchors.margins: 8
-            //backgroundOpacity: 0.9
-
-            //bright: true
-            MainMenu {
-                id: mainMenu
-                onCurrentPageChanged: drawer.open = false
-                anchors.fill: parent
-                anchors.margins: 8
-            }
         }
     }
 
@@ -133,15 +114,12 @@ Window {
         }
 
         height: parent.height - drawer.height
-        width: 280
+        width: sidebarWidth
 
         Card {
             anchors.fill: parent
-            anchors.margins: 8
-            anchors.leftMargin: 10
-            //backgroundOpacity: 0.9
+            anchors.margins: 16
 
-            //bright: true
             NextAlarm {
                 anchors.fill: parent
                 anchors.margins: 16
@@ -159,15 +137,12 @@ Window {
         }
 
         height: parent.height - drawer.height
-        width: 280
+        width: sidebarWidth
 
         Card {
             anchors.fill: parent
-            anchors.margins: 8
-            anchors.rightMargin: 10
-            //backgroundOpacity: 0.9
+            anchors.margins: 16
 
-            //bright: true
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 16
@@ -183,13 +158,13 @@ Window {
                         model: ActionDayManager.days
 
                         delegate: ColumnLayout {
-                           CLabel {
+                            CLabel {
                                 Layout.fillWidth: true
                                 text: modelData.name
                                 wrapMode: Text.Wrap
                                 font.pixelSize: 32
                             }
-                           CLabel {
+                            CLabel {
                                 Layout.fillWidth: true
                                 text: modelData.desc
                                 wrapMode: Text.Wrap
@@ -198,7 +173,7 @@ Window {
                             Item {
                                 Layout.fillHeight: true
                             }
-                           CLabel {
+                            CLabel {
                                 font.underline: true
                                 font.pixelSize: 18
                                 text: 'Link'
@@ -248,7 +223,7 @@ Window {
         lastSwap = now
     }
 
-   CLabel {
+    CLabel {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 8

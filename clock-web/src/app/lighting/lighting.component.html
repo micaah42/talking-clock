@@ -1,0 +1,56 @@
+<mat-card>
+    <mat-card-content>
+        <div style="display: flex; align-items: center; gap: 16px">
+            <mat-slide-toggle [(ngModel)]="lightsEnabled"></mat-slide-toggle>
+            <mat-slider style="flex: 1;">
+                <input matSliderThumb [(ngModel)]="brightness">
+            </mat-slider>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<mat-card>
+    <mat-card-content>
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+            @for (lightMode of lightModes; track $index) {
+            <mat-tab [label]="lightMode.name">
+                <div style="margin: 16px;">
+                    @for(key of keys(lightMode); track $index) {
+                    <div>
+                        @switch (typeof(lightMode[key])) {
+                        @case ('number') {
+                        <mat-slider style="display: block;">
+                            <input matSliderThumb>
+                        </mat-slider>
+                        {{ key }} {{ lightMode[key] }}
+                        }
+                        @case ('string') {
+                        @if(lightMode[key].startsWith('#')){
+                        <div [style.background]="lightMode[key]"
+                             [cpToggle]="true"
+                             [cpDialogDisplay]="'inline'"
+                             [cpAlphaChannel]="'disabled'"
+                             [cpCancelButton]="false"
+                             [(colorPicker)]="lightMode[key]"></div>
+                        } @else {
+                        <mat-form-field>
+                            <mat-label>{{key}}</mat-label>
+                            <input matInput [(ngModel)]="lightMode[key]">
+                        </mat-form-field>
+                        }
+                        }
+                        @case ('boolean') {
+                        <mat-slide-toggle [(ngModel)]="lightMode[key]">{{key}}</mat-slide-toggle>
+                        }
+                        @default {
+                        {{ key }} {{ lightMode[key] }}
+                        }
+                        }
+                    </div>
+                    }
+                </div>
+            </mat-tab>
+            }
+        </mat-tab-group>
+    </mat-card-content>
+</mat-card>

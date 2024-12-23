@@ -1,6 +1,7 @@
 import QtQuick 2.15
 
 import Clock 1.0
+import Clock.Style 1.0
 import QtQuick.Effects
 
 Item {
@@ -11,7 +12,7 @@ Item {
     property int blinkUp: SpaceTheme.animationSpeed
     property int stars: SpaceTheme.stars
     property int padding: 64
-    property int radius: 48
+    property int radius: 32
 
     Repeater {
         model: stars
@@ -82,7 +83,7 @@ Item {
                 target: rocket
                 //anchorPoint: Qt.point(0.5, 0.5)
                 orientation: PathAnimation.TopFirst
-                duration: 30000
+                duration: 10000
 
                 path: Path {
                     id: path
@@ -160,31 +161,19 @@ Item {
             }
 
             PauseAnimation {
-                duration: 15000
+                duration: 15 * 60000
             }
         }
         Item {
             id: rocket
-            rotation: 90
 
-            Image {
+            Icon {
                 id: image
                 anchors.centerIn: parent
-                source: 'qrc:/spaceship.svg'
-                fillMode: Image.PreserveAspectFit
-                width: 40
+                text: Icons.rocket_launch
+                font.pixelSize: 32
+                rotation: -45
                 z: 1
-            }
-            MultiEffect {
-                anchors.fill: image
-                source: image
-
-                blurEnabled: true
-                blurMax: 24
-                blur: 1
-                colorizationColor: ColorService.accent
-                colorization: 0.75
-                scale: 1.1
             }
         }
     }

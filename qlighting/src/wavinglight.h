@@ -4,6 +4,7 @@
 #include <QColor>
 #include <QObject>
 #include <QTimer>
+#include <QVariant>
 
 #include "lightmode.h"
 

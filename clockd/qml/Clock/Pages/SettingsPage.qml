@@ -21,6 +21,7 @@ Item {
 
             model: sections.contentChildren
             currentIndex: sections.currentIndex
+            interactive: false
 
             delegate: ItemDelegate {
                 RowLayout {
@@ -159,6 +160,25 @@ Item {
             }
 
             AppearenceSection {}
+
+            Section {
+                title: 'Paired Devices'
+                icon: Icons.devices
+
+                ListView {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
+                    model: ClientService.clients
+
+                    delegate: ItemDelegate {
+                        property Client client: modelData
+                        width: ListView.view.width
+                        height: 60
+                        text: client.ip
+                    }
+                }
+            }
 
             Item {
                 property string title: 'About'

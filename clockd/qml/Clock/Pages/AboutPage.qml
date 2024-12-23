@@ -131,8 +131,9 @@ RowLayout {
             CTextField {
                 Component.onDestruction: About.packages.setFilterWildcard('')
                 onTextEdited: About.packages.setFilterWildcard(text)
+                placeholderText: 'Search packages'
                 Layout.fillWidth: true
-                placeholderText: 'Search'
+                Layout.topMargin: 2
             }
 
             ListView {

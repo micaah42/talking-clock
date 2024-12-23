@@ -15,13 +15,9 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.rightMargin: 4
-        anchors.leftMargin: 4
+        anchors.rightMargin: 16
+        anchors.leftMargin: 16
         spacing: 16
-
-        Item {
-            Layout.fillWidth: true
-        }
 
         Repeater {
             model: ListModel {
@@ -44,7 +40,7 @@ Item {
             }
 
             delegate: Button {
-                Layout.preferredWidth: (index === 1 ? 2 : 1) * height
+                Layout.fillWidth: true //Layout.preferredWidth: (index === 1 && false ? 2 : 1) * height
                 Layout.fillHeight: true
 
                 Material.roundedScale: Material.SmallScale
@@ -66,16 +62,13 @@ Item {
                 }
             }
         }
-
-        Item {
-            Layout.fillWidth: true
-        }
     }
 
     Card {
         visible: scale !== 0
         parent: window.contentItem
         anchors.fill: parent
+        anchors.margins: 8
 
         MouseArea {
             anchors.fill: parent

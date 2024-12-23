@@ -60,6 +60,10 @@ set(PROJECT_SOURCES
 
     src/clientmanager.cpp
     src/clientmanager.h
+
+    src/system.cpp
+    src/system.h
+
     src/main.cpp
 
     sounds/sounds.qrc

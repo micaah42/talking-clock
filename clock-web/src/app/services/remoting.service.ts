@@ -97,9 +97,11 @@ export class RemotingService {
     if (subject.counter > 0)
       return;
 
-      this.sendMessage({type: 'unsubscribe', key})
+    this.sendMessage({ type: 'unsubscribe', key })
 
   }
 
-
+  set(key: string, value: any) {
+    this.sendMessage({ type: 'set', key, value } as RemotingMessage)
+  }
 }

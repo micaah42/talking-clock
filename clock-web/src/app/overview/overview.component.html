@@ -1,26 +1,61 @@
-<div id="other" style="z-index: 1">
-  <mat-card>
+@if (!portraitMode) {
+<div style="display: flex; height: 100%; justify-content: stretch;">
+
+  <mat-card class="alarm card">
     <mat-card-content>
       @if(nextAlarm.value){
-      <app-value-display labelText="Name" [valueText]="nextAlarm.value.name"></app-value-display>
-      <app-value-display labelText="Time"></app-value-display>
-      <div style="font-size: 24px; margin-bottom: 8px;">{{nextAlarm.value.time | date :'shortTime'}}</div>
-      <app-value-display labelText="Sound" [valueText]="nextAlarm.value.sound"></app-value-display>
+      <mat-list>
+        <h2>Next Alarm</h2>
+        <mat-list-item>
+          <div matListItemTitle>{{nextAlarm.value.nextTimeout | date: 'shortTime'}} &#8226;
+            {{nextAlarm.value.name?nextAlarm.value.name: 'No Name'}}
+          </div>
+          <div matListItemLine>{{nextAlarm.value.sound ? nextAlarm.value.sound : 'No Sound!'}}</div>
+        </mat-list-item>
+      </mat-list>
+      }
+      @else {
+      <h2>No alarms pending ...</h2>
+      <h3>Sleep tight :)</h3>
+      <div style="margin: auto; width: 156px;">
+        <mat-icon style="font-size: 156px; height: 156px; width: 156px;">bed</mat-icon>
+      </div>
       }
     </mat-card-content>
   </mat-card>
 
-  <app-analog-clock id="clock" style="flex: 3; z-index: 1;"></app-analog-clock>
+  <app-analog-clock class="clock"></app-analog-clock>
 
-  <mat-card>
-    <mat-card-header>
-      <mat-card-subtitle>Special Days</mat-card-subtitle>
-    </mat-card-header>
+  <mat-card class="days card">
     <mat-card-content>
-      @for (day of actionDays.value; track $index) {
-      {{day.name}}
-      {{day.desc}}
-      }
+      <mat-list>
+        <h2>Today is...</h2>
+        @for (day of actionDays.value; track $index) {
+        <mat-list-item>
+          <div matListItemTitle>{{day.name}}</div>
+          <a matListItemLine [href]="day.link" target="_blank">Link</a>
+        </mat-list-item>
+        }
+      </mat-list>
     </mat-card-content>
   </mat-card>
 </div>
+}
+
+@else {
+<div class="mobile-column">
+  <app-analog-clock style="display: block; padding: 8px; aspect-ratio: 1 / 1;"></app-analog-clock>
+  <div style="flex: 1;"></div>
+  <div style="display: flex; gap: 16px;">
+    <button mat-fab routerLink="/lighting">
+      <mat-icon>lightbulb_2</mat-icon>
+    </button>
+    <button mat-fab routerLink="/alarms">
+      <mat-icon>alarm</mat-icon>
+    </button>
+    <button mat-fab routerLink="/settings">
+      <mat-icon>settings</mat-icon>
+    </button>
+  </div>
+</div>
+}

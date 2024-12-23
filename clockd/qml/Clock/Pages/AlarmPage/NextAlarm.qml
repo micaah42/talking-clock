@@ -35,6 +35,7 @@ ColumnLayout {
                 spacing: 12
 
                 ValueDisplay {
+                    visible: alarm.name.length
                     labelText: "Name"
                     valueText: alarm.name
                 }
@@ -47,7 +48,7 @@ ColumnLayout {
                         valueText: alarm.nextTimeout.toLocaleTimeString()
                     }
 
-                   CLabel {
+                    CLabel {
                         font.pixelSize: 20
 
                         Timer {

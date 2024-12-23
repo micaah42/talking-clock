@@ -27,6 +27,7 @@
 #include "soundservice.h"
 #include "spacetheme.h"
 #include "staticlight.h"
+#include "system.h"
 #include "wavinglight.h"
 #include "websocketserver.h"
 
@@ -87,12 +88,6 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Clock", 1, 0, "ActionDayManager", &actionDayManager);
     remoting.registerObject("actiondays", &actionDayManager);
 
-    QList<ActionDay *> ad;
-    qDebug() << QVariant::fromValue(actionDayManager.days()).canConvert<QVariantList>();
-    qDebug() << QVariant::fromValue(actionDayManager.days()).value<QVariantList>();
-    qDebug() << QVariant::fromValue(actionDayManager.days());
-    qDebug() << remoting.get("actiondays.days");
-
     About about;
     qmlRegisterSingletonInstance("Clock", 1, 0, "About", &about);
 
@@ -115,8 +110,14 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
     qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
     qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
+    remoting.registerObject("lights", &lighting);
+
+    System system;
+    qmlRegisterUncreatableType<System>("Clock", 1, 0, "System", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "System", &system);
 
     ClientService clientService{server};
+    qmlRegisterUncreatableType<Client>("Clock", 1, 0, "Client", "");
     qmlRegisterUncreatableType<ClientService>("Clock", 1, 0, "ClientService", "");
     qmlRegisterSingletonInstance("Clock", 1, 0, "ClientService", &clientService);
 

@@ -8,6 +8,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RemotingService } from '../services/remoting.service';
 import { ValueDisplayComponent } from '../components/value-display/value-display.component';
 import { RemoteObject } from '../services/remoteobject';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { LayoutModule } from '@angular/cdk/layout';
+import { LayoutHelperService } from '../services/layout-helper.service';
+import { MatButtonModule } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
 
 //import { RemotingService, Info } from "src/app/remoting/remoting.service";
 //import { Alarm } from "src/models/alarm";
@@ -39,7 +45,7 @@ class ActionDay {
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
-  imports: [MatCardModule, AnalogClockComponent, CommonModule, ValueDisplayComponent],
+  imports: [MatCardModule, AnalogClockComponent, CommonModule, MatListModule, MatIconModule, LayoutModule, MatButtonModule, RouterLink, ValueDisplayComponent],
   standalone: true,
   animations: [
     trigger('rocket', [
@@ -54,11 +60,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
   public nextAlarm: RemoteObject<Alarm>;
   public nextIds: number[] = [];
   public timeLeft: number = 0;
-
-
   public timeToFly: boolean = true;
-
-  constructor(private remoting: RemotingService) {
+  
+  constructor(private remoting: RemotingService, private layoutHelper: LayoutHelperService) {
     setInterval(() => {
       this.timeToFly = !this.timeToFly;
       setTimeout(() => this.timeToFly = !this.timeToFly, 100)
@@ -77,4 +81,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.destroy$.complete()
   }
 
+  get portraitMode(): boolean {
+    return this.layoutHelper.isPortrait
+  }
 }

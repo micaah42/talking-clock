@@ -3,18 +3,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Mouse+Memoirs&display=swap');
 
-$clock-web-theme: mat.define-theme((
-  color: (
-    theme-type: dark,
-    primary: mat.$blue-palette,
-    tertiary: mat.$red-palette,
-  ),
-  typography: (
-    plain-family: 'Mouse Memoirs',
-  ),
-  density: (
-    scale: 0,
-  )));
+$clock-web-theme: mat.define-theme((color: (theme-type: dark,
+        primary: mat.$blue-palette,
+        tertiary: mat.$red-palette,
+      ),
+      typography: (plain-family: 'Mouse Memoirs',
+      ),
+      density: (scale: 0,
+      )));
 
 :root {
   @include mat.all-component-themes($clock-web-theme);
@@ -41,61 +37,66 @@ $dark-primary: mat.$blue-palette;
 $dark-accent: mat.$red-palette;
 
 .image-button {
-    .mat-button-wrapper {
-        display: flex;
-        flex-flow: row nowrap;
-        align-items: center;
-        gap: 8px;
+  .mat-button-wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 8px;
 
-        img {
-            height: 28px;
-        }
+    img {
+      height: 28px;
     }
+  }
 }
 
 .info-primary {
-    // background-color: mat.get-color-from-palette($dark-primary);
-    // fill: mat.get-color-from-palette($dark-primary);
-    border-radius: 5px;
-    padding: 10px;
-    width: 100%;
+  // background-color: mat.get-color-from-palette($dark-primary);
+  // fill: mat.get-color-from-palette($dark-primary);
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
 }
 
 .info-accent {
-    // background-color: mat.get-color-from-palette($dark-accent);
-    // fill: mat.get-color-from-palette($dark-accent);
-    border-radius: 5px;
-    padding: 10px;
-    width: 100%;
+  // background-color: mat.get-color-from-palette($dark-accent);
+  // fill: mat.get-color-from-palette($dark-accent);
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
 }
 
 .column {
-    display: flex;
-    flex-flow: column;
-    margin: 0;
+  display: flex;
+  flex-flow: column;
+  margin: 0;
 }
 
 .row {
-    display: flex;
-    flex-flow: row;
-    margin: 0;
+  display: flex;
+  flex-flow: row;
+  margin: 0;
 }
 
 .card-base {
   padding: 24px;
   border-radius: 8px;
-  border: 1px solid rgba(0,0,0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(4px);
   box-sizing: border-box;
 }
 
-.mat-mdc-card {
-    border: 1px solid rgba(0,0,0, 0.3);
-    backdrop-filter: blur(4px);
-    background-color: rgba(blue, 0.15) !important;
-    box-sizing: border-box;
-  
+.mat-mdc-unelevated-button,
+.mat-mdc-unelevated-button .mdc-button__ripple {
+  border-radius: 8px !important;
 }
+
+.mat-mdc-card {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: rgba(blue, 0.15) !important;
+  backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
 .card-size {
   width: 1000px;
   max-width: 100%;
