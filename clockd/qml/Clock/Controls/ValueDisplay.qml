@@ -11,14 +11,16 @@ ColumnLayout {
 
     spacing: 0
 
-   CLabel {
+    CLabel {
         id: l
+        Layout.fillWidth: true
         font.pixelSize: 14
         opacity: 0.72
     }
 
-   CLabel {
+    CLabel {
         id: v
+        Layout.fillWidth: true
         font.pixelSize: 32
         bottomPadding: -4
     }

@@ -10,6 +10,7 @@ ColumnLayout {
     property StaticLight staticLight: Lighting.staticLight
     property WavingLight wavingLight: Lighting.wavingLight
     property PulsatingLight pulsatingLight: Lighting.pulsatingLight
+
     readonly property var availableLightModes: Array.from(swipeView.contentChildren).map(x => x.lightMode)
     spacing: 0
 

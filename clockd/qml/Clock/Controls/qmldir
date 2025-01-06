@@ -11,3 +11,4 @@ LargeSlider 1.0 LargeSlider.qml
 CToolButton 1.0 CToolButton.qml
 ColorPicker 1.0 ColorPicker.qml
 ConfirmButton 1.0 ConfirmButton.qml
+CSwitch 1.0 CSwitch.qml

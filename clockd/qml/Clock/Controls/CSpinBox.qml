@@ -3,23 +3,22 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts
 
 ColumnLayout {
+    id: root
     property alias labelText: l.text
     property alias label: l
 
     property alias spinBox: spinBox
 
-    implicitWidth: 244
     width: implicitWidth
+    implicitWidth: 204
 
     CLabel {
         id: l
-        font.pixelSize: 14
+        opacity: 0.56
     }
     SpinBox {
         id: spinBox
-        implicitWidth: 244
-        width: implicitWidth
+        implicitWidth: root.width
         font.pixelSize: 24
-        Component.onCompleted: console.log(height)
     }
 }

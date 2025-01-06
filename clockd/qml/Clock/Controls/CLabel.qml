@@ -8,4 +8,5 @@ Label {
     // bottomPadding: -font.pixelSize / 8
     font.family: FontService.family
     font.pixelSize: 18
+    elide: Text.ElideRight
 }

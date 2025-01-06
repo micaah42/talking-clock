@@ -8,8 +8,9 @@ import Clock 1.0
 Item {
     id: ctrl
 
-    property string value
     property alias label: button.text
+    property string fontFamily
+    signal fontFamilyAccepted(var fontFamily)
 
     implicitHeight: 55
 
@@ -25,8 +26,8 @@ Item {
         parent: window.contentItem
         height: 0.9 * window.height
         width: 0.9 * window.width
-        x: (window.width - width) / 2
         y: (window.height - height) / 2
+        x: (window.width - width) / 2
 
         RowLayout {
             anchors.fill: parent
@@ -51,7 +52,7 @@ Item {
                         highlighted: examples.family === model.display
                         onClicked: examples.family = model.display
 
-                       CLabel {
+                        CLabel {
                             anchors.centerIn: parent
                             text: model.display
                         }
@@ -65,7 +66,7 @@ Item {
                 visible: family !== ""
                 spacing: 20
 
-               CLabel {
+                CLabel {
                     Layout.alignment: Qt.AlignHCenter
                     font.pixelSize: 32
                     font.family: examples.family
@@ -74,29 +75,29 @@ Item {
                     text: examples.family
                 }
 
-               CLabel {
+                CLabel {
                     font.family: examples.family
                     font.pixelSize: 18
                     text: "The quick brown fox jumps over a lazy dog."
                 }
-               CLabel {
+                CLabel {
                     font.family: examples.family
                     font.pixelSize: 22
                     font.bold: true
                     text: "Mr. Jock, TV quiz PhD., bags few lynx."
                 }
-               CLabel {
+                CLabel {
                     font.family: examples.family
                     font.pixelSize: 15
                     font.italic: true
                     text: "Two driven jocks help fax my big quiz."
                 }
-               CLabel {
+                CLabel {
                     font.family: examples.family
                     font.pixelSize: 8
                     text: "Waltz, nymph, for quick jigs vex Bud."
                 }
-               CLabel {
+                CLabel {
                     font.family: examples.family
                     font.pixelSize: 14
                     text: "My girl wove six dozen plaid jackets before she quit."
@@ -107,7 +108,7 @@ Item {
                     Material.background: ColorService.primary
                     font.family: examples.family
                     onClicked: {
-                        ctrl.value = examples.family
+                        fontFamilyAccepted(examples.family)
                         popup.close()
                     }
                 }

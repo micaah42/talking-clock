@@ -8,10 +8,12 @@ import Clock.Controls
 ColumnLayout {
     property string title
     property string icon
+    spacing: 16
 
     RowLayout {
         Layout.bottomMargin: 16
         spacing: 16
+
         Icon {
             text: icon
         }

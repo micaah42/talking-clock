@@ -30,45 +30,21 @@ Window {
     Material.background: ColorService.background
     Material.roundedScale: Material.NotRounded
 
-    property real drawerHeight: height / 4
+    property real drawerHeight: 164
     property real sidebarWidth: width / 3 + 2 * 16 / 3
 
     SpaceScene {
         anchors.fill: parent
     }
 
-    StackView {
-        id: alarmStack
-
-        height: parent.height
-        width: 380
-
-        initialItem: Item {}
-        clip: true
-
-        Component {
-            id: alarmNotification
-            AlarmNotification {}
-        }
-
-        Connections {
-            target: AlarmService
-            function onAlarmTriggered(alarm) {
-                const properties = {
-                    "alarm": alarm
-                }
-
-                alarmStack.push(alarmNotification, properties)
-                mainMenu.currentPage = null
-                drawer.open = false
-            }
-        }
-    }
-
     Clock {
-        anchors.fill: parent
-        transformOrigin: Item.Top
-        scale: drawer.open ? 1 / 2 : 1
+        anchors.bottom: drawer.top
+        anchors.left: sideBar.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+
+        scale: sideBar.open ? 2 / 3 : 1
+        transformOrigin: Item.Center
         Behavior on scale {
             PropertyAnimation {
                 easing.type: Easing.InOutQuad
@@ -79,15 +55,14 @@ Window {
     MouseArea {
         anchors.fill: parent
         onClicked: drawer.open = !drawer.open
-        enabled: alarmStack.depth < 2
     }
 
     Item {
         id: drawer
 
         property bool open: false
-        width: parent.width
         height: drawerHeight
+        width: parent.width
 
         anchors.bottom: parent.bottom
         anchors.bottomMargin: open ? 0 : -height
@@ -106,94 +81,139 @@ Window {
     }
 
     Item {
-        x: drawer.open ? 0 : -width
+        id: sideBar
+        anchors.bottom: drawer.top
+        anchors.top: parent.top
+        width: sidebarWidth
+
+        readonly property bool open: drawer.open || sideBarStack.depth > 1
+        x: open ? 0 : -width
         Behavior on x {
             PropertyAnimation {
                 easing.type: Easing.InOutQuad
             }
         }
 
-        height: parent.height - drawer.height
-        width: sidebarWidth
-
         Card {
             anchors.fill: parent
             anchors.margins: 16
+            anchors.bottomMargin: 0
+            clip: true
 
-            NextAlarm {
+            StackView {
+                id: sideBarStack
                 anchors.fill: parent
                 anchors.margins: 16
-                alarm: AlarmService.nextAlarm
+
+                initialItem: SwipeView {
+                    spacing: 16
+
+                    NextAlarm {
+                        alarm: AlarmService.nextAlarm
+                    }
+                    ActionDayItem {}
+                }
             }
         }
     }
 
-    Item {
-        x: drawer.open ? parent.width - width : parent.width
-        Behavior on x {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
+    Component {
+        id: alarmNotification
+        AlarmNotification {}
+    }
+
+    Connections {
+        target: AlarmService
+        function onAlarmTriggered(alarm) {
+            const properties = {
+                "alarm": alarm
+            }
+
+            sideBarStack.push(alarmNotification, properties)
+            mainMenu.currentPage = null
+            drawer.open = false
+        }
+    }
+
+    Card {
+        id: pageLoader
+        visible: scale !== 0
+        parent: window.contentItem
+        anchors.fill: parent
+        anchors.margins: 8
+
+        MouseArea {
+            anchors.fill: parent
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 8
+            spacing: 16
+
+            Card {
+                Layout.preferredHeight: 56
+                Layout.fillWidth: true
+                bright: true
+
+                CToolButton {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Icons.chevron_backward
+                    onClicked: mainMenu.currentPage = null
+                    font.pixelSize: 32
+                    height: 64
+                    width: 64
+                }
+
+                CLabel {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: mainMenu.currentPage ? mainMenu.currentPage.name : ''
+                    font.pixelSize: 24
+                }
+            }
+
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+
+                Loader {
+                    id: loader
+                    anchors.fill: parent
+                    asynchronous: true
+
+                    source: mainMenu.currentPage ? `qrc:/Clock/Pages/${mainMenu.currentPage.component}Page.qml` : ''
+                    opacity: status === Loader.Ready ? 1 : 0
+
+                    Behavior on opacity {
+                        PropertyAnimation {}
+                    }
+                }
+
+                BusyIndicator {
+                    anchors.centerIn: parent
+                    opacity: loader.status === Loader.Loading ? 1 : 0
+
+                    Behavior on opacity {
+                        PropertyAnimation {}
+                    }
+                }
             }
         }
 
-        height: parent.height - drawer.height
-        width: sidebarWidth
+        scale: mainMenu.currentPage ? 1 : 0
 
-        Card {
-            anchors.fill: parent
-            anchors.margins: 16
+        Behavior on scale {
+            PropertyAnimation {
+                easing.type: Easing.InOutQuad
+                duration: 250
+            }
+        }
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 16
-
-                SwipeView {
-                    id: view
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    onCurrentIndexChanged: timer.restart()
-                    clip: true
-
-                    Repeater {
-                        model: ActionDayManager.days
-
-                        delegate: ColumnLayout {
-                            CLabel {
-                                Layout.fillWidth: true
-                                text: modelData.name
-                                wrapMode: Text.Wrap
-                                font.pixelSize: 32
-                            }
-                            CLabel {
-                                Layout.fillWidth: true
-                                text: modelData.desc
-                                wrapMode: Text.Wrap
-                                font.pixelSize: 18
-                            }
-                            Item {
-                                Layout.fillHeight: true
-                            }
-                            CLabel {
-                                font.underline: true
-                                font.pixelSize: 18
-                                text: 'Link'
-                            }
-                        }
-                    }
-
-                    Timer {
-                        id: timer
-                        onTriggered: view.currentIndex = (view.currentIndex + 1) % view.count
-                        interval: 7500
-                        running: true
-                    }
-                }
-
-                PageIndicator {
-                    Layout.alignment: Qt.AlignHCenter
-                    currentIndex: view.currentIndex
-                    count: view.count
-                }
+        Connections {
+            target: EventFilter
+            function onUserInactive() {
+                mainMenu.currentPage = null
             }
         }
     }

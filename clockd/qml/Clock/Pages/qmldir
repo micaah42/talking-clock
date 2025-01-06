@@ -1,0 +1,4 @@
+module Clock.Pages
+AlarmPage 1.0 AlarmPage.qml
+LightingPage 1.0 LightingPage.qml
+SettingsPage 1.0 SettingsPage.qml

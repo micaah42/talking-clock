@@ -12,8 +12,8 @@ ColumnLayout {
 
     Component {
         id: nextAlarmComponent
-        Item {
 
+        Item {
             Image {
                 anchors.right: parent.right
                 anchors.top: parent.top

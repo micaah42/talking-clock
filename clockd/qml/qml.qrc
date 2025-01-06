@@ -43,6 +43,10 @@
         <file>Clock/Controls/CToolButton.qml</file>
         <file>Clock/Style/Palettes.qml</file>
         <file>Clock/Controls/ConfirmButton.qml</file>
+        <file>Clock/Main/ActionDayItem.qml</file>
+        <file>Clock/Controls/CSwitch.qml</file>
+        <file>Clock/Main/InfoItem.qml</file>
+        <file>Clock/Pages/qmldir</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

@@ -4,6 +4,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Shapes 1.15
 
 import Clock 1.0
+import Clock.Style
 import Clock.Controls 1.0
 import Clock.Pages.AlarmPage 1.0
 
@@ -44,16 +45,56 @@ Item {
                     width: view.width
                 }
 
-                header: Button {
+                header: RowLayout {
                     width: parent.width
-                    height: 64
+                    height: 56
 
-                    Material.roundedScale: Material.ExtraSmallScale
-                    font.family: FontService.family
-                    font.pixelSize: 24
+                    Button {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        font.pixelSize: 24
+                        text: "New Alarm"
+                        onClicked: AlarmService.newAlarm()
+                    }
 
-                    onClicked: AlarmService.newAlarm()
-                    text: "New Alarm"
+                    Button {
+                        Layout.preferredWidth: height
+                        Layout.fillHeight: true
+                        font.pixelSize: 24
+                        font.family: Icons.fontFamily
+                        text: Icons.more_vert
+                        onClicked: menu.open()
+
+                        Menu {
+                            id: menu
+                            x: parent.width - width
+                            y: parent.height + 8
+                            MenuItem {
+                                text: '1 Minute'
+                                onClicked: {
+                                    const alarm = AlarmService.newAlarm()
+                                    alarm.time = new Date(new Date().getTime() + 60000)
+                                    alarm.name = '1 Minute from now'
+                                }
+                            }
+                            MenuItem {
+                                text: '30 Seconds'
+                                onClicked: {
+                                    const alarm = AlarmService.newAlarm()
+                                    alarm.time = new Date(new Date().getTime() + 30000)
+                                    alarm.name = '30 Seconds from now'
+                                }
+                            }
+                            MenuItem {
+                                text: '10 Seconds'
+                                onClicked: {
+                                    const alarm = AlarmService.newAlarm()
+                                    alarm.time = new Date(new Date().getTime() + 10000)
+                                    alarm.name = '30 Seconds from now'
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

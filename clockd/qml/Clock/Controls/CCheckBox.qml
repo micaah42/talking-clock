@@ -1,6 +1,5 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
-
 import Clock 1.0
 
 CheckBox {
@@ -8,16 +7,12 @@ CheckBox {
     property alias label: l
 
     font.family: FontService.family
-    implicitHeight: 56
-    leftPadding: 0
-    topPadding: 0
 
+    //implicitHeight: 56
     CLabel {
         id: l
-        anchors.top: parent.top
-        anchors.leftMargin: 2
-        anchors.left: parent.left
-        anchors.topMargin: 4
-        font.pixelSize: 14
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.right
+        opacity: 0.56
     }
 }
