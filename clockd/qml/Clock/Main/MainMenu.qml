@@ -20,20 +20,22 @@ Item {
         spacing: 16
 
         Button {
+            Material.roundedScale: Material.SmallScale
             Layout.fillHeight: true
             Layout.fillWidth: true
             implicitWidth: 0
 
             property bool wasHeld: false
-            Material.background: ColorService.primary
+            Material.background: Lighting.enabled ? Qt.lighter(ColorService.primary, 1.75) : ColorService.primary
 
-            onPressAndHold: wasHeld = true
+            onPressAndHold: {
+                Lighting.enabled = !Lighting.enabled
+                wasHeld = true
+            }
+
             onReleased: {
-                if (wasHeld)
-                    Lighting.enabled = !Lighting.enabled
-                else
+                if (!wasHeld)
                     currentPage = page
-
                 wasHeld = false
             }
             readonly property var page: {
@@ -45,19 +47,9 @@ Item {
             font.family: Icons.fontFamily
             font.pixelSize: 88
             text: page.icon
-
-            Rectangle {
-                anchors.centerIn: parent
-                visible: Lighting.enabled
-                radius: width / 2
-                height: width
-                width: 104
-                border.color: Material.foreground
-                border.width: 6
-                color: 'transparent'
-            }
         }
         Button {
+            Material.roundedScale: Material.SmallScale
             Layout.fillHeight: true
             Layout.fillWidth: true
             implicitWidth: 0
@@ -75,11 +67,12 @@ Item {
             text: page.icon
         }
         Button {
+            Material.roundedScale: Material.SmallScale
+            Material.background: ColorService.primary
+
             Layout.fillHeight: true
             Layout.fillWidth: true
             implicitWidth: 0
-
-            Material.background: ColorService.primary
             onClicked: currentPage = page
             readonly property var page: {
                 "component": "Settings",

@@ -42,6 +42,8 @@ ColumnLayout {
 
             value: Lighting.brightness
             onValueChanged: {
+                if (value === Lighting.brightness)
+                    return
                 Lighting.brightness = value
                 Lighting.enabled = true
             }

@@ -107,7 +107,7 @@ ColumnLayout {
     Loader {
         id: nextAlarmLoader
         Layout.fillWidth: true
-        sourceComponent: AlarmService.nextAlarm ? nextAlarmComponent : noNextAlarmComponent
+        sourceComponent: alarm ? nextAlarmComponent : noNextAlarmComponent
     }
 
     Item {

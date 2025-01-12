@@ -159,6 +159,7 @@ Item {
                 }
             }
 
+            WirelessSection {}
             AppearenceSection {}
 
             Section {

@@ -117,6 +117,23 @@ Window {
         }
     }
 
+    PageLoader {
+        currentPage: mainMenu.currentPage
+        onClosed: mainMenu.currentPage = null
+
+        anchors.fill: parent
+        anchors.margins: 8
+        visible: scale !== 0
+        scale: currentPage ? 1 : 0
+
+        Behavior on scale {
+            PropertyAnimation {
+                easing.type: Easing.InOutQuad
+                duration: 250
+            }
+        }
+    }
+
     Component {
         id: alarmNotification
         AlarmNotification {}
@@ -132,89 +149,6 @@ Window {
             sideBarStack.push(alarmNotification, properties)
             mainMenu.currentPage = null
             drawer.open = false
-        }
-    }
-
-    Card {
-        id: pageLoader
-        visible: scale !== 0
-        parent: window.contentItem
-        anchors.fill: parent
-        anchors.margins: 8
-
-        MouseArea {
-            anchors.fill: parent
-        }
-
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 8
-            spacing: 16
-
-            Card {
-                Layout.preferredHeight: 56
-                Layout.fillWidth: true
-                bright: true
-
-                CToolButton {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: Icons.chevron_backward
-                    onClicked: mainMenu.currentPage = null
-                    font.pixelSize: 32
-                    height: 64
-                    width: 64
-                }
-
-                CLabel {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: mainMenu.currentPage ? mainMenu.currentPage.name : ''
-                    font.pixelSize: 24
-                }
-            }
-
-            Item {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-
-                Loader {
-                    id: loader
-                    anchors.fill: parent
-                    asynchronous: true
-
-                    source: mainMenu.currentPage ? `qrc:/Clock/Pages/${mainMenu.currentPage.component}Page.qml` : ''
-                    opacity: status === Loader.Ready ? 1 : 0
-
-                    Behavior on opacity {
-                        PropertyAnimation {}
-                    }
-                }
-
-                BusyIndicator {
-                    anchors.centerIn: parent
-                    opacity: loader.status === Loader.Loading ? 1 : 0
-
-                    Behavior on opacity {
-                        PropertyAnimation {}
-                    }
-                }
-            }
-        }
-
-        scale: mainMenu.currentPage ? 1 : 0
-
-        Behavior on scale {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
-                duration: 250
-            }
-        }
-
-        Connections {
-            target: EventFilter
-            function onUserInactive() {
-                mainMenu.currentPage = null
-            }
         }
     }
 

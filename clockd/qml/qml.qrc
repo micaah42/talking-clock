@@ -47,6 +47,9 @@
         <file>Clock/Controls/CSwitch.qml</file>
         <file>Clock/Main/InfoItem.qml</file>
         <file>Clock/Pages/qmldir</file>
+        <file>Clock/Pages/SettingsPage/WirelessSection.qml</file>
+        <file>Clock/Main/PageLoader.qml</file>
+        <file>Clock/Pages/SettingsPage/WirelessSettingsEdit.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

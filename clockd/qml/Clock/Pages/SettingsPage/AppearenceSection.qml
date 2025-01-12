@@ -56,7 +56,7 @@ Section {
             CFontDialog {
                 Layout.preferredHeight: 56
                 Layout.fillWidth: true
-                onFontFamilyChanged: FontService.family = fontFamily
+                onFontFamilyAccepted: x => FontService.family = x
                 fontFamily: FontService.family
             }
             CSwitch {

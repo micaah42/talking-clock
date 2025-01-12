@@ -7,3 +7,4 @@ AlarmNotification 1.0 AlarmNotification.qml
 SpaceScene 1.0 SpaceScene.qml
 ActionDayItem 1.0 ActionDayItem.qml
 InfoItem 1.0 InfoItem.qml
+PageLoader 1.0 PageLoader.qml
