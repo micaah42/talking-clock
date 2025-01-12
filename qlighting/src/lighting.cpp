@@ -64,11 +64,12 @@ void Lighting::render()
 {
     emit rendered();
 
-    ws2811_return_t ret;
     if (!_d->ws2811.channel[0].leds)
         return;
 
-    if ((ret = ws2811_render(&_d->ws2811)) != WS2811_SUCCESS) {
+    ws2811_return_t ret = ws2811_render(&_d->ws2811);
+
+    if (ret != WS2811_SUCCESS) {
         qCCritical(self) << "ws2811_render failed:" << ws2811_get_return_t_str(ret);
         return;
     }
@@ -109,8 +110,10 @@ void Lighting::setBrightness(double newBrightness)
     _brightness = newBrightness;
     emit brightnessChanged();
 
-    _d->ws2811.channel[0].brightness = 255 * _brightness;
-    render();
+    if (_enabled) {
+        _d->ws2811.channel[0].brightness = 255 * _brightness;
+        this->render();
+    }
 }
 
 bool Lighting::enabled() const
@@ -130,7 +133,7 @@ void Lighting::setEnabled(bool newEnabled)
         _mode->setActive(_enabled);
 
     _d->ws2811.channel[0].brightness = _enabled ? 255 * _brightness : 0;
-    render();
+    this->render();
 }
 
 const QList<Pixel *> &Lighting::pixels() const

@@ -37,10 +37,13 @@ void FontService::refreshFamilies()
             if (info.suffix() != "ttf") {
                 continue;
             }
+
             int id = QFontDatabase::addApplicationFont(info.filePath());
-            if (id != -1) {
+
+            if (id == -1)
+                qCWarning(self) << "failed to load:" << info.filePath();
+            else
                 loaded++;
-            }
         }
     }
 

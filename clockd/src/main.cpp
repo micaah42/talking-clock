@@ -134,6 +134,10 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
+    engine.addImportPath(":/");
+    engine.addPluginPath(":/");
+    engine.addImportPath("/home/michael/talking-clock/build/Desktop_Qt_6_5_3_GCC_64bit-Debug/qnetworkmanager");
+
     qInfo() << "loading view...";
     engine.load(url);
     qInfo() << "done!";

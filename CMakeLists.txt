@@ -7,6 +7,8 @@ add_subdirectory(clockd/)
 add_subdirectory(qlighting/)
 add_subdirectory(qopenremote/)
 add_subdirectory(qperformance/)
+# add_subdirectory(qnetworkmanager/)
+add_subdirectory(networkmanager-qml/)
 
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY NO)
