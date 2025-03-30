@@ -2,6 +2,8 @@ import QtQuick 2.14
 import QtQuick.Controls
 import QtQuick.VirtualKeyboard 2.15
 
+import Clock
+
 Item {
     id: root
 

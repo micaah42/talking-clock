@@ -41,7 +41,11 @@ QList<ActionDay *> ActionDayService::actionDays(const QDate &date, QObject *pare
                 break;
 
             auto sections = line.split(',');
-            Q_ASSERT(sections.size() == 4);
+            if (sections.size() != 4) {
+                qCWarning(self) << "ignoring invalid line:" << line;
+                line = _file.readLine();
+                continue;
+            }
 
             auto day = new ActionDay{parent};
             day->setDate(QDate::fromString(sections[0], "yyyy-MM-dd"));

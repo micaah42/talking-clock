@@ -9,19 +9,19 @@ ColumnLayout {
     property alias valueText: v.text
     property alias value: v
 
-    spacing: 0
+    spacing: -2
 
     CLabel {
         id: l
         Layout.fillWidth: true
-        font.pixelSize: 14
+        size: CLabel.Medium
         opacity: 0.72
     }
 
     CLabel {
         id: v
         Layout.fillWidth: true
-        font.pixelSize: 32
+        size: CLabel.Large
         bottomPadding: -4
     }
 }

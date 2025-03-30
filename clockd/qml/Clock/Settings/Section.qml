@@ -6,6 +6,7 @@ import Clock.Style
 import Clock.Controls
 
 ColumnLayout {
+    property Component extraHeaderContent
     property string title
     property string icon
     spacing: 16
@@ -19,9 +20,14 @@ ColumnLayout {
         }
 
         CLabel {
+            Layout.fillWidth: true
             font.weight: Font.DemiBold
             font.pixelSize: 28
             text: title
+        }
+
+        Loader {
+            sourceComponent: extraHeaderContent
         }
     }
 }

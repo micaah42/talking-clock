@@ -1,5 +1,7 @@
-module Clock.Pages.SettingsPage
+module Clock.Settings
 GeneralSection 1.0 GeneralSection.qml
 AppearenceSection 1.0 AppearenceSection.qml
 WirelessSection 1.0 WirelessSection.qml
 Section 1.0 Section.qml
+PerformanceSection 1.0 PerformanceSection.qml
+SettingsPage 1.0 SettingsPage.qml

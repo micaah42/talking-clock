@@ -7,7 +7,7 @@ Item {
 
     property color borderColor: 'white'
     property color value: 'red'
-    property real borderWidth: 1.5
+    property real borderWidth: 0.75
     property real radius: 12
     property real spacing: 8
 
@@ -37,7 +37,7 @@ Item {
             spacing: root.spacing
 
             Rectangle {
-                Layout.preferredWidth: 48
+                Layout.preferredWidth: 72
                 Layout.fillHeight: true
                 border.width: borderWidth
                 border.color: borderColor

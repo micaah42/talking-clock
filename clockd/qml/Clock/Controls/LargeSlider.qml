@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 
 import Clock
+import Clock.Style
 import Clock.Controls
 
 Slider {
@@ -14,7 +15,7 @@ Slider {
 
     snapMode: Slider.SnapAlways
     implicitHeight: 40
-    stepSize: 0.025
+    stepSize: 0.005
 
     background: Rectangle {
         id: background
@@ -22,7 +23,7 @@ Slider {
         border.color: Material.foreground
         border.width: root.pressed ? 2.5 : 2
 
-        color: ColorService.primary
+        color: Theme.primary
         opacity: enabled ? 1 : 0.72
         radius: root.radius
 
@@ -31,7 +32,7 @@ Slider {
             anchors.margins: parent.border.width
 
             Rectangle {
-                color: root.pressed ? Qt.lighter(ColorService.accent, 1.25) : ColorService.accent
+                color: root.pressed ? Theme.accentColor(Material.Shade300) : Theme.accent
                 opacity: enabled ? 1 : 0.72
 
                 width: height + root.visualPosition * (parent.width - height)

@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 
 import Clock 1.0
+import Clock.Style
 import Clock.Controls 1.0
 
 Frame {
@@ -83,7 +84,7 @@ Frame {
             Layout.preferredWidth: 1 / 5
             horizontalAlignment: Text.AlignHCenter
             text: ":"
-            color: ColorService.accent
+            color: Theme.accent
             font.pixelSize: 32
         }
 
@@ -107,7 +108,7 @@ Frame {
             Layout.preferredWidth: 1 / 5
             horizontalAlignment: Text.AlignHCenter
             text: ":"
-            color: ColorService.accent
+            color: Theme.accent
             font.pixelSize: 32
         }
 

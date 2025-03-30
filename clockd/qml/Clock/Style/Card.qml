@@ -1,4 +1,7 @@
-import QtQuick 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material
+
 import Clock 1.0
 
 Item {
@@ -8,17 +11,13 @@ Item {
     Rectangle {
         anchors.fill: parent
 
-        color: bright ? ColorService.primary : ColorService.darkPrimary
-        opacity: backgroundOpacity
+        // color: bright ? Theme.primary : Theme.darkPrimary
+        color: bright ? Theme.primaryColor(Material.ShadeA700) : //@
+                        Qt.darker(Theme.primaryColor(Material.Shade900), 1.42)
 
-        Behavior on color {
-            PropertyAnimation {
-                duration: 1000
-            }
-        }
-
-        border.color: Qt.lighter(color, 1.15)
-        border.width: 1.2
+        // opacity: backgroundOpacity
+        border.color: Qt.darker(color, 1.25)
+        border.width: 0.75
         radius: 8
     }
 

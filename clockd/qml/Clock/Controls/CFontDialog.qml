@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
 import Clock 1.0
+import Clock.Style
 
 Item {
     id: ctrl
@@ -105,7 +106,7 @@ Item {
 
                 Button {
                     text: "Accept"
-                    Material.background: ColorService.primary
+                    Material.background: Theme.primary
                     font.family: examples.family
                     onClicked: {
                         fontFamilyAccepted(examples.family)

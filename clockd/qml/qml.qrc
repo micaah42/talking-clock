@@ -16,25 +16,14 @@
         <file>Clock/Style/Card.qml</file>
         <file>Clock/Style/DarkCard.qml</file>
         <file>Clock/Style/FeedbackLoader.qml</file>
-        <file>Clock/Pages/AlarmPage/AlarmItem.qml</file>
-        <file>Clock/Pages/AlarmPage/AlarmDialog.qml</file>
-        <file>Clock/Pages/AlarmPage/NextAlarm.qml</file>
-        <file>Clock/Pages/AlarmPage/TimeField.qml</file>
         <file>Clock/Main.qml</file>
         <file>Clock/Main/qmldir</file>
-        <file>Clock/Pages/AlarmPage/qmldir</file>
-        <file>Clock/Pages/SettingsPage/qmldir</file>
         <file>Clock/Style/qmldir</file>
         <file>Clock/Main/AlarmNotification.qml</file>
-        <file>Clock/Pages/AlarmPage.qml</file>
         <file>Clock/Pages/DataPage.qml</file>
-        <file>Clock/Pages/SettingsPage.qml</file>
         <file>Clock/Controls/ValueDisplay.qml</file>
         <file>Clock/Controls/CSpinBox.qml</file>
         <file>Clock/Controls/Button.qml</file>
-        <file>Clock/Pages/SettingsPage/AppearenceSection.qml</file>
-        <file>Clock/Pages/SettingsPage/Section.qml</file>
-        <file>Clock/Pages/SettingsPage/GeneralSection.qml</file>
         <file>Clock/Style/Icon.qml</file>
         <file>Clock/Style/Icons.qml</file>
         <file>Clock/Pages/LightingPage.qml</file>
@@ -47,9 +36,27 @@
         <file>Clock/Controls/CSwitch.qml</file>
         <file>Clock/Main/InfoItem.qml</file>
         <file>Clock/Pages/qmldir</file>
-        <file>Clock/Pages/SettingsPage/WirelessSection.qml</file>
         <file>Clock/Main/PageLoader.qml</file>
-        <file>Clock/Pages/SettingsPage/WirelessSettingsEdit.qml</file>
+        <file>Clock/Style/Theme.qml</file>
+        <file>Clock/Main/MainMenuButton.qml</file>
+        <file>Clock/Main/MainScreenNotifications.qml</file>
+        <file>Clock/Alarms/AlarmDialog.qml</file>
+        <file>Clock/Alarms/AlarmItem.qml</file>
+        <file>Clock/Alarms/AlarmPage.qml</file>
+        <file>Clock/Alarms/NextAlarm.qml</file>
+        <file>Clock/Alarms/qmldir</file>
+        <file>Clock/Alarms/SleepyBed.qml</file>
+        <file>Clock/Alarms/TimeField.qml</file>
+        <file>Clock/Settings/AppearenceSection.qml</file>
+        <file>Clock/Settings/ConnectionSettingsEdit.qml</file>
+        <file>Clock/Settings/GeneralSection.qml</file>
+        <file>Clock/Settings/PerformanceSection.qml</file>
+        <file>Clock/Settings/qmldir</file>
+        <file>Clock/Settings/Section.qml</file>
+        <file>Clock/Settings/SettingsPage.qml</file>
+        <file>Clock/Settings/WirelessSection.qml</file>
+        <file>Clock/Alarms/DurationEdit.qml</file>
+        <file>Clock/Controls/Dialog.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import QtQuick.Controls.Material
 
 import Clock 1.0
 import Clock.Style 1.0
@@ -14,60 +15,46 @@ Item {
     property int padding: 64
     property int radius: 32
 
-    Repeater {
-        model: stars
-        delegate: Rectangle {
+    readonly property var shades: [Material.Shade50, Material.Shade100]
 
-            x: parent.width * Math.random()
-            y: parent.height * Math.random()
-            opacity: 0.4 + 0.2 * Math.random()
-
-            color: Qt.lighter(ColorService.primary, 2.5)
-            width: 2 * Math.random() + 1.1
-            radius: width / 2
-            height: width
-        }
+    function randomShade() {
+        return shades[Math.ceil(Math.random() * shades.length)]
     }
 
     Repeater {
         id: starsRepeater
-        model: 5
-        delegate: Repeater {
-            model: Math.ceil(SpaceScene.blinkingCount / 5)
-            delegate: Item {
-                id: del
+        model: 15
+        delegate: Item {
+            anchors.fill: parent
 
-                property real maxOpacity: 0.6 + 0.2 * Math.random()
-                property real minOpacity: 0.2
+            Repeater {
+                model: 5 // SpaceScene.blinkingCount
+                delegate: Rectangle {
+                    y: parent.height * Math.random() - height / 2
+                    x: parent.width * Math.random() - width / 2
 
-                x: parent.width * Math.random()
-                y: parent.height * Math.random()
-
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: 2 * Math.random() + 1.1
-                    height: width
+                    color: Material.color(Material.Indigo, randomShade())
+                    width: 3.5 * Math.random() + 1.5
                     radius: width / 2
+                    height: width
+                }
+            }
 
-                    color: Qt.lighter(ColorService.primary, 2.5)
+            property real maxOpacity: 0.75 + 0.2 * Math.random()
+            property real minOpacity: 0.25
 
-                    SequentialAnimation on opacity {
-                        loops: Animation.Infinite
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
 
-                        PauseAnimation {
-                            duration: Math.random() * root.blinkUp
-                        }
-                        OpacityAnimator {
-                            duration: root.blinkUp
-                            from: 0
-                            to: 1
-                        }
-                        OpacityAnimator {
-                            duration: root.blinkUp
-                            from: 1
-                            to: 0
-                        }
-                    }
+                OpacityAnimator {
+                    duration: index * root.blinkUp
+                    from: .25
+                    to: .85
+                }
+                OpacityAnimator {
+                    duration: index * root.blinkUp
+                    from: .85
+                    to: .25
                 }
             }
         }

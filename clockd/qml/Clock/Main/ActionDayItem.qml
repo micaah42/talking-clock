@@ -6,34 +6,53 @@ import Clock.Style
 import Clock.Controls
 
 Item {
+    property real contentHeight: column.implicitHeight
+
     Flickable {
         anchors.fill: parent
-        contentHeight: childrenRect.height
+        contentHeight: column.implicitHeight
 
         ColumnLayout {
+            id: column
             width: parent.width
-            spacing: 8
+            spacing: 4
+
+            CLabel {
+                Layout.bottomMargin: 4
+                size: CLabel.XLarge
+                text: `Today is...`
+            }
 
             Repeater {
                 model: ActionDayManager.days
 
                 delegate: ColumnLayout {
-                    spacing: 0
+                    spacing: -2
 
                     CLabel {
                         Layout.fillWidth: true
                         elide: Text.ElideRight
                         text: modelData.name
-                        font.pixelSize: 24
+                        size: CLabel.Large
                     }
                     CLabel {
                         Layout.fillWidth: true
                         elide: Text.ElideRight
                         text: modelData.desc
+                        size: CLabel.Medium
                         opacity: 0.72
                     }
                 }
             }
+        }
+
+        Icon {
+            anchors.bottom: column.bottom
+            anchors.right: parent.right
+            anchors.margins: -implicitHeight / 4
+            font.pixelSize: parent.width
+            text: Icons.calendar_month
+            opacity: 0.11
         }
     }
 }

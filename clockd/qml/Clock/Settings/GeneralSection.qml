@@ -21,7 +21,14 @@ Section {
     }
     ColumnLayout {
         spacing: -4
+        ConfirmButton {
+            Layout.preferredWidth: textField.width
+            onAccepted: System.restartApplication()
 
+            dialogBodyText: 'Are you sure you want restart the application?'
+            dialogTitle: text
+            text: 'Restart Application'
+        }
         ConfirmButton {
             Layout.preferredWidth: textField.width
             onAccepted: System.powerOff()

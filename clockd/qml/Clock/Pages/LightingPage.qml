@@ -10,22 +10,27 @@ ColumnLayout {
     property StaticLight staticLight: Lighting.staticLight
     property WavingLight wavingLight: Lighting.wavingLight
     property PulsatingLight pulsatingLight: Lighting.pulsatingLight
-
+    property MonoRotationLight monoRotationLight: Lighting.monoRotationLight
     readonly property var availableLightModes: Array.from(swipeView.contentChildren).map(x => x.lightMode)
+
+    readonly property var palettes: Palettes.palettes
+    readonly property var currentPalette: Palettes.palettes[currentIndex % Palettes.palettes.length]
+    property int currentIndex: 0
+
     spacing: 0
 
     RowLayout {
         Layout.minimumHeight: 56
         Layout.maximumHeight: 56
-        Layout.bottomMargin: 16
-        spacing: 24
+        spacing: 8
 
         Button {
             Layout.preferredWidth: 2 * height
             Layout.fillHeight: true
 
-            onClicked: Lighting.enabled = !Lighting.enabled
+            Material.roundedScale: Material.MediumScale
             highlighted: Lighting.enabled
+            onClicked: Lighting.enabled = !Lighting.enabled
             bottomInset: 0
             topInset: 0
 
@@ -41,6 +46,7 @@ ColumnLayout {
             labelText: 'Brightness'
 
             value: Lighting.brightness
+
             onValueChanged: {
                 if (value === Lighting.brightness)
                     return
@@ -72,11 +78,12 @@ ColumnLayout {
         LightingDisplay {
             lighting: Lighting
             width: parent.width
-            height: 8
+            height: 16
         }
 
         Frame {
             anchors.fill: parent
+            topPadding: 24
 
             SwipeView {
                 id: swipeView
@@ -88,54 +95,124 @@ ColumnLayout {
                 spacing: 32
                 clip: true
 
-                RowLayout {
+                GridLayout {
                     property LightMode lightMode: staticLight
-                    spacing: 32
+                    columns: 8
+                    rows: 6
 
-                    ColorPicker {
-                        onCurrentColorChanged: staticLight.color = currentColor
-                        value: staticLight.color
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
+                    Dialog {
+                        id: customColorPopup
+                        anchors.centerIn: Overlay.overlay
+                        height: 7 * window.height / 8
+                        width: 7 * window.width / 8
+
+                        title: 'Custom Color'
+
+                        contentItem: ColorPicker {
+                            id: customColorPicker
+                            onCurrentColorChanged: staticLight.color = currentColor
+                            value: staticLight.color
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                        }
                     }
 
-                    GridLayout {
-                        id: palettes
-
-                        property var currentPalette: Palettes.palettes[currentIndex % Palettes.palettes.length]
-                        property int currentIndex: 0
-
-                        Layout.maximumWidth: parent.width / 3
-                        Layout.fillHeight: true
-
-                        columns: 3
-                        rows: 4
+                    RowLayout {
+                        Layout.columnSpan: parent.columns
 
                         CToolButton {
-                            onClicked: palettes.currentIndex -= 1
+                            onClicked: currentIndex -= 1
                             text: Icons.chevron_backward
                         }
                         CLabel {
                             horizontalAlignment: Text.AlignHCenter
                             Layout.fillWidth: true
-                            text: palettes.currentPalette.name
+                            text: currentPalette.name
                         }
 
                         CToolButton {
-                            onClicked: palettes.currentIndex += 1
+                            onClicked: currentIndex += 1
                             text: Icons.chevron_forward
                         }
+                    }
 
-                        Repeater {
-                            model: palettes.currentPalette.colors
-                            delegate: Button {
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                onClicked: staticLight.color = modelData
-                                Material.background: modelData
-                                bottomInset: 0
-                                topInset: 0
+                    Repeater {
+                        model: currentPalette.colors
+                        delegate: Button {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            onClicked: staticLight.color = modelData
+                            Material.background: modelData
+                            implicitHeight: 0
+                            bottomInset: 0
+                            topInset: 0
+                        }
+                    }
+
+                    Button {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        onClicked: customColorPopup.open()
+                        Material.background: customColorPicker.currentColor
+                        font.family: Icons.fontFamily
+                        text: Icons.colors
+                        implicitHeight: 0
+                        bottomInset: 0
+                        topInset: 0
+                    }
+                }
+                GridLayout {
+                    id: mono
+                    onCurrentPaletteChanged: monoRotationLight.colors = currentPalette.colors
+                    readonly property var currentPalette: Palettes.palettes[currentIndex % Palettes.palettes.length]
+                    property int currentIndex: 0
+                    property LightMode lightMode: monoRotationLight
+                    columns: 8
+                    rows: 6
+
+                    RowLayout {
+                        Layout.columnSpan: parent.columns
+
+                        CToolButton {
+                            onClicked: mono.currentIndex -= 1
+                            text: Icons.chevron_backward
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                            RowLayout {
+                                anchors.centerIn: parent
+
+                                CLabel {
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: mono.currentPalette.name
+                                }
+                                ToolButton {
+                                    property int max: 5
+                                    property int index: 0
+                                    text: `${index + 1}x`
+
+                                    onClicked: {
+                                        index = (index + 1) % 5
+                                        monoRotationLight.duration = 20000 / (index + 1)
+                                    }
+                                }
                             }
+                        }
+                        CToolButton {
+                            onClicked: mono.currentIndex += 1
+                            text: Icons.chevron_forward
+                        }
+                    }
+
+                    Repeater {
+                        model: mono.currentPalette.colors
+                        delegate: Button {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Material.background: modelData
+                            implicitHeight: 0
+                            bottomInset: 0
+                            topInset: 0
                         }
                     }
                 }

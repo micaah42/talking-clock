@@ -8,10 +8,10 @@ Rectangle {
     signal clicked();
 
 
-    color: colorService.colors["background"]
+    color: Theme.colors["background"]
     radius: 5
 
-    border.color: checked && enabled ? colorService.colors["primary"] : Qt.lighter(colorService.colors["darkprimary"], 0.8)
+    border.color: checked && enabled ? Theme.colors["primary"] : Qt.lighter(Theme.colors["darkprimary"], 0.8)
     border.width: checked && enabled ? 5 : 1.5
 
     MouseArea {

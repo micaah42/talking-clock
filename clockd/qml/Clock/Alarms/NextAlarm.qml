@@ -1,12 +1,15 @@
 import QtQuick 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
+import QtQuick.Controls.Material
 import QtQuick.Shapes 1.14
 
 import Clock 1.0
+import Clock.Style
 import Clock.Controls 1.0
 
 ColumnLayout {
+    id: root
     property Alarm alarm
     spacing: 8
 
@@ -14,25 +17,48 @@ ColumnLayout {
         id: nextAlarmComponent
 
         Item {
-            Image {
+            implicitHeight: nextAlarmColumn.implicitHeight
+
+            Icon {
+                anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                anchors.top: parent.top
-
-                sourceSize.height: 64
-                sourceSize.width: 64
-
-                source: {
+                anchors.margins: -implicitHeight / 4
+                font.pixelSize: parent.width
+                opacity: 0.11
+                text: {
                     const hours = alarm.nextTimeout.getHours()
                     if (8 <= hours && hours < 22)
-                        return 'qrc:/sunny_FILL0_wght400_GRAD0_opsz24.svg'
+                        return Icons.sunny
                     else
-                        return 'qrc:/clear_night_FILL0_wght400_GRAD0_opsz24.svg'
+                        return Icons.clear_night
+                }
+            }
+
+            Rectangle {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                color: Theme.accent
+
+                radius: width / 2
+                height: 48
+                width: 48
+
+                CToolButton {
+                    anchors.centerIn: parent
+                    onClicked: editDialog.active = true
+                    text: Icons.edit
                 }
             }
 
             ColumnLayout {
-                anchors.fill: parent
-                spacing: 12
+                id: nextAlarmColumn
+                width: parent.width
+                spacing: 8
+
+                CLabel {
+                    size: CLabel.XLarge
+                    text: 'Next Alarm:'
+                }
 
                 ValueDisplay {
                     visible: alarm.name.length
@@ -41,7 +67,7 @@ ColumnLayout {
                 }
 
                 ColumnLayout {
-                    spacing: -4
+                    spacing: -2
 
                     ValueDisplay {
                         labelText: "Time"
@@ -49,37 +75,9 @@ ColumnLayout {
                     }
 
                     CLabel {
-                        font.pixelSize: 20
-
-                        Timer {
-                            onTriggered: parent.text = `triggered in ${durationString()}`
-                            triggeredOnStart: true
-                            running: true
-                            repeat: true
-
-                            function durationString() {
-                                const msecs = alarm.nextTimeout.getTime() - (new Date()).getTime()
-                                const secs = Math.round(msecs / 1000)
-
-                                if (secs < 60) {
-                                    return `${secs} seconds`
-                                }
-
-                                const minutes = Math.round(secs / 60)
-
-                                if (minutes < 60) {
-                                    return `${minutes} minutes`
-                                }
-
-                                const hours = Math.round(minutes / 60)
-
-                                if (hours < 24) {
-                                    return `${hours} hours`
-                                }
-
-                                const days = hours / 24
-                                return `${days.toFixed(1)} days`
-                            }
+                        text: {
+                            const msecs = alarm.nextTimeout.getTime() - AlarmService.now.getTime()
+                            return `in ${Theme.durationString(msecs)}`
                         }
                     }
                 }
@@ -93,14 +91,32 @@ ColumnLayout {
                     }
                 }
             }
+
+            Loader {
+                id: editDialog
+                asynchronous: true
+                active: false
+                sourceComponent: AlarmDialog {
+                    visible: true
+                    onAboutToHide: editDialog.active = false
+                    alarm: root.alarm
+                }
+            }
         }
     }
 
     Component {
         id: noNextAlarmComponent
-        ValueDisplay {
-            labelText: 'No Alarms scheduled : )'
-            valueText: 'Sleep tight!'
+
+        RowLayout {
+            ValueDisplay {
+                Layout.alignment: Qt.AlignTop
+                labelText: 'No Alarms scheduled : )'
+                valueText: 'Sleep tight!'
+            }
+            SleepyBed {
+                Layout.alignment: Qt.AlignRight
+            }
         }
     }
 
@@ -108,60 +124,5 @@ ColumnLayout {
         id: nextAlarmLoader
         Layout.fillWidth: true
         sourceComponent: alarm ? nextAlarmComponent : noNextAlarmComponent
-    }
-
-    Item {
-        Layout.fillHeight: true
-    }
-
-    Image {
-        id: bed
-        Layout.alignment: Qt.AlignHCenter
-        Layout.preferredWidth: 96
-        fillMode: Image.PreserveAspectFit
-        source: 'qrc:/bed_FILL0_wght400_GRAD0_opsz24.svg'
-        sourceSize.width: width
-        sourceSize.height: height
-
-        Repeater {
-            id: zzz
-            model: 3
-            delegate: Item {
-                CLabel {
-                    property real range
-
-                    PropertyAnimation on range {
-                        loops: Animation.Infinite
-                        duration: 8000
-                        from: 0
-                        to: 1
-                    }
-
-                    property real position: {
-                        const p = range + modelData / zzz.count
-                        if (p < 1)
-                            return p
-                        else
-                            return p - 1
-                    }
-
-                    x: bed.width * (position * position + 0.5) * 0.8
-                    y: -bed.height * position * 0.8 - 32
-
-                    opacity: {
-                        if (position < 0.2)
-                            return 5 * position
-                        if (position > 0.8)
-                            return 5 - (5 * position)
-
-                        return 1
-                    }
-
-                    font.pixelSize: 48 + 48 * position * position
-                    rotation: 15 * Math.random()
-                    text: 'z'
-                }
-            }
-        }
     }
 }

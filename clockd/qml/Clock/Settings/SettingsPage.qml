@@ -4,10 +4,11 @@ import QtQuick.Controls 2.14
 
 import QtQml.Models
 
-import Clock 1.0
-import Clock.Style 1.0
-import Clock.Controls 1.0
-import Clock.Pages.SettingsPage 1.0
+import Clock
+import Clock.Style
+import Clock.Controls
+import Clock.Settings
+import Clock.Pages
 
 Item {
     RowLayout {
@@ -64,100 +65,6 @@ Item {
             interactive: false
             spacing: 8
             GeneralSection {}
-
-            Section {
-                id: performanceSection
-                title: 'Performance'
-                icon: Icons.monitoring
-                property bool isCurrentItem: SwipeView.isCurrentItem
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    CLabel {
-                        text: 'CPU Usage'
-                    }
-                    Item {
-                        Layout.fillWidth: true
-                    }
-                    CLabel {
-                        readonly property var infos: [CPUMonitor.model, CPUMonitor.vendor, CPUMonitor.architecture]
-                        text: infos.filter(x => x.length).join(' \u2022 ')
-                    }
-                }
-
-                Loader {
-                    Layout.preferredHeight: parent.height / 3
-                    Layout.fillWidth: true
-                    active: performanceSection.isCurrentItem
-
-                    sourceComponent: Item {
-                        id: item
-
-                        Repeater {
-                            model: 5
-                            delegate: Rectangle {
-                                opacity: 0.32
-                                y: modelData * item.height / 4
-                                width: item.width
-                                height: 0.75
-                            }
-                        }
-
-                        CLabel {
-                            text: '100%'
-                            y: 2
-                        }
-                        CLabel {
-                            anchors.bottom: parent.bottom
-                            text: graph.duration / 1000 + 's'
-                        }
-
-                        CPUGraph {
-                            id: graph
-                            anchors.fill: parent
-                            colors: Palettes.palettes[2]["colors"]
-                            cpu: CPUMonitor
-                        }
-                    }
-                }
-                GridLayout {
-                    Layout.fillWidth: true
-                    columns: 8
-                    Repeater {
-                        model: Array.from(CPUMonitor.cores).slice(1)
-                        delegate: Card {
-                            Layout.preferredHeight: 24
-                            Layout.fillWidth: true
-                            bright: true
-                            CLabel {
-                                anchors.centerIn: parent
-                                font.pixelSize: 18
-                                text: `${index + 1}: ${modelData.load.toFixed(0)}%`
-                            }
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillHeight: true
-                    Layout.topMargin: 16
-
-                    ValueDisplay {
-                        Layout.preferredWidth: 120
-                        labelText: 'FPS'
-                        valueText: window.fps.toFixed(0)
-                    }
-                    ValueDisplay {
-                        Layout.preferredWidth: 120
-                        labelText: 'CPU Temp'
-                        valueText: CPUMonitor.temperature
-                    }
-                }
-                Item {
-                    Layout.fillHeight: true
-                }
-            }
 
             WirelessSection {}
             AppearenceSection {}

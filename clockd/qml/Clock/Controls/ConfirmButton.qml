@@ -19,12 +19,9 @@ Button {
         id: dialog
         anchors.centerIn: Overlay.overlay
         standardButtons: Dialog.Ok | Dialog.Cancel
-
-        //        height: 88
-        //        width: 320
         onAccepted: root.accepted()
 
-        Label {
+        contentItem: CLabel {
             id: dialogBody
         }
     }

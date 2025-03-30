@@ -9,37 +9,25 @@ ToolButton {
         Small,
         Medium,
         Large,
-        XLarge
+        XLarge,
+        XXLarge
     }
 
     property int size: CToolButton.Medium
     font.family: Icons.fontFamily
-    padding: -16
-
-    implicitHeight: implicitWidth
-    implicitWidth: {
-        switch (size) {
-        case CToolButton.Small:
-            return 32
-        case CToolButton.Medium:
-            return 48
-        case CToolButton.Large:
-            return 64
-        case CToolButton.XLarge:
-            return 84
-        }
-    }
 
     font.pixelSize: {
         switch (size) {
         case CToolButton.Small:
-            return 16
+            return Theme.fontSizeSmall
         case CToolButton.Medium:
-            return 24
+            return Theme.fontSizeMedium
         case CToolButton.Large:
-            return 32
+            return Theme.fontSizeLarge
         case CToolButton.XLarge:
-            return 42
+            return Theme.fontSizeXLarge
+        case CToolButton.XXLarge:
+            return Theme.fontSizeXXLarge
         }
     }
 }

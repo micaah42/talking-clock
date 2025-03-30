@@ -11,6 +11,7 @@ ColumnLayout {
     id: root
     property Alarm alarm
     property bool accepted: false
+    spacing: 8
 
     MediaPlayer {
         id: player
@@ -50,23 +51,24 @@ ColumnLayout {
         }
     }
 
-    spacing: 16
-
     RowLayout {
         spacing: 4
         ValueDisplay {
-            Layout.maximumWidth: parent.width / 2
+            Layout.preferredWidth: parent.width / 2
+            visible: alarm.name !== ''
             labelText: 'Name'
             valueText: alarm.name
         }
         Rectangle {
+            visible: alarm.name !== ''
+            Layout.fillHeight: true
             Layout.preferredWidth: 1
             Layout.rightMargin: 4
             Layout.leftMargin: 4
             opacity: 0.2
         }
         ValueDisplay {
-            Layout.maximumWidth: parent.width / 2
+            Layout.preferredWidth: parent.width / 2
             labelText: 'Time'
             valueText: alarm.time.toLocaleTimeString()
         }
@@ -80,58 +82,16 @@ ColumnLayout {
         opacity: 0.2
     }
 
-    SwipeView {
-        id: view
+    ActionDayItem {
         Layout.fillHeight: true
         Layout.fillWidth: true
-        onCurrentIndexChanged: timer.restart()
         clip: true
-
-        Repeater {
-            model: ActionDayManager.actionDays(new Date(), this)
-
-            delegate: ColumnLayout {
-                CLabel {
-                    Layout.fillWidth: true
-                    text: modelData.name
-                    wrapMode: Text.Wrap
-                    font.pixelSize: 32
-                }
-                CLabel {
-                    Layout.fillWidth: true
-                    text: modelData.desc
-                    wrapMode: Text.Wrap
-                    font.pixelSize: 18
-                }
-                Item {
-                    Layout.fillHeight: true
-                }
-                CLabel {
-                    font.underline: true
-                    font.pixelSize: 18
-                    text: 'Link'
-                }
-            }
-        }
-
-        Timer {
-            id: timer
-            onTriggered: view.currentIndex = (view.currentIndex + 1) % view.count
-            interval: 7500
-            running: true
-        }
-    }
-
-    PageIndicator {
-        Layout.alignment: Qt.AlignHCenter
-        currentIndex: view.currentIndex
-        count: view.count
     }
 
     DelayButton {
         id: bttn
 
-        Layout.preferredHeight: width / 3
+        Layout.preferredHeight: 88
         Layout.fillWidth: true
         delay: accepted ? 0 : 850
 
@@ -157,12 +117,12 @@ ColumnLayout {
 
                 ColorAnimation {
                     from: 'white'
-                    to: ColorService.accent
+                    to: Theme.accent
                     easing.type: Easing.InOutQuad
                     duration: 1000
                 }
                 ColorAnimation {
-                    from: ColorService.accent
+                    from: Theme.accent
                     to: 'white'
                     easing.type: Easing.InOutQuad
                     duration: 1000
@@ -174,10 +134,10 @@ ColumnLayout {
                 orientation: Qt.Horizontal
 
                 GradientStop {
-                    color: ColorService.accent
+                    color: Theme.accent
                 }
                 GradientStop {
-                    color: Qt.lighter(ColorService.accent, 1.35)
+                    color: Theme.accentColor(Material.Shade300)
 
                     SequentialAnimation on position {
                         loops: Animation.Infinite
@@ -198,7 +158,7 @@ ColumnLayout {
                     }
                 }
                 GradientStop {
-                    color: ColorService.accent
+                    color: Theme.accent
                     position: 1
                 }
             }
@@ -213,10 +173,10 @@ ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 16 * (1 - bttn.progress) + 2
 
-                border.color: Qt.lighter(ColorService.primary, 1.25)
+                border.color: Theme.primaryColor(Material.Shade300)
                 border.width: 3.5
 
-                color: bttn.pressed ? Qt.darker(ColorService.primary, 1.2) : ColorService.primary
+                color: bttn.pressed ? Qt.darker(Theme.primary, 1.2) : Theme.primary
                 radius: height / 4
 
                 CLabel {
@@ -237,12 +197,13 @@ ColumnLayout {
         }
 
         Material.roundedScale: Material.LargeScale
-        Layout.preferredHeight: 88
+        Material.background: Theme.accent
+        Layout.preferredHeight: 64
         Layout.fillWidth: true
         font.pixelSize: 32
-        highlighted: true
         text: "Snooze"
     }
+
     Timer {
         onTriggered: root.StackView.view.pop()
         interval: 15 * 60000

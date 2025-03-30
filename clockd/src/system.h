@@ -12,6 +12,7 @@ public:
     explicit System(QObject *parent = nullptr);
 
 public slots:
+    void restartApplication();
     void powerOff();
     void reboot();
 

@@ -6,11 +6,11 @@ import QtQuick.Controls.Material 2.14
 import QtQuick.VirtualKeyboard
 import QtMultimedia 5.15
 
-import Clock 1.0
-import Clock.Main 1.0
-import Clock.Pages.AlarmPage
-import Clock.Controls 1.0
-import Clock.Style 1.0
+import Clock
+import Clock.Main
+import Clock.Alarms
+import Clock.Controls
+import Clock.Style
 
 Window {
     id: window
@@ -22,16 +22,16 @@ Window {
     height: 1080 / 2
 
     visible: true
-    color: ColorService.background
 
     Material.theme: Material.Dark
-    Material.accent: ColorService.accent
-    Material.primary: ColorService.primary
-    Material.background: ColorService.background
-    Material.roundedScale: Material.NotRounded
+    Material.accent: Theme.accentDark
+    Material.primary: Theme.primaryDark
+    Material.background: Theme.background
 
-    property real drawerHeight: 164
-    property real sidebarWidth: width / 3 + 2 * 16 / 3
+    color: Theme.background
+
+    property real sidebarWidth: width / 2
+    property real drawerHeight: 148
 
     SpaceScene {
         anchors.fill: parent
@@ -43,7 +43,7 @@ Window {
         anchors.right: parent.right
         anchors.top: parent.top
 
-        scale: sideBar.open ? 2 / 3 : 1
+        scale: sideBar.open ? 0.69 : 1
         transformOrigin: Item.Center
         Behavior on scale {
             PropertyAnimation {
@@ -97,24 +97,29 @@ Window {
         Card {
             anchors.fill: parent
             anchors.margins: 16
-            anchors.bottomMargin: 0
+            anchors.bottomMargin: 4
             clip: true
 
             StackView {
                 id: sideBarStack
                 anchors.fill: parent
                 anchors.margins: 16
-
-                initialItem: SwipeView {
-                    spacing: 16
-
-                    NextAlarm {
-                        alarm: AlarmService.nextAlarm
-                    }
-                    ActionDayItem {}
-                }
+                anchors.bottomMargin: 0
+                initialItem: InfoItem {}
             }
         }
+    }
+
+    MainScreenNotifications {
+        opacity: drawer.open || sideBar.open || mainMenu.currentPage !== null ? 0 : 1
+
+        Behavior on opacity {
+            PropertyAnimation {}
+        }
+
+        width: parent.width / 3
+        x: 16
+        y: 16
     }
 
     PageLoader {

@@ -30,6 +30,7 @@ public:
 
 public slots:
     void removeAlarm(Alarm *alarm);
+    void addAlarm(Alarm *alarm);
     Alarm *newAlarm();
 
 signals:

@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<CPUMonitor>("Clock", 1, 0, "CPUMonitor", "");
     qmlRegisterSingletonInstance("Clock", 1, 0, "CPUMonitor", &cpu);
 
-    Lighting lighting;
+    Lighting lighting{300};
     qmlRegisterUncreatableType<Pixel>("Clock", 1, 0, "Pixel", "");
     qmlRegisterUncreatableType<Lighting>("Clock", 1, 0, "Lighting", "");
     qmlRegisterUncreatableType<LightMode>("Clock", 1, 0, "LightMode", "");
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<WavingLight>("Clock", 1, 0, "WavingLight", "");
     qmlRegisterUncreatableType<PrettyRandomLight>("Clock", 1, 0, "PrettyRandomLight", "");
     qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
+    qmlRegisterUncreatableType<MonoRotationLight>("Clock", 1, 0, "MonoRotationLight", "");
     qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
     qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
     remoting.registerObject("lights", &lighting);
@@ -136,7 +137,6 @@ int main(int argc, char *argv[])
 
     engine.addImportPath(":/");
     engine.addPluginPath(":/");
-    engine.addImportPath("/home/michael/talking-clock/build/Desktop_Qt_6_5_3_GCC_64bit-Debug/qnetworkmanager");
 
     qInfo() << "loading view...";
     engine.load(url);

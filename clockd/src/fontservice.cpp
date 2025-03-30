@@ -14,12 +14,13 @@ Q_LOGGING_CATEGORY(self, "fonts")
 
 FontService::FontService(QQmlApplicationEngine *parent)
     : QObject(parent)
-    , _fontDirectories(QList<QDir>{QDir(":fonts")})
+    , _fontDirectories(QList<QDir>{QDir(":/fonts")})
     , _engine(parent)
     , _settings{DEFAULT_SETTINGS_SCOPE}
     , _family{"Font/Family", "Working Man"}
 {
     this->refreshFamilies();
+    _families.setFilterCaseSensitivity(Qt::CaseInsensitive);
     _families.setSourceModel(&__families);
     QGuiApplication::setFont(QFont{_family});
 }
@@ -47,8 +48,8 @@ void FontService::refreshFamilies()
         }
     }
 
-    qCInfo(self) << "fonts loaded:" << loaded;
     __families.setStringList(_dataBase.families());
+    qCInfo(self) << "fonts loaded:" << loaded << __families.rowCount();
     emit familiesChanged();
 
     auto current = QGuiApplication::font();

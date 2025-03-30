@@ -50,7 +50,7 @@ Card {
                 anchors.fill: parent
                 asynchronous: true
 
-                source: currentPage ? `qrc:/Clock/Pages/${currentPage.component}Page.qml` : ''
+                sourceComponent: currentPage?.comp || null
                 opacity: status === Loader.Ready ? 1 : 0
 
                 Behavior on opacity {

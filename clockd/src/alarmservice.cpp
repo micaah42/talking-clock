@@ -104,6 +104,16 @@ void AlarmService::registerAlarm(Alarm *alarm)
     }
 
     connect(alarm, &Alarm::nextTimeoutChanged, this, &AlarmService::onTimeoutChanged);
+
+    connect(alarm, &Alarm::destroyed, this, [this, alarm]() {
+        _alarmQueue.remove(alarm->nextTimeout());
+        _timeoutMap.remove(alarm);
+
+        if (!_alarmQueue.empty())
+            this->setNextAlarm(_alarmQueue.first());
+        else
+            this->setNextAlarm(nullptr);
+    });
 }
 
 void AlarmService::saveAlarms()
@@ -199,9 +209,8 @@ void AlarmService::removeAlarm(Alarm *alarm)
     alarm->deleteLater();
 }
 
-Alarm *AlarmService::newAlarm()
+void AlarmService::addAlarm(Alarm *alarm)
 {
-    auto alarm = new Alarm{this};
     this->registerAlarm(alarm);
     _alarmModel.append(alarm);
 
@@ -209,7 +218,11 @@ Alarm *AlarmService::newAlarm()
         this->setNextAlarm(_alarmQueue.first());
     else
         this->setNextAlarm(nullptr);
+}
 
+Alarm *AlarmService::newAlarm()
+{
+    auto alarm = new Alarm{this};
     return alarm;
 }
 

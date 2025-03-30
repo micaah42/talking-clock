@@ -41,10 +41,12 @@ Section {
                 spinBox.from: 500
                 spinBox.to: 10000
             }
-            CSwitch {
-                labelText: 'FPS Counter Visible'
-                onCheckedChanged: SpaceTheme.fpsVisible = checked
-                checked: SpaceTheme.fpsVisible
+            CFontDialog {
+                Layout.preferredHeight: 56
+                Layout.fillWidth: true
+                onFontFamilyAccepted: x => FontService.family = x
+                fontFamily: FontService.family
+                label: 'Choose Font'
             }
             Item {
                 Layout.fillHeight: true
@@ -53,11 +55,10 @@ Section {
         ColumnLayout {
             Layout.maximumWidth: 204
             spacing: 16
-            CFontDialog {
-                Layout.preferredHeight: 56
-                Layout.fillWidth: true
-                onFontFamilyAccepted: x => FontService.family = x
-                fontFamily: FontService.family
+            CSwitch {
+                labelText: 'FPS Counter Visible'
+                onCheckedChanged: SpaceTheme.fpsVisible = checked
+                checked: SpaceTheme.fpsVisible
             }
             CSwitch {
                 labelText: 'Space Ship'

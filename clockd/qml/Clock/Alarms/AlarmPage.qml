@@ -3,28 +3,24 @@ import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
 import QtQuick.Shapes 1.15
 
-import Clock 1.0
+import Clock
 import Clock.Style
-import Clock.Controls 1.0
-import Clock.Pages.AlarmPage 1.0
+import Clock.Controls
 
 Item {
     RowLayout {
         anchors.fill: parent
 
-        NextAlarm {
-            Layout.maximumWidth: 0.3 * parent.width
+        Frame {
+            Layout.preferredWidth: parent.width / 3
             Layout.fillHeight: true
             Layout.margins: 8
-            alarm: AlarmService.nextAlarm
-        }
+            clip: true
 
-        Rectangle {
-            Layout.preferredWidth: 1.5
-            Layout.fillHeight: true
-            Layout.margins: 8
-            radius: width / 2
-            opacity: 0.5
+            NextAlarm {
+                alarm: AlarmService.nextAlarm
+                width: parent.width
+            }
         }
 
         Item {
@@ -40,11 +36,6 @@ Item {
 
                 model: AlarmService.model
 
-                delegate: AlarmItem {
-                    alarm: model.value
-                    width: view.width
-                }
-
                 header: RowLayout {
                     width: parent.width
                     height: 56
@@ -52,15 +43,19 @@ Item {
                     Button {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
-                        font.pixelSize: 24
                         text: "New Alarm"
-                        onClicked: AlarmService.newAlarm()
+                        onClicked: {
+                            const alarm = AlarmService.newAlarm()
+                            alarm.sound = SoundService.availableSounds[0]
+                            AlarmService.addAlarm(alarm)
+                            alarmDialog.alarm = alarm
+                            alarmDialog.open()
+                        }
                     }
 
                     Button {
                         Layout.preferredWidth: height
                         Layout.fillHeight: true
-                        font.pixelSize: 24
                         font.family: Icons.fontFamily
                         text: Icons.more_vert
                         onClicked: menu.open()
@@ -70,33 +65,60 @@ Item {
                             x: parent.width - width
                             y: parent.height + 8
                             MenuItem {
-                                text: '1 Minute'
+                                text: 'New Timer'
                                 onClicked: {
                                     const alarm = AlarmService.newAlarm()
-                                    alarm.time = new Date(new Date().getTime() + 60000)
-                                    alarm.name = '1 Minute from now'
-                                }
-                            }
-                            MenuItem {
-                                text: '30 Seconds'
-                                onClicked: {
-                                    const alarm = AlarmService.newAlarm()
-                                    alarm.time = new Date(new Date().getTime() + 30000)
-                                    alarm.name = '30 Seconds from now'
-                                }
-                            }
-                            MenuItem {
-                                text: '10 Seconds'
-                                onClicked: {
-                                    const alarm = AlarmService.newAlarm()
-                                    alarm.time = new Date(new Date().getTime() + 10000)
-                                    alarm.name = '30 Seconds from now'
+                                    timerDialog.alarm = alarm
+                                    timerDialog.open()
                                 }
                             }
                         }
                     }
                 }
+
+                delegate: AlarmItem {
+                    width: view.width
+                    alarm: modelData
+
+                    onClicked: {
+                        if (wasHeld) {
+                            wasHeld = false
+                            return
+                        }
+
+                        alarmDialog.alarm = alarm
+                        alarmDialog.open()
+                    }
+                }
             }
         }
+    }
+
+    Dialog {
+        id: timerDialog
+        property Alarm alarm
+
+        anchors.centerIn: parent
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        Material.roundedScale: Material.ExtraSmallScale
+        closePolicy: Popup.NoAutoClose
+        title: 'Create Timer'
+
+        contentItem: DurationEdit {
+            id: durationEdit
+        }
+
+        onRejected: alarm.destroy()
+        onAccepted: {
+            alarm.time = new Date(AlarmService.now.getTime() + durationEdit.msecs)
+            AlarmService.addAlarm(alarm)
+        }
+    }
+    AlarmDialog {
+        id: alarmDialog
+    }
+
+    Dialog {
+        id: eventDialog
     }
 }

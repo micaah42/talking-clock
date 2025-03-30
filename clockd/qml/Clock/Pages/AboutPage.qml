@@ -64,53 +64,63 @@ RowLayout {
                 font.pixelSize: 18
             }
 
-            CLabel {
+            Flickable {
+                contentHeight: textColumn.implicitHeight + 16
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                clip: true
 
-                textFormat: Text.RichText
-                wrapMode: Text.WordWrap
+                ColumnLayout {
+                    id: textColumn
+                    width: parent.width
 
-                text: `
-                <p>
-                We built this clock with only the finest of open source software and the most delicate of features.
-                While we cannot offer you a functioning sleep button as of right now, the goal here is to design
-                a fully functioning embedded-linux product and, if possible, a decent clock that can wake you up.
-                </p>
-                `
-            }
+                    CLabel {
+                        Layout.fillWidth: true
+                        textFormat: Text.RichText
+                        wrapMode: Text.WordWrap
 
-            CLabel {
-                Layout.fillWidth: true
-                textFormat: Text.RichText
-                wrapMode: Text.WordWrap
-                font.family: 'Mono'
-                font.pixelSize: 9
+                        text: `
+                        <p>
+                        We built this clock with only the finest of open source software and the most delicate of features.
+                        While we cannot offer you a functioning sleep button as of right now, the goal here is to design
+                        a fully functioning embedded-linux product and, if possible, a decent clock that can wake you up.
+                        </p>
+                        `
+                    }
 
-                text: `
-                <p>
-                Copyright (C) 2024 Michael Wipplinger
-                </p>
+                    CLabel {
+                        Layout.fillWidth: true
+                        textFormat: Text.RichText
+                        wrapMode: Text.WordWrap
+                        font.family: 'Mono'
+                        font.pixelSize: 9
 
-                <p>
-                This program is free software: you can redistribute it and/or modify
-                it under the terms of the GNU General Public License as published by
-                the Free Software Foundation, either version 3 of the License, or
-                (at your option) any later version.
-                </p>
+                        text: `
+                        <p>
+                        Copyright (C) 2024 Michael Wipplinger
+                        </p>
 
-                <p>
-                This program is distributed in the hope that it will be useful,
-                but WITHOUT ANY WARRANTY; without even the implied warranty of
-                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-                GNU General Public License for more details.
-                </p>
+                        <p>
+                        This program is free software: you can redistribute it and/or modify
+                        it under the terms of the GNU General Public License as published by
+                        the Free Software Foundation, either version 3 of the License, or
+                        (at your option) any later version.
+                        </p>
 
-                <p>
-                You should have received a copy of the GNU General Public License
-                along with this program.  If not, see https://www.gnu.org/licenses/.
-                </p>
-                `
+                        <p>
+                        This program is distributed in the hope that it will be useful,
+                        but WITHOUT ANY WARRANTY; without even the implied warranty of
+                        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                        GNU General Public License for more details.
+                        </p>
+
+                        <p>
+                        You should have received a copy of the GNU General Public License
+                        along with this program.  If not, see https://www.gnu.org/licenses/.
+                        </p>
+                        `
+                    }
+                }
             }
         }
     }

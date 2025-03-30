@@ -7,6 +7,8 @@ import Clock 1.0
 import Clock.Style 1.0
 import Clock.Controls 1.0
 import Clock.Pages
+import Clock.Alarms
+import Clock.Settings
 
 Item {
     property variant currentPage: null
@@ -19,14 +21,18 @@ Item {
         anchors.margins: 16
         spacing: 16
 
-        Button {
-            Material.roundedScale: Material.SmallScale
+        MainMenuButton {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            implicitWidth: 0
+
+            name: "Lighting"
+            text: Icons.lightbulb_2
+            comp: Component {
+                LightingPage {}
+            }
 
             property bool wasHeld: false
-            Material.background: Lighting.enabled ? Qt.lighter(ColorService.primary, 1.75) : ColorService.primary
+            Material.background: Lighting.enabled ? Theme.primary : Theme.primaryDark
 
             onPressAndHold: {
                 Lighting.enabled = !Lighting.enabled
@@ -38,51 +44,30 @@ Item {
                     currentPage = page
                 wasHeld = false
             }
-            readonly property var page: {
-                "component": "Lighting",
-                "icon": Icons.lightbulb_2,
-                "name": "Lighting"
-            }
-
-            font.family: Icons.fontFamily
-            font.pixelSize: 88
-            text: page.icon
         }
-        Button {
-            Material.roundedScale: Material.SmallScale
+        MainMenuButton {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            implicitWidth: 0
 
-            Material.background: ColorService.primary
             onClicked: currentPage = page
-            readonly property var page: {
-                "component": "Alarm",
-                "icon": Icons.alarm,
-                "name": "Alarm"
+
+            name: "Alarm"
+            text: Icons.alarm
+            comp: Component {
+                AlarmPage {}
             }
-
-            font.family: Icons.fontFamily
-            font.pixelSize: 88
-            text: page.icon
         }
-        Button {
-            Material.roundedScale: Material.SmallScale
-            Material.background: ColorService.primary
-
+        MainMenuButton {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            implicitWidth: 0
-            onClicked: currentPage = page
-            readonly property var page: {
-                "component": "Settings",
-                "icon": Icons.settings,
-                "name": "Settings"
-            }
 
-            font.family: Icons.fontFamily
-            font.pixelSize: 88
-            text: page.icon
+            onClicked: currentPage = page
+
+            name: "Settings"
+            text: Icons.settings
+            comp: Component {
+                SettingsPage {}
+            }
         }
     }
 }

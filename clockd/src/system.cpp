@@ -17,10 +17,20 @@ System::System(QObject *parent)
     , _managePower{"System/ManagePower", MANAGE_POWER}
 {}
 
+void System::restartApplication()
+{
+    if (_managePower) {
+        QTimer::singleShot(DELAY_TIME, this, []() {
+            QProcess::startDetached("/bin/systemctl", {"restart", "clockd"});
+            QGuiApplication::quit();
+        });
+    }
+}
+
 void System::powerOff()
 {
     if (_managePower) {
-        QTimer::singleShot(DELAY_TIME, []() {
+        QTimer::singleShot(DELAY_TIME, this, []() {
             QProcess::startDetached("/usr/sbin/poweroff");
             QGuiApplication::quit();
         });
@@ -30,7 +40,7 @@ void System::powerOff()
 void System::reboot()
 {
     if (_managePower) {
-        QTimer::singleShot(DELAY_TIME, []() {
+        QTimer::singleShot(DELAY_TIME, this, []() {
             QProcess::startDetached("/usr/sbin/reboot");
             QGuiApplication::quit();
         });
