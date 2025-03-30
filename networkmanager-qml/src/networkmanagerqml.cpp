@@ -3,104 +3,91 @@
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
 #include <QLoggingCategory>
+#include <unistd.h>
 
-#include "wirelessnetworkqml.h"
+#include "dbusreplyqml.h"
+#include "wirelessdeviceqml.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "wireless")
+Q_LOGGING_CATEGORY(self, "nmqml")
 }
 
 NetworkManagerQml::NetworkManagerQml()
 {
+    //_secretAgent = new NM::SecretAgent(QString{"talking-clock:%1"}.arg(getpid()));
     NM::setNetworkingEnabled(true);
+
     qCInfo(self) << "networking enabled:" << NM::isNetworkingEnabled();
-
-    for (const auto &connection : NM::listConnections()) {
-        if (connection->settings()->connectionType() != NM::ConnectionSettings::Wireless)
-            continue;
-
-        auto settings = connection->settings()->setting(NM::Setting::Wireless).dynamicCast<NM::WirelessSetting>();
-        _connections.insert(settings->ssid(), connection);
-    }
 
     const auto interfaces = NM::networkInterfaces();
 
     for (const auto &interface : interfaces)
         if (interface->type() == NM::Device::Wifi) {
             qCInfo(self) << "use wifi interface:" << interface->interfaceName();
-            _wirelessDevice.reset(interface->as<NM::WirelessDevice>());
+            auto device = interface.dynamicCast<NM::WirelessDevice>();
+            this->setWirelessDevice(new WirelessDevice{device, this});
             break;
-        }
+        } else
+            qCWarning(self) << "failed to init interface!";
 
-    connect(_wirelessDevice.get(), &NM::WirelessDevice::networkDisappeared, this, &NetworkManagerQml::onNetworkDisappeared);
-    connect(_wirelessDevice.get(), &NM::WirelessDevice::networkAppeared, this, &NetworkManagerQml::onNetworkAppeared);
-
-    if (_wirelessDevice) {
-        for (auto const &network : _wirelessDevice->networks()) {
-            _wirelessNetworks.append(new WirelessNetwork{network, this});
-            qCInfo(self) << "found network:" << network->ssid();
-        }
-    }
-
-    else
-        qCWarning(self) << "failed to init interface!";
+    auto notifier = NM::notifier();
+    connect(notifier, &NM::Notifier::networkingEnabledChanged, this, &NetworkManagerQml::networkingEnabledChanged);
+    connect(notifier, &NM::Notifier::wirelessEnabledChanged, this, &NetworkManagerQml::wirelessEnabledChanged);
 }
 
-void NetworkManagerQml::onNetworkDisappeared(const QString &ssid)
+WirelessDevice *NetworkManagerQml::wirelessDevice() const
 {
-    auto networks = _wirelessDevice->networks();
-    for (int i = 0; i < networks.size(); i++)
-        if (networks[i]->ssid() == ssid)
-            _wirelessNetworks.removeAt(i);
+    return _wirelessDevice;
 }
 
-void NetworkManagerQml::onNetworkAppeared(const QString &ssid)
+void NetworkManagerQml::setWirelessDevice(WirelessDevice *newWirelessDevice)
 {
-    NM::WirelessNetwork::Ptr newNetwork = _wirelessDevice->findNetwork(ssid);
-
-    if (newNetwork.isNull()) {
-        qWarning() << "failed to find appeared network:" << ssid;
+    if (_wirelessDevice == newWirelessDevice)
         return;
-    }
-
-    for (int i = 0; i < _wirelessNetworks.size() - 1; i++) {
-        if (_wirelessNetworks.at(i + 1)->signalStrength() < newNetwork->signalStrength()) {
-            auto network = new WirelessNetwork{newNetwork, this};
-            _wirelessNetworks.insert(i, network);
-            break;
-        }
-    }
+    _wirelessDevice = newWirelessDevice;
+    emit wirelessDeviceChanged();
 }
 
-void NetworkManagerQml::onConnectionRemoved(const QString &path)
+DBusReply *NetworkManagerQml::addAndActivateConnection(Settings *settings, QObject *parent)
 {
-    for (int i = 0; i < _wirelessNetworks.size(); i++) {
-        auto network = _wirelessNetworks.at(i);
-
-        if (network->connection()->path() == path) {
-            network->setWirelessSetting(nullptr);
-            network->setConnection(nullptr);
-        }
-    }
+    auto reply = NM::addAndActivateConnection(settings->connectionSettings()->toMap(), "/", "/");
+    return parent ? new DBusReply{reply, parent} : nullptr;
 }
 
-void NetworkManagerQml::onConnectionAdded(const QString &path)
+DBusReply *NetworkManagerQml::activateConnection(Connection *connection, QObject *parent)
 {
-    auto connection = NM::Connection::Ptr::create(path);
-    if (connection->settings()->connectionType() != NM::ConnectionSettings::Wireless)
+    auto reply = NM::activateConnection(connection->connection()->path(), "/", "/");
+    return parent ? new DBusReply{reply, parent} : nullptr;
+}
+
+DBusReply *NetworkManagerQml::addConnection(Settings *settings, QObject *parent)
+{
+    auto reply = NM::addConnection(settings->connectionSettings()->toMap());
+    return parent ? new DBusReply{reply, parent} : nullptr;
+}
+
+bool NetworkManagerQml::networkingEnabled() const
+{
+    return NM::isNetworkingEnabled();
+}
+
+void NetworkManagerQml::setNetworkingEnabled(bool newNetworkingEnabled)
+{
+    if (NM::isNetworkingEnabled() == newNetworkingEnabled)
         return;
 
-    auto settings = connection->settings()->setting(NM::Setting::Wireless).dynamicCast<NM::WirelessSetting>();
-    _connections.insert(settings->ssid(), connection);
+    NM::setNetworkingEnabled(newNetworkingEnabled);
 }
 
-QListModel<WirelessNetwork *> *NetworkManagerQml::wirelessNetworks()
+bool NetworkManagerQml::wirelessEnabled() const
 {
-    return &_wirelessNetworks;
+    return NM::isWirelessEnabled();
 }
 
-void NetworkManagerQml::scan()
+void NetworkManagerQml::setWirelessEnabled(bool newWirelessEnabled)
 {
-    _wirelessDevice->requestScan();
-}
+    if (NM::isWirelessEnabled() == newWirelessEnabled)
+        return;
 
+    NM::setWirelessEnabled(newWirelessEnabled);
+}

@@ -5,7 +5,8 @@
 #include <NetworkManagerQt/WirelessNetwork>
 #include <QQmlEngine>
 
-#include "wirelesssettingsqml.h"
+#include "connectionqml.h"
+#include "wirelesssecuritysettingqml.h"
 
 namespace NM = NetworkManager;
 
@@ -17,7 +18,7 @@ class WirelessNetwork : public QObject
     Q_PROPERTY(QString ssid READ ssid CONSTANT FINAL)
     Q_PROPERTY(SecurityType security READ security NOTIFY securityChanged FINAL)
     Q_PROPERTY(int signalStrength READ signalStrength NOTIFY signalStrengthChanged FINAL)
-    Q_PROPERTY(WirelessSetting *wirelessSetting READ wirelessSetting WRITE setWirelessSetting NOTIFY wirelessSettingChanged FINAL)
+    Q_PROPERTY(Connection *connection READ connection WRITE setConnection NOTIFY connectionChanged FINAL)
 
 public:
     enum SecurityType {
@@ -36,37 +37,34 @@ public:
     };
     Q_ENUM(SecurityType)
 
-    static WirelessSetting::KeyMgmt securityTypeToKeyMgmt(SecurityType securityType);
+    static WirelessSecuritySetting::KeyMgmt securityTypeToKeyMgmt(SecurityType securityType);
 
     QString ssid() const;
     int signalStrength() const;
     SecurityType security() const;
 
-    WirelessSetting *wirelessSetting() const;
-    void setWirelessSetting(WirelessSetting *newWirelessSetting);
-
-    NM::Connection::Ptr connection() const;
-    void setConnection(NM::Connection::Ptr newConnection);
+    Connection *connection() const;
+    void setConnection(Connection *newConnection);
 
 public slots:
-    WirelessSetting *newWirelessSettings(QObject *parent);
-    //void updateSettings(WirelessSetting *newSettings);
+    Settings *newSettings(QObject *parent);
     void refreshSecurityType();
 
 signals:
-    void wirelessSettingChanged();
     void signalStrengthChanged();
     void securityChanged();
+    void connectionChanged();
 
 protected:
-    friend class NetworkManagerQml;
+    friend class WirelessDevice;
     explicit WirelessNetwork(const NM::WirelessNetwork::Ptr &wirelessNetwork, QObject *parent);
     void setSecurity(SecurityType newSecurity);
 
+    void onConnectionDestroyed();
+
 private:
     NM::WirelessNetwork::Ptr _wirelessNetwork;
-    WirelessSetting *_wirelessSetting = nullptr;
-    NM::Connection::Ptr _connection;
+    Connection *_connection = nullptr;
     SecurityType _security;
 };
 

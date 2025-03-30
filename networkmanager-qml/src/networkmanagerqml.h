@@ -5,43 +5,61 @@
 #include <QQmlEngine>
 
 #include <NetworkManagerQt/Connection>
+#include <NetworkManagerQt/SecretAgent>
 #include <NetworkManagerQt/WirelessDevice>
 
-#include "qlistmodel.h"
+#include "settingqml.h"
 
-#include "wirelesssettingsqml.h"
+class WirelessDevice;
+Q_DECLARE_OPAQUE_POINTER(WirelessDevice *);
+
+//class Settings;
+//Q_DECLARE_OPAQUE_POINTER(Settings *);
+
+class DBusReply;
+Q_DECLARE_OPAQUE_POINTER(DBusReply *);
+
+class Connection;
+Q_DECLARE_OPAQUE_POINTER(Connection *);
 
 namespace NM = NetworkManager;
-
-class WirelessNetwork;
-class WirelessSetting;
-class QPainter;
 
 class NetworkManagerQml : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
-    Q_PROPERTY(QListModelBase *wirelessNetworks READ wirelessNetworks CONSTANT FINAL)
+    Q_PROPERTY(WirelessDevice *wirelessDevice READ wirelessDevice WRITE setWirelessDevice NOTIFY wirelessDeviceChanged FINAL)
+    Q_PROPERTY(bool networkingEnabled READ networkingEnabled WRITE setNetworkingEnabled NOTIFY networkingEnabledChanged FINAL)
+    Q_PROPERTY(bool wirelessEnabled READ wirelessEnabled WRITE setWirelessEnabled NOTIFY wirelessEnabledChanged FINAL)
 
 public:
     explicit NetworkManagerQml();
-    QListModel<WirelessNetwork *> *wirelessNetworks();
+
+    WirelessDevice *wirelessDevice() const;
+    void setWirelessDevice(WirelessDevice *newWirelessDevice);
+
+    bool networkingEnabled() const;
+    void setNetworkingEnabled(bool newNetworkingEnabled);
+
+    bool wirelessEnabled() const;
+    void setWirelessEnabled(bool newWirelessEnabled);
 
 public slots:
-    void scan();
+    DBusReply *addAndActivateConnection(Settings *settings, QObject *parent = nullptr);
+    DBusReply *activateConnection(Connection *connection, QObject *parent = nullptr);
+    DBusReply *addConnection(Settings *settings, QObject *parent = nullptr);
 
-protected:
-    void onNetworkDisappeared(const QString &ssid);
-    void onNetworkAppeared(const QString &ssid);
+signals:
+    void wirelessDeviceChanged();
 
-    void onConnectionRemoved(const QString &path);
-    void onConnectionAdded(const QString &path);
+    void networkingEnabledChanged();
+
+    void wirelessEnabledChanged();
 
 private:
-    NM::WirelessDevice::Ptr _wirelessDevice;
-    QListModel<WirelessNetwork *> _wirelessNetworks;
-    QMap<QString, NM::Connection::Ptr> _connections;
+    NM::SecretAgent *_secretAgent;
+    WirelessDevice *_wirelessDevice;
 };
 
 #endif // NETWORKMANAGERQML_H

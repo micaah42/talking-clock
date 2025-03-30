@@ -14,26 +14,21 @@ WirelessNetwork::WirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &wir
     , _security{UnknownSecurity}
 
 {
+    connect(wirelessNetwork.get(), &NM::WirelessNetwork::destroyed, this, [this]() { this->deleteLater(); });
     connect(wirelessNetwork.get(), &NM::WirelessNetwork::signalStrengthChanged, this, &WirelessNetwork::signalStrengthChanged);
     this->refreshSecurityType();
 
-    for (auto const &connection : NM::listConnections()) {
-        auto settings = connection->settings();
-        if (settings.isNull() || settings->connectionType() != NM::ConnectionSettings::Wireless)
-            continue;
+    const auto connections = NM::listConnections();
 
-        auto wirelessSetting = settings->setting(NM::Setting::Wireless).dynamicCast<NM::WirelessSetting>();
-        if (wirelessSetting.isNull())
-            continue;
+    for (auto const &connection : connections)
+        if (connection->settings()->connectionType() == NM::ConnectionSettings::Wireless) {
+            auto wirelessSetting = connection->settings()->setting(NM::Setting::Wireless).dynamicCast<NM::WirelessSetting>();
 
-        if (wirelessSetting->ssid() != _wirelessNetwork->ssid())
-            continue;
-
-        _connection = connection;
-        this->setWirelessSetting(new WirelessSetting{settings, this});
-        qCInfo(self) << "network has connection:" << *settings;
-        break;
-    }
+            if (wirelessSetting && wirelessSetting->ssid() == this->ssid()) {
+                this->setConnection(new Connection{connection, this});
+                break;
+            }
+        }
 }
 
 void WirelessNetwork::refreshSecurityType()
@@ -62,28 +57,53 @@ int WirelessNetwork::signalStrength() const
     return _wirelessNetwork->signalStrength();
 }
 
-WirelessSetting::KeyMgmt WirelessNetwork::securityTypeToKeyMgmt(SecurityType securityType)
+Settings *WirelessNetwork::newSettings(QObject *parent)
+{
+    auto device = NM::findNetworkInterface(_wirelessNetwork->device())->as<NM::WirelessDevice>();
+
+    if (device == nullptr) {
+        qCWarning(self) << "cannot find interface!";
+        return nullptr;
+    }
+
+    auto settings = NM::ConnectionSettings::Ptr::create(NM::ConnectionSettings::Wireless);
+    settings->setUuid(NM::ConnectionSettings::createNewUuid());
+    settings->setInterfaceName(device->interfaceName());
+    settings->setId(_wirelessNetwork->ssid());
+
+    auto wirelessSetting = settings->setting(NM::Setting::Wireless).dynamicCast<NM::WirelessSetting>();
+    wirelessSetting->setSsid(_wirelessNetwork->ssid().toUtf8());
+
+    auto wirelessSecuritySetting = settings->setting(NM::Setting::WirelessSecurity).dynamicCast<NM::WirelessSecuritySetting>();
+    wirelessSecuritySetting->setKeyMgmt(NM::WirelessSecuritySetting::WpaPsk);
+    qCDebug(self) << "initial setting:" << *settings;
+
+    return new Settings{settings, parent};
+}
+
+WirelessSecuritySetting::KeyMgmt WirelessNetwork::securityTypeToKeyMgmt(SecurityType securityType)
 {
     switch (securityType) {
     case StaticWep:
     case DynamicWep:
-        return WirelessSetting::Wep;
+        return WirelessSecuritySetting::Wep;
     case WpaPsk:
     case Wpa2Psk:
-        return WirelessSetting::WpaPsk;
+        return WirelessSecuritySetting::WpaPsk;
     case WpaEap:
     case Wpa2Eap:
-        return WirelessSetting::WpaEap;
+        return WirelessSecuritySetting::WpaEap;
     case SAE:
-        return WirelessSetting::SAE;
+        return WirelessSecuritySetting::SAE;
     case Wpa3SuiteB192:
-        return WirelessSetting::WpaEapSuiteB192;
+        return WirelessSecuritySetting::WpaEapSuiteB192;
     case OWE:
-        return WirelessSetting::OWE;
+        return WirelessSecuritySetting::OWE;
     case UnknownSecurity:
     case NoneSecurity:
     case Leap:
-        return WirelessSetting::Unknown;
+    default:
+        return WirelessSecuritySetting::Unknown;
     }
 }
 
@@ -106,71 +126,27 @@ void WirelessNetwork::setSecurity(SecurityType newSecurity)
     emit securityChanged();
 }
 
-NM::Connection::Ptr WirelessNetwork::connection() const
+void WirelessNetwork::onConnectionDestroyed()
+{
+    this->setConnection(nullptr);
+}
+
+Connection *WirelessNetwork::connection() const
 {
     return _connection;
 }
 
-void WirelessNetwork::setConnection(NM::Connection::Ptr newConnection)
+void WirelessNetwork::setConnection(Connection *newConnection)
 {
-    _connection = newConnection;
-}
-
-WirelessSetting *WirelessNetwork::wirelessSetting() const
-{
-    return _wirelessSetting;
-}
-
-WirelessSetting *WirelessNetwork::newWirelessSettings(QObject *parent)
-{
-    if (_wirelessSetting) {
-        auto settings = NM::ConnectionSettings::Ptr::create(_wirelessSetting->settings()->toMap());
-        return new WirelessSetting{settings, this};
-    }
-
-    auto device = NM::findNetworkInterface(_wirelessNetwork->device())->as<NM::WirelessDevice>();
-
-    if (device == nullptr) {
-        qCWarning(self) << "cannot find interface!";
-        return nullptr;
-    }
-
-    auto settings = NM::ConnectionSettings::Ptr::create(NM::ConnectionSettings::Wireless);
-    settings->setUuid(NM::ConnectionSettings::createNewUuid());
-    settings->setInterfaceName(device->interfaceName());
-    settings->setId(_wirelessNetwork->ssid());
-
-    auto newSettings = new WirelessSetting{settings, parent};
-    newSettings->setSsid(_wirelessNetwork->ssid().toUtf8());
-    newSettings->setKeyMgmt(WirelessSetting::WpaPsk);
-    qCDebug(self) << "initial setting:" << *settings;
-
-    return newSettings;
-}
-
-void WirelessNetwork::setWirelessSetting(WirelessSetting *newWirelessSetting)
-{
-    if (_wirelessSetting == newWirelessSetting)
+    if (_connection == newConnection)
         return;
 
-    if (_connection) {
-        auto pending = _connection->update(newWirelessSetting->settings()->toMap());
-        auto watcher = new QDBusPendingCallWatcher{pending};
-        connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, pending]() {
-            if (pending.isError() || !pending.isFinished())
-                qCWarning(self) << "failed to update connection!";
-            watcher->deleteLater();
-        });
-    }
+    if (_connection)
+        disconnect(_connection, &Connection::destroyed, this, &WirelessNetwork::onConnectionDestroyed);
 
-    else {
-        qCDebug(self) << *newWirelessSetting->settings();
-        auto pending = NM::addConnection(newWirelessSetting->settings()->toMap());
-        auto watcher = new QDBusPendingCallWatcher{pending};
-        connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, pending]() {
-            if (pending.isError() || !pending.isFinished())
-                qCWarning(self) << "failed to add connection!";
-            watcher->deleteLater();
-        });
-    }
+    _connection = newConnection;
+    emit connectionChanged();
+
+    if (_connection)
+        connect(_connection, &Connection::destroyed, this, &WirelessNetwork::onConnectionDestroyed);
 }

@@ -19,14 +19,27 @@ qt_add_qml_module(${PROJECT_NAME}
     src/networkmanagerqml.cpp
     src/networkmanagerqml.h
 
-    #src/wirelessdeviceqml.cpp
-    #src/wirelessdeviceqml.h
+    src/wirelessdeviceqml.cpp
+    src/wirelessdeviceqml.h
 
     src/wirelessnetworkqml.cpp
     src/wirelessnetworkqml.h
 
-    src/wirelesssettingsqml.cpp
-    src/wirelesssettingsqml.h
+    src/wirelesssettingqml.cpp
+    src/wirelesssettingqml.h
+
+    src/connectionqml.cpp
+    src/connectionqml.h
+
+    src/settingqml.cpp
+    src/settingqml.h
+
+    src/wirelesssecuritysettingqml.cpp
+    src/wirelesssecuritysettingqml.h
+
+    src/dbusreplyqml.cpp
+    src/dbusreplyqml.h
+    SOURCES src/activeconnection.h src/activeconnection.cpp
 
 
 )
