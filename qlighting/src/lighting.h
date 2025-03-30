@@ -2,13 +2,17 @@
 #define LIGHTING_H
 
 #include <QObject>
+#include <memory>
 
 #include "lightmode.h"
 #include "pixel.h"
 
+#include "monorotation.h"
 #include "pulsatinglight.h"
 #include "staticlight.h"
 #include "wavinglight.h"
+
+struct ws2811_t;
 
 class Lighting : public QObject
 {
@@ -19,9 +23,11 @@ class Lighting : public QObject
     Q_PROPERTY(StaticLight *staticLight READ staticLight CONSTANT FINAL)
     Q_PROPERTY(WavingLight *wavingLight READ wavingLight CONSTANT FINAL)
     Q_PROPERTY(PulsatingLight *pulsatingLight READ pulsatingLight CONSTANT FINAL)
+    Q_PROPERTY(MonoRotationLight *monoRotationLight READ monoRotationLight CONSTANT FINAL)
 
 public:
-    explicit Lighting(QObject *parent = nullptr);
+    explicit Lighting(int ledCount, QObject *parent = nullptr);
+    ~Lighting();
 
     LightMode *mode() const;
     void setMode(LightMode *newMode);
@@ -41,6 +47,7 @@ public:
     StaticLight *staticLight() const;
     WavingLight *wavingLight() const;
     PulsatingLight *pulsatingLight() const;
+    MonoRotationLight *monoRotationLight() const;
 
 signals:
     void modeChanged();
@@ -53,7 +60,7 @@ protected:
     friend LightMode;
 
 private:
-    struct LightingPrivate *_d;
+    std::unique_ptr<ws2811_t> _ws2811;
     LightMode *_mode = nullptr;
     double _brightness;
     bool _enabled;
@@ -61,6 +68,7 @@ private:
     StaticLight *_staticLight;
     WavingLight *_wavingLight;
     PulsatingLight *_pulsatingLight;
+    MonoRotationLight *_monoRotationLight;
 };
 
 #endif // LIGHTING_H

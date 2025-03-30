@@ -17,7 +17,6 @@ public:
     explicit StaticLight(Lighting &lighting);
 
     virtual QString name() const override { return "Static"; };
-
     virtual void start() override { apply(); };
     virtual void stop() override {};
 

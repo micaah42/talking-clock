@@ -39,6 +39,9 @@ add_library(${PROJECT_NAME} SHARED
 
     src/lightingdisplay.cpp
     src/lightingdisplay.h
+
+    src/monorotation.cpp
+    src/monorotation.h
 )
 
 
@@ -53,6 +56,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
+    ws2811
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -65,6 +69,20 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
+
+
+
+add_executable(${PROJECT_NAME}-cli
+    src/main.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}-cli PRIVATE
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Gui
+    ${PROJECT_NAME}
+)
+
+install(TARGETS ${PROJECT_NAME}-cli)
 
 # include(CTest)
 #
