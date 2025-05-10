@@ -6,6 +6,8 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
+#include "orm/db.hpp"
+
 #include <qobjectregistry.h>
 
 #include "about.h"
@@ -28,6 +30,7 @@
 #include "spacetheme.h"
 #include "staticlight.h"
 #include "system.h"
+#include "systemlight.h"
 #include "wavinglight.h"
 #include "websocketserver.h"
 
@@ -55,6 +58,14 @@ int main(int argc, char *argv[])
 #ifndef Q_PROCESSOR_X86_64
     app.setOverrideCursor(QCursor(Qt::BlankCursor));
 #endif
+
+    auto manager = Orm::DB::create({
+        {"driver", "QSQLITE"},
+        {"database", qEnvironmentVariable("DB_DATABASE", "./share/clockd/actiondays.sqlite")},
+        {"foreign_key_constraints", qEnvironmentVariable("DB_FOREIGN_KEYS", "true")},
+        {"check_database_exists", true},
+        {"prefix", ""},
+    });
 
     QQmlApplicationEngine engine;
     engine.addImportPath(":/");
@@ -100,6 +111,11 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<CPUMonitor>("Clock", 1, 0, "CPUMonitor", "");
     qmlRegisterSingletonInstance("Clock", 1, 0, "CPUMonitor", &cpu);
 
+    SystemLightManager systemLightManager;
+    qmlRegisterUncreatableType<SystemLight>("Clock", 1, 0, "SystemLight", "");
+    qmlRegisterUncreatableType<SystemLightManager>("Clock", 1, 0, "SystemLightManager", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "SystemLightManager", &systemLightManager);
+
     Lighting lighting{300};
     qmlRegisterUncreatableType<Pixel>("Clock", 1, 0, "Pixel", "");
     qmlRegisterUncreatableType<Lighting>("Clock", 1, 0, "Lighting", "");
@@ -109,6 +125,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<PrettyRandomLight>("Clock", 1, 0, "PrettyRandomLight", "");
     qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
     qmlRegisterUncreatableType<MonoRotationLight>("Clock", 1, 0, "MonoRotationLight", "");
+    qmlRegisterUncreatableType<RaggedLight>("Clock", 1, 0, "RaggedLight", "");
     qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
     qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
     remoting.registerObject("lights", &lighting);

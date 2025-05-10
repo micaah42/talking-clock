@@ -2,11 +2,15 @@
 
 #include <QLoggingCategory>
 
+#include <orm/db.hpp>
+
 #include "pathservice.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "actiondays")
 }
+
+using namespace Orm;
 
 ActionDayService::ActionDayService(QObject *parent)
     : QObject{parent}
@@ -21,48 +25,11 @@ ActionDayService::ActionDayService(QObject *parent)
 
 QList<ActionDay *> ActionDayService::actionDays(const QDate &date, QObject *parent)
 {
-    if (!_file.open(QIODevice::ReadOnly)) {
-        qCCritical(self) << "failed to open action day file" << _file.errorString();
-        return {};
-    }
-
-    auto dateString = date.toString("0004-MM-dd").toUtf8();
-
-    while (!_file.atEnd()) {
-        auto line = _file.readLine();
-
-        if (!line.startsWith(dateString))
-            continue;
-
-        QList<ActionDay *> days;
-
-        while (true) {
-            if (!line.startsWith(dateString))
-                break;
-
-            auto sections = line.split(',');
-            if (sections.size() != 4) {
-                qCWarning(self) << "ignoring invalid line:" << line;
-                line = _file.readLine();
-                continue;
-            }
-
-            auto day = new ActionDay{parent};
-            day->setDate(QDate::fromString(sections[0], "yyyy-MM-dd"));
-            day->setName(sections[1]);
-            day->setDesc(sections[2]);
-            day->setLink(sections[3]);
-            days.append(day);
-            line = _file.readLine();
-        }
-
-        qCInfo(self) << "found" << days.size() << "action days for" << date;
-        _file.close();
-        return days;
-    }
-
-    _file.close();
-    return {};
+    auto query = _model.queryBuilder();
+    query->whereEq("date", date.toString("MM-dd"));
+    QList<ActionDay *> actionDays = _model.get(query, this);
+    qCInfo(self) << "found" << actionDays.size() << "action days for" << date;
+    return actionDays;
 }
 
 void ActionDayService::onTimeout()
@@ -146,4 +113,17 @@ void ActionDay::setLink(const QString &newLink)
 const QList<ActionDay *> &ActionDayService::days() const
 {
     return _days;
+}
+
+QString ActionDay::icon() const
+{
+    return m_icon;
+}
+
+void ActionDay::setIcon(const QString &newIcon)
+{
+    if (m_icon == newIcon)
+        return;
+    m_icon = newIcon;
+    emit iconChanged();
 }

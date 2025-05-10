@@ -1,22 +1,18 @@
-#ifndef SETTING_H
-#define SETTING_H
+#ifndef SETTING-OLD_H
+#define SETTING-OLD_H
 
 #include <QJsonArray>
 #include <QObject>
 #include <QSettings>
 #include <QVariant>
 
-#ifdef Q_PROCESSOR_X86_64
-#define DEFAULT_SETTINGS_SCOPE QSettings::UserScope
-#else
-#define DEFAULT_SETTINGS_SCOPE QSettings::SystemScope
-#endif
+#include "unistd.h"
 
 template<class T>
-class Setting
+class SettingOld
 {
 public:
-    explicit Setting(const QString &key, const T &defaultValue)
+    explicit SettingOld(const QString &key, const T &defaultValue)
         : _key{key} //
         , _t{_settings().value(key, QVariant::fromValue(defaultValue)).template value<T>()} {};
 
@@ -41,10 +37,11 @@ private:
 };
 
 template<class T>
-QSettings &Setting<T>::_settings()
+QSettings &SettingOld<T>::_settings()
 {
-    static QSettings settings{DEFAULT_SETTINGS_SCOPE};
+    static QSettings settings{geteuid() == 0 ? QSettings::SystemScope : QSettings::UserScope};
+    qInfo() << "init settings file:" << settings.fileName();
     return settings;
 }
 
-#endif // SETTING_H
+#endif // SETTING-OLD_H

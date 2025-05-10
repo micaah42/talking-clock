@@ -5,12 +5,14 @@ import QtQuick.Controls.Material
 import Clock
 import Clock.Style
 import Clock.Controls
+import Clock.Pages.Lighting
 
 ColumnLayout {
     property StaticLight staticLight: Lighting.staticLight
     property WavingLight wavingLight: Lighting.wavingLight
     property PulsatingLight pulsatingLight: Lighting.pulsatingLight
     property MonoRotationLight monoRotationLight: Lighting.monoRotationLight
+    property RaggedLight raggedLight: Lighting.raggedLight
     readonly property var availableLightModes: Array.from(swipeView.contentChildren).map(x => x.lightMode)
 
     readonly property var palettes: Palettes.palettes
@@ -95,72 +97,12 @@ ColumnLayout {
                 spacing: 32
                 clip: true
 
-                GridLayout {
+                PalettePicker {
                     property LightMode lightMode: staticLight
-                    columns: 8
-                    rows: 6
-
-                    Dialog {
-                        id: customColorPopup
-                        anchors.centerIn: Overlay.overlay
-                        height: 7 * window.height / 8
-                        width: 7 * window.width / 8
-
-                        title: 'Custom Color'
-
-                        contentItem: ColorPicker {
-                            id: customColorPicker
-                            onCurrentColorChanged: staticLight.color = currentColor
-                            value: staticLight.color
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.columnSpan: parent.columns
-
-                        CToolButton {
-                            onClicked: currentIndex -= 1
-                            text: Icons.chevron_backward
-                        }
-                        CLabel {
-                            horizontalAlignment: Text.AlignHCenter
-                            Layout.fillWidth: true
-                            text: currentPalette.name
-                        }
-
-                        CToolButton {
-                            onClicked: currentIndex += 1
-                            text: Icons.chevron_forward
-                        }
-                    }
-
-                    Repeater {
-                        model: currentPalette.colors
-                        delegate: Button {
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                            onClicked: staticLight.color = modelData
-                            Material.background: modelData
-                            implicitHeight: 0
-                            bottomInset: 0
-                            topInset: 0
-                        }
-                    }
-
-                    Button {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        onClicked: customColorPopup.open()
-                        Material.background: customColorPicker.currentColor
-                        font.family: Icons.fontFamily
-                        text: Icons.colors
-                        implicitHeight: 0
-                        bottomInset: 0
-                        topInset: 0
-                    }
+                    onValueEdited: newValue => staticLight.color = newValue
+                    value: staticLight.color
                 }
+
                 GridLayout {
                     id: mono
                     onCurrentPaletteChanged: monoRotationLight.colors = currentPalette.colors
@@ -246,8 +188,10 @@ ColumnLayout {
                         }
                         CSpinBox {
                             labelText: 'Speed'
-                            spinBox.onValueChanged: wavingLight.speed = spinBox.value
-                            spinBox.value: wavingLight.speed
+                            spinBox.onValueChanged: wavingLight.speed = spinBox.value / 10
+                            spinBox.value: 10 * wavingLight.speed
+                            spinBox.from: 1
+                            spinBox.to: 25
                         }
                         Item {
                             Layout.fillHeight: true
@@ -296,6 +240,10 @@ ColumnLayout {
                             Layout.fillHeight: true
                         }
                     }
+                }
+                Item {
+                    Component.onCompleted: console.log(pulsatingLight, this, width, height)
+                    property LightMode lightMode: raggedLight
                 }
             }
         }

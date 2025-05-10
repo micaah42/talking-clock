@@ -3,16 +3,12 @@
 
 #include <QColor>
 #include <QObject>
-#include <QTimer>
-#include <QVariant>
 
 #include "lightmode.h"
 
-class WavingLight : public LightMode
+class WavingLight : public AnimatedLightMode
 {
     Q_OBJECT
-    Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged FINAL)
-    Q_PROPERTY(double speed READ speed WRITE setSpeed NOTIFY speedChanged FINAL)
     Q_PROPERTY(int length READ length WRITE setLength NOTIFY lengthChanged FINAL)
     Q_PROPERTY(QColor a READ a WRITE setA NOTIFY aChanged FINAL)
     Q_PROPERTY(QColor b READ b WRITE setB NOTIFY bChanged FINAL)
@@ -20,8 +16,7 @@ class WavingLight : public LightMode
 public:
     explicit WavingLight(Lighting &lighting);
 
-    double speed() const;
-    void setSpeed(double newSpeed);
+    virtual QString name() const override { return "Waving"; };
 
     int length() const;
     void setLength(int newLength);
@@ -32,35 +27,19 @@ public:
     QColor b() const;
     void setB(const QColor &newB);
 
-    int interval() const;
-    void setInterval(int newInterval);
-
 signals:
-    void speedChanged();
     void lengthChanged();
     void aChanged();
     void bChanged();
-    void intervalChanged();
 
 protected:
-    void setupGradient();
-    void onTimeout();
+    virtual void animate(double delta) override;
 
 private:
-    QList<QColor> _colors;
-    QTimer _timer;
-
-    double m_speed;
-    int m_length;
-    QColor m_a;
-    QColor m_b;
-    int m_shift;
-
-    // LightMode interface
-public:
-    virtual QString name() const override { return "Waving"; };
-    virtual void start() override { _timer.start(); };
-    virtual void stop() override { _timer.stop(); };
+    int _length;
+    QColor _a;
+    QColor _b;
+    double _t;
 };
 
 #endif // WAVINGLIGHT_H

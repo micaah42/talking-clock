@@ -5,10 +5,9 @@ import QtQuick.Controls 2.14
 import QtQml.Models
 
 import Clock
+import Clock.Pages
 import Clock.Style
 import Clock.Controls
-import Clock.Settings
-import Clock.Pages
 
 Item {
     RowLayout {
@@ -64,30 +63,12 @@ Item {
             Layout.fillWidth: true
             interactive: false
             spacing: 8
-            GeneralSection {}
 
+            GeneralSection {}
             WirelessSection {}
             AppearenceSection {}
-
-            Section {
-                title: 'Paired Devices'
-                icon: Icons.devices
-
-                ListView {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-
-                    model: ClientService.clients
-
-                    delegate: ItemDelegate {
-                        property Client client: modelData
-                        width: ListView.view.width
-                        height: 60
-                        text: client.ip
-                    }
-                }
-            }
-
+            PairedDevicesSection {}
+            SystemLightsSection {}
             Item {
                 property string title: 'About'
                 property string icon: Icons.info

@@ -16,7 +16,6 @@ FontService::FontService(QQmlApplicationEngine *parent)
     : QObject(parent)
     , _fontDirectories(QList<QDir>{QDir(":/fonts")})
     , _engine(parent)
-    , _settings{DEFAULT_SETTINGS_SCOPE}
     , _family{"Font/Family", "Working Man"}
 {
     this->refreshFamilies();

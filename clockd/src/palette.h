@@ -53,7 +53,6 @@ signals:
 
 private:
     QColor _primary, _darkPrimary, _accent, _darkAccent, _background;
-    QSettings _settings;
     Setting<double> _frontlight;
     Setting<double> _backlight;
 

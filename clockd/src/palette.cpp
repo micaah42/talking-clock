@@ -2,7 +2,6 @@
 
 Palette::Palette(QObject *parent)
     : QObject{nullptr}
-    , _settings{DEFAULT_SETTINGS_SCOPE}
     , _primary{0x38, 0x35, 0x8C}
     , _darkPrimary{0x1A, 0x19, 0x40}
     , _accent{0xD9, 0x30, 0x30}

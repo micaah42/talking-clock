@@ -5,5 +5,5 @@ Label {
     //    topPadding: -font.pixelSize / 8
     //    bottomPadding: font.pixelSize / 8
     font.family: Icons.fontFamily
-    font.pixelSize: 32
+    font.pixelSize: Theme.fontSizeLarge
 }

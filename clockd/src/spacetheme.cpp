@@ -2,7 +2,6 @@
 
 SpaceTheme::SpaceTheme(QObject *parent)
     : QObject{parent}
-    , _settings{DEFAULT_SETTINGS_SCOPE}
     , _clockSize{"SpaceBackground/ClockSize", 1.4}
     , _spaceShip{"SpaceBackground/SpaceShip", false}
     , _animatedStars{"SpaceBackground/AnimatedStars", 20}

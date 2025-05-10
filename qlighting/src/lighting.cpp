@@ -41,6 +41,7 @@ Lighting::Lighting(int ledCount, QObject *parent)
     , _wavingLight{new WavingLight{*this}}
     , _pulsatingLight{new PulsatingLight{*this}}
     , _monoRotationLight{new MonoRotationLight{*this}}
+    , _raggedLight{new RaggedLight{*this}}
 {
     ws2811_return_t ret;
 
@@ -59,6 +60,8 @@ Lighting::~Lighting() {}
 
 void Lighting::render()
 {
+    emit rendered();
+
     if (!_ws2811->channel[0].leds)
         return;
 
@@ -67,7 +70,6 @@ void Lighting::render()
         qCCritical(self) << "ws2811_render failed:" << ws2811_get_return_t_str(ret);
         return;
     }
-    emit rendered();
 }
 
 LightMode *Lighting::mode() const
@@ -157,4 +159,9 @@ PulsatingLight *Lighting::pulsatingLight() const
 MonoRotationLight *Lighting::monoRotationLight() const
 {
     return _monoRotationLight;
+}
+
+RaggedLight *Lighting::raggedLight() const
+{
+    return _raggedLight;
 }

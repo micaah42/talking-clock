@@ -21,17 +21,9 @@ Section {
                 labelText: 'Star Count'
                 spinBox.onValueModified: SpaceTheme.stars = spinBox.value
                 spinBox.value: SpaceTheme.stars
-                spinBox.stepSize: 5
-                spinBox.from: 5
-                spinBox.to: 100
-            }
-            CSpinBox {
-                labelText: 'Animated Star Count'
-                spinBox.onValueModified: SpaceTheme.animatedStars = spinBox.value
-                spinBox.value: SpaceTheme.animatedStars
-                spinBox.stepSize: 5
-                spinBox.from: 5
-                spinBox.to: 75
+                spinBox.stepSize: 10
+                spinBox.from: 10
+                spinBox.to: 250
             }
             CSpinBox {
                 labelText: 'Animation Speed'

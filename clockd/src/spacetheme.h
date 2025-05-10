@@ -44,7 +44,6 @@ signals:
     void fpsVisibleChanged();
 
 private:
-    QSettings _settings;
     Setting<int> _animatedStars;
     Setting<int> _stars;
     Setting<int> _animationSpeed;

@@ -42,29 +42,36 @@ private:
 class AnimatedLightMode : public LightMode
 {
     Q_OBJECT
-    Q_PROPERTY(int animationInvterval READ animationInvterval WRITE setAnimationInvterval NOTIFY animationInvtervalChanged FINAL)
+    Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged FINAL)
+    Q_PROPERTY(double speed READ speed WRITE setSpeed NOTIFY speedChanged FINAL)
 
 public:
     explicit AnimatedLightMode(Lighting &lighting);
 
     virtual void animate(double delta) = 0;
 
-    virtual void start() { _timer.start(); };
-    virtual void stop() { _timer.stop(); };
+    virtual void start();
+    virtual void stop();
+    ;
 
-    int animationInvterval() const;
-    void setAnimationInvterval(int newAnimationInvterval);
+    void setInterval(int newInterval);
+    int interval() const;
+
+    void setSpeed(double newSpeed);
+    double speed() const;
 
 protected:
     QList<Pixel *> &_pixels;
 
 signals:
-    void animationInvtervalChanged();
+    void intervalChanged();
+    void speedChanged();
 
 private:
     void onTimeout();
     QTimer _timer;
     qint64 _lastTime;
+    double _speed;
 };
 
 #endif // LIGHTMODE_H

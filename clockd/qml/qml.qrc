@@ -57,6 +57,12 @@
         <file>Clock/Settings/WirelessSection.qml</file>
         <file>Clock/Alarms/DurationEdit.qml</file>
         <file>Clock/Controls/Dialog.qml</file>
+        <file>Clock/Pages/Lighting/PalettePicker.qml</file>
+        <file>Clock/Pages/Lighting/qmldir</file>
+        <file>Clock/Settings/SystemLightsSection.qml</file>
+        <file>Clock/Settings/PairedDevicesSection.qml</file>
+        <file>Clock/Components/Expandable.qml</file>
+        <file>Clock/Components/qmldir</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

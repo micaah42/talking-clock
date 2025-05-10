@@ -42,7 +42,6 @@ private:
     QSortFilterProxyModel _families;
 
     // for setting the font
-    QSettings _settings;
     Setting<QString> _family;
     QQmlApplicationEngine *_engine;
 

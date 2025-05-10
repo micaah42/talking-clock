@@ -42,6 +42,12 @@ add_library(${PROJECT_NAME} SHARED
 
     src/monorotation.cpp
     src/monorotation.h
+
+    src/systemlight.cpp
+    src/systemlight.h
+
+    src/raggedlight.cpp
+    src/raggedlight.h
 )
 
 
@@ -56,6 +62,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
+    qopenremote
     ws2811
 )
 

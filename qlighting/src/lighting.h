@@ -9,6 +9,7 @@
 
 #include "monorotation.h"
 #include "pulsatinglight.h"
+#include "raggedlight.h"
 #include "staticlight.h"
 #include "wavinglight.h"
 
@@ -24,6 +25,7 @@ class Lighting : public QObject
     Q_PROPERTY(WavingLight *wavingLight READ wavingLight CONSTANT FINAL)
     Q_PROPERTY(PulsatingLight *pulsatingLight READ pulsatingLight CONSTANT FINAL)
     Q_PROPERTY(MonoRotationLight *monoRotationLight READ monoRotationLight CONSTANT FINAL)
+    Q_PROPERTY(RaggedLight *raggedLight READ raggedLight CONSTANT FINAL)
 
 public:
     explicit Lighting(int ledCount, QObject *parent = nullptr);
@@ -48,6 +50,7 @@ public:
     WavingLight *wavingLight() const;
     PulsatingLight *pulsatingLight() const;
     MonoRotationLight *monoRotationLight() const;
+    RaggedLight *raggedLight() const;
 
 signals:
     void modeChanged();
@@ -69,6 +72,7 @@ private:
     WavingLight *_wavingLight;
     PulsatingLight *_pulsatingLight;
     MonoRotationLight *_monoRotationLight;
+    RaggedLight *_raggedLight = nullptr;
 };
 
 #endif // LIGHTING_H

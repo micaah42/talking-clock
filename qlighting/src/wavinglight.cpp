@@ -10,109 +10,67 @@ Q_LOGGING_CATEGORY(self, "waving", QtInfoMsg)
 }
 
 WavingLight::WavingLight(Lighting &lighting)
-    : LightMode{lighting}
-    , m_speed{1}
-    , m_length{48}
-    , m_a{0xff, 0, 0}
-    , m_b{0, 0, 0xff}
+    : AnimatedLightMode{lighting}
+    , _length{30}
+    , _a{0xff, 0, 0}
+    , _b{0, 0, 0xff}
+    , _t{0}
 {
-    connect(&_timer, &QTimer::timeout, this, &WavingLight::onTimeout);
-    _timer.setTimerType(Qt::PreciseTimer);
-    _timer.setInterval(1000 / 30);
-    setupGradient();
-
     qCInfo(self) << "created" << this;
-}
-
-double WavingLight::speed() const
-{
-    return m_speed;
-}
-
-void WavingLight::setSpeed(double newSpeed)
-{
-    if (qFuzzyCompare(m_speed, newSpeed))
-        return;
-
-    m_speed = newSpeed;
-    emit speedChanged();
 }
 
 int WavingLight::length() const
 {
-    return m_length;
+    return _length;
 }
 
 void WavingLight::setLength(int newLength)
 {
-    if (m_length == newLength)
+    if (_length == newLength)
         return;
 
-    m_length = newLength;
+    _length = newLength;
     emit lengthChanged();
-
-    setupGradient();
 }
 
 QColor WavingLight::a() const
 {
-    return m_a;
+    return _a;
 }
 
 void WavingLight::setA(const QColor &newA)
 {
-    if (m_a == newA)
+    if (_a == newA)
         return;
 
-    m_a = newA;
+    _a = newA;
     emit aChanged();
-
-    setupGradient();
 }
 
 QColor WavingLight::b() const
 {
-    return m_b;
+    return _b;
 }
 
 void WavingLight::setB(const QColor &newB)
 {
-    if (m_b == newB)
+    if (_b == newB)
         return;
 
-    m_b = newB;
+    _b = newB;
     emit bChanged();
-
-    setupGradient();
 }
 
-int WavingLight::interval() const
+void WavingLight::animate(double delta)
 {
-    return _timer.interval();
-}
+    _t += delta;
+    double f = 2 * M_PI / _length;
 
-void WavingLight::setInterval(int newInterval)
-{
-    if (_timer.interval() == newInterval)
-        return;
-
-    _timer.setInterval(newInterval);
-    emit intervalChanged();
-}
-
-void WavingLight::setupGradient()
-{
-    _colors = gradient(m_length, m_a, m_b);
-}
-
-void WavingLight::onTimeout()
-{
-    for (int i = 0; i < _pixels.size(); ++i) {
-        int sourceIndex = (i + m_shift) % (2 * _colors.size() - 1);
-        sourceIndex = sourceIndex < _colors.size() ? sourceIndex : 2 * _colors.size() - sourceIndex - 1;
-        _pixels[i]->setColor(_colors[sourceIndex]);
+    for (int i = 0; i < _pixels.size(); i++) {
+        double x = i * f + _t;
+        double y = (sin(x) + 1.) / 2.;
+        _pixels[i]->setColor(interpolate(y, _a, _b));
     }
 
     _lighting.render();
-    m_shift += m_speed;
 }

@@ -51,29 +51,57 @@ void LightMode::setActive(bool newActive)
 AnimatedLightMode::AnimatedLightMode(Lighting &lighting)
     : LightMode{lighting}
     , _pixels{LightMode::_pixels}
+    , _speed{1}
 {
     _timer.callOnTimeout(this, &AnimatedLightMode::onTimeout);
     _timer.setTimerType(Qt::PreciseTimer);
-    _timer.setInterval(50);
+    _timer.setInterval(75);
 }
 
-int AnimatedLightMode::animationInvterval() const
+void AnimatedLightMode::start()
 {
-    return _timer.interval();
+    _lastTime = QDateTime::currentMSecsSinceEpoch();
+    _timer.start();
+
+    this->animate(0);
 }
 
-void AnimatedLightMode::setAnimationInvterval(int newAnimationInvterval)
+void AnimatedLightMode::stop()
 {
-    if (_timer.interval() == newAnimationInvterval)
-        return;
-
-    _timer.setInterval(newAnimationInvterval);
-    emit animationInvtervalChanged();
+    _timer.stop();
 }
 
 void AnimatedLightMode::onTimeout()
 {
     auto now = QDateTime::currentMSecsSinceEpoch();
-    this->animate(now - _lastTime / 1000.);
+    this->animate(_speed * (now - _lastTime) / 1000.);
     _lastTime = now;
+}
+
+int AnimatedLightMode::interval() const
+{
+    return _timer.interval();
+}
+
+void AnimatedLightMode::setInterval(int newInterval)
+{
+    if (_timer.interval() == newInterval)
+        return;
+
+    _timer.setInterval(newInterval);
+    emit intervalChanged();
+}
+
+double AnimatedLightMode::speed() const
+{
+    return _speed;
+}
+
+void AnimatedLightMode::setSpeed(double newSpeed)
+{
+    if (qFuzzyCompare(_speed, newSpeed))
+        return;
+
+    _speed = newSpeed;
+    emit speedChanged();
 }

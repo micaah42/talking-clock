@@ -135,36 +135,31 @@ Item {
             border.color: borderColor
             radius: root.radius
 
+            Component {
+                id: gradientStop
+                GradientStop {}
+            }
+
+            Component.onCompleted: {
+                const n = 32
+                const stops = []
+                for (var i = 0; i < n; i++) {
+                    const x = i / (n - 1 + 1e-6)
+                    const c = Qt.hsva(x, 1, 1, 1)
+                    const properties = {
+                        "position": x,
+                        "color": c
+                    }
+
+                    const object = gradientStop.createObject(gradient, properties)
+                    stops.push(object)
+                }
+                gradient.stops = stops
+            }
+
             gradient: Gradient {
+                id: gradient
                 orientation: Gradient.Horizontal
-                GradientStop {
-                    position: 0.0
-                    color: "#FF0000"
-                }
-                GradientStop {
-                    position: 0.16
-                    color: "#FFFF00"
-                }
-                GradientStop {
-                    position: 0.33
-                    color: "#00FF00"
-                }
-                GradientStop {
-                    position: 0.5
-                    color: "#00FFFF"
-                }
-                GradientStop {
-                    position: 0.76
-                    color: "#0000FF"
-                }
-                GradientStop {
-                    position: 0.85
-                    color: "#FF00FF"
-                }
-                GradientStop {
-                    position: 1.0
-                    color: "#FF0000"
-                }
             }
 
             Item {

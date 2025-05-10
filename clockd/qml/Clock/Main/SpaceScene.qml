@@ -8,10 +8,6 @@ import QtQuick.Effects
 Item {
     id: root
 
-    property int blinkingCount: SpaceTheme.animatedStars
-    property int blinkDown: SpaceTheme.animationSpeed
-    property int blinkUp: SpaceTheme.animationSpeed
-    property int stars: SpaceTheme.stars
     property int padding: 64
     property int radius: 32
 
@@ -21,40 +17,51 @@ Item {
         return shades[Math.ceil(Math.random() * shades.length)]
     }
 
+    function recalculateSpaceShip() {
+        rocketAnimation.start()
+        rocketAnimation.stop()
+    }
+
+    onHeightChanged: recalculateSpaceShip()
+    onWidthChanged: recalculateSpaceShip()
+
     Repeater {
         id: starsRepeater
-        model: 15
+        model: 5
         delegate: Item {
+            id: d
             anchors.fill: parent
 
             Repeater {
-                model: 5 // SpaceScene.blinkingCount
+                model: SpaceTheme.stars / starsRepeater.count
                 delegate: Rectangle {
                     y: parent.height * Math.random() - height / 2
                     x: parent.width * Math.random() - width / 2
 
                     color: Material.color(Material.Indigo, randomShade())
-                    width: 3.5 * Math.random() + 1.5
+                    width: 5.5 * Math.random() + 1.75
                     radius: width / 2
                     height: width
                 }
             }
 
-            property real maxOpacity: 0.75 + 0.2 * Math.random()
-            property real minOpacity: 0.25
+            property real minOpacity: Math.random() * 0.5
+            property real maxOpacity: minOpacity + Math.random() * 0.5
 
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
 
                 OpacityAnimator {
-                    duration: index * root.blinkUp
-                    from: .25
-                    to: .85
+                    easing.type: Easing.InOutElastic
+                    duration: index * SpaceTheme.animationSpeed
+                    from: d.minOpacity
+                    to: d.maxOpacity
                 }
                 OpacityAnimator {
-                    duration: index * root.blinkUp
-                    from: .85
-                    to: .25
+                    easing.type: Easing.InOutElastic
+                    duration: index * SpaceTheme.animationSpeed
+                    from: d.maxOpacity
+                    to: d.minOpacity
                 }
             }
         }
@@ -64,14 +71,13 @@ Item {
         id: container
         anchors.fill: parent
 
-        // y: 24
         SequentialAnimation {
             loops: Animation.Infinite
             running: true
 
             PathAnimation {
+                id: rocketAnimation
                 target: rocket
-                //anchorPoint: Qt.point(0.5, 0.5)
                 orientation: PathAnimation.TopFirst
                 duration: 10000
 

@@ -15,7 +15,7 @@ Item {
         ColumnLayout {
             id: column
             width: parent.width
-            spacing: 4
+            spacing: 16
 
             CLabel {
                 Layout.bottomMargin: 4
@@ -26,21 +26,31 @@ Item {
             Repeater {
                 model: ActionDayManager.days
 
-                delegate: ColumnLayout {
-                    spacing: -2
+                delegate: RowLayout {
+                    spacing: 24
 
-                    CLabel {
-                        Layout.fillWidth: true
-                        elide: Text.ElideRight
-                        text: modelData.name
-                        size: CLabel.Large
+                    Icon {
+                        // Layout.alignment: Qt.AlignTop
+                        font.pixelSize: Theme.fontSizeXLarge
+                        text: Icons[modelData.icon]
                     }
-                    CLabel {
-                        Layout.fillWidth: true
-                        elide: Text.ElideRight
-                        text: modelData.desc
-                        size: CLabel.Medium
-                        opacity: 0.72
+
+                    ColumnLayout {
+                        spacing: 0
+
+                        CLabel {
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                            text: modelData.name
+                            size: CLabel.Large
+                        }
+                        CLabel {
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                            text: modelData.desc
+                            size: CLabel.Medium
+                            opacity: 0.72
+                        }
                     }
                 }
             }
