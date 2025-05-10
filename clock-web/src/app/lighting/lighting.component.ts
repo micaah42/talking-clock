@@ -7,7 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 import { ColorPickerModule } from 'ngx-color-picker'
 
-import { LightMode, StaticLight, WavingLight } from './lightmodes'
+import { LightMode, Lighting, StaticLight, WavingLight } from './lightmodes'
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,21 +26,34 @@ import { RemotingService } from '../services/remoting.service';
 export class LightingComponent implements OnDestroy {
   private destroy$ = new Subject<void>()
   lightsEnabled: boolean = true
-  brightness: number = 1
+  _brightness: number = 1
 
-
-
-  staticLight: StaticLight
-  wavingLight: WavingLight
-  lightModes: (LightMode | any)[];
-
-  constructor(remoting: RemotingService) {
-    console.log(remoting)
-    this.staticLight = new StaticLight(this.destroy$, 'lights.staticLight', remoting)
-    this.wavingLight = new WavingLight(this.destroy$, 'lights.wavingLight', remoting)
-    this.lightModes = [this.staticLight, this.wavingLight];
+  set brightness(newBrightness) {
+    console.log(newBrightness)
+    this._brightness = newBrightness
+  }
+  get brightness() {
+    return this._brightness
   }
 
+
+
+  lighting: Lighting = new Lighting
+  // lightingR: RemoteObject<Lighting>
+  staticLight: RemoteObject<StaticLight>
+  // wavingLight: RemoteObject<WavingLight>
+  lightModes: (LightMode | any)[] = [];
+
+  constructor(remoting: RemotingService) {
+    new RemoteObject<Lighting>('lights', remoting, this.destroy$).value$.subscribe(x => this.lighting = x)
+    this.staticLight = new RemoteObject<StaticLight>('lights.staticLight', remoting, this.destroy$)
+    // this.wavingLight = new RemoteObject<WavingLight>('lights.wavingLight', remoting, this.destroy$)
+    // this.lightModes = [this.staticLight, this.wavingLight];
+  }
+
+  public static stringify(x: any): string {
+    return JSON.stringify(x)
+  }
   keys(object: object): string[] {
     const keys = Object.keys(object)
     return keys.filter(x => x !== 'active' && x !== 'name' && x !== 'objectName');

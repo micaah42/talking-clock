@@ -14,12 +14,15 @@ class SubscriptionSubject extends ReplaySubject<any> {
   providedIn: 'root'
 })
 export class RemotingService {
+  private static _instance: RemotingService
   private subjects: Map<string, SubscriptionSubject> = new Map<string, SubscriptionSubject>()
   private websocket$: WebSocketSubject<RemotingMessage>;
   private state$: BehaviorSubject<State> = new BehaviorSubject<State>('connecting')
 
 
   constructor() {
+    RemotingService._instance = this
+
     this.websocket$ = webSocket({
       openObserver: {
         next: (event) => {
@@ -44,11 +47,14 @@ export class RemotingService {
     })
 
     this.state$.pipe(filter(x => x === 'connected')).subscribe(() => {
-      // 'on connected'
-
       for (let key of this.subjects.keys())
         this.sendMessage({ type: 'subscribe', key })
     })
+  }
+
+
+  public static get instance(): RemotingService {
+    return this._instance
   }
 
   private handleMessage(message: RemotingMessage) {
@@ -102,6 +108,7 @@ export class RemotingService {
   }
 
   set(key: string, value: any) {
+    console.log('set', key, value)
     this.sendMessage({ type: 'set', key, value } as RemotingMessage)
   }
 }

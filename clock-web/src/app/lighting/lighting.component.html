@@ -1,9 +1,9 @@
 <mat-card>
     <mat-card-content>
         <div style="display: flex; align-items: center; gap: 16px">
-            <mat-slide-toggle [(ngModel)]="lightsEnabled"></mat-slide-toggle>
-            <mat-slider style="flex: 1;">
-                <input matSliderThumb [(ngModel)]="brightness">
+            <mat-slide-toggle [(ngModel)]="lighting!.enabled"></mat-slide-toggle>
+            <mat-slider style="flex: 1;" [min]="0" [max]="1" [step]="0.01">
+                <input matSliderThumb [(ngModel)]="lighting!.brightness">
             </mat-slider>
         </div>
     </mat-card-content>

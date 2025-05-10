@@ -61,7 +61,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   public nextIds: number[] = [];
   public timeLeft: number = 0;
   public timeToFly: boolean = true;
-  
+
   constructor(private remoting: RemotingService, private layoutHelper: LayoutHelperService) {
     setInterval(() => {
       this.timeToFly = !this.timeToFly;

@@ -7,13 +7,14 @@ export class RemoteObject<T> {
     private _keys: (string | number)[] = [];
     private _value$: Observable<T>
 
-    constructor(private path: string, private remoting: RemotingService, private destroy$: Observable<void>) {
+    constructor(private path: string, private remoting: RemotingService, private destroy$: Observable<void>, initial: T | null = null) {
         this._value$ = remoting.subscribe<T>(path, destroy$).pipe(takeUntil(destroy$));
+
         this.value$.subscribe({
             next: value => {
                 this._value = value;
 
-                if (typeof value === 'object')
+                if (typeof value === 'object' && value !== null)
                     this.subscribeObject()
             },
             complete: () => {
@@ -21,6 +22,9 @@ export class RemoteObject<T> {
                     this.unsubscribeObject()
             }
         });
+
+        if (initial !== null)
+            this._value = initial
     }
 
     public get value$(): Observable<T> {
@@ -44,11 +48,20 @@ export class RemoteObject<T> {
         this._keys = newKeys;
 
         for (let key of this._keys) {
-            console.log(`${this.path}.${key}`)
+            let keyValue = (this._value as any)[key]
+
+            const set = (x: any) => {
+                console.log('set', `${this.path}.${key}`, x)
+                this.remoting.set(`${this.path}.${key}`, x);
+            }
+            const get = () => keyValue
+
+            Object.defineProperty(this._value, key, { set, get })
+
             this.remoting.subscribe<T>(`${this.path}.${key}`, this.destroy$)
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(value => {
-                    (this._value as any)[key] = value
+                    keyValue = value
 
                     if (typeof value === 'object') {
                         const childObject = new RemoteObject<any>(`${this.path}.${key}`, this.remoting, this.destroy$)
@@ -60,18 +73,17 @@ export class RemoteObject<T> {
 
     private unsubscribeObject() {
         for (let key of this._keys)
-            this.remoting.unsubscribe(`${this.path}.${key}`);
+            RemotingService.instance.unsubscribe(`${this.path}.${key}`);
     }
 }
 
 
 export class RemotedObject {
     constructor(
-        public destroy$: Observable<void>,
+        public object: any,
         public path: string,
-        public remoting: RemotingService = inject(RemotingService)
+        public destroy$: Observable<void>,
     ) { }
-
 }
 
 
@@ -80,10 +92,10 @@ export function RemoteProperty() {
 
         let value: any;
         const get = () => value;
-        const set = (x: any) => target.remoting.set(`${target.path}.${propertyKey}`, x);
+        const set = (x: any) => RemotingService.instance.set(`${target.path}.${propertyKey}`, x);
         Object.defineProperty(target, propertyKey, { get, set })
 
-        target.remoting.subscribe(`${target.path}.${propertyKey}`, target.destroy$).subscribe((x: any) => {
+        RemotingService.instance.subscribe(`${target.path}.${propertyKey}`, target.destroy$).subscribe((x: any) => {
             x.path = `${target.path}.${propertyKey}`;
             x.destroy$ = target.destroy$;
             value = x;
