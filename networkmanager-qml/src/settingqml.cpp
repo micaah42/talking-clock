@@ -60,3 +60,17 @@ Setting *Setting::fromNMSetting(const NetworkManager::Setting::Ptr &setting, QOb
         return nullptr;
     }
 }
+
+bool Settings::autoConnect() const
+{
+    return _connectionSettings->autoconnect();
+}
+
+void Settings::setAutoConnect(bool newAutoConnect)
+{
+    if (_connectionSettings->autoconnect() == newAutoConnect)
+        return;
+
+    _connectionSettings->setAutoconnect(newAutoConnect);
+    emit autoConnectChanged();
+}

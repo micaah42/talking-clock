@@ -17,7 +17,7 @@ ColumnLayout {
 
     property WirelessNetwork network
     property Connection connection
-    spacing: 16
+    spacing: 32
 
     onConnectionChanged: {
         if (connection)
@@ -30,9 +30,14 @@ ColumnLayout {
 
         Repeater {
             id: repeater
-            model: connection ? Array.from(connection.settings.settings).map(setting => setting.type) : []
-            delegate: TabButton {
-                Component.onCompleted: console.log(connection, text)
+            model: {
+                if (!connection)
+                    return []
+                const array = Array.from(connection.settings.settings).map(setting => setting.type)
+                array.splice(0, 0, Setting.General)
+                return array
+            }
+            delegate: CTabButton {
                 text: {
                     switch (modelData) {
                     case Setting.Wireless:
@@ -50,6 +55,8 @@ ColumnLayout {
         Layout.fillWidth: true
         sourceComponent: {
             switch (repeater.model[bar.currentIndex]) {
+            case Setting.General:
+                return details
             case Setting.Wireless:
                 return wirelessSettingEdit
             case Setting.WirelessSecurity:
@@ -57,7 +64,22 @@ ColumnLayout {
             }
         }
     }
+    Component {
+        id: details
+        ColumnLayout {
+            spacing: 8
+            ValueDisplay {
+                labelText: 'Signal Strength'
+                valueText: '-'
+            }
 
+            CCheckBox {
+                onClicked: connection.settings.autoConnect = checked
+                checked: connection.settings.autoConnect
+                text: 'Connect automatically'
+            }
+        }
+    }
     Component {
         id: wirelessSettingEdit
         ColumnLayout {
@@ -81,7 +103,8 @@ ColumnLayout {
         id: wirelessSecuritySettingEdit
         ColumnLayout {
             spacing: 8
-            ComboBox {
+            CComboBox {
+                placeholderText: 'Security'
                 Layout.preferredWidth: pskField.width
                 currentIndex: securities.indexOf(network?.security || WirelessNetwork.NoneSecurity)
 

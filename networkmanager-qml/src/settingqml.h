@@ -15,6 +15,7 @@ class Setting : public QObject
 
 public:
     enum Type {
+        General,
         Wireless,
         WirelessSecurity,
     };
@@ -32,6 +33,7 @@ class Settings : public QObject
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("")
+    Q_PROPERTY(bool autoConnect READ autoConnect WRITE setAutoConnect NOTIFY autoConnectChanged FINAL)
     Q_PROPERTY(QList<Setting *> settings READ settings WRITE setSettings NOTIFY settingsChanged FINAL)
 
 public:
@@ -42,11 +44,16 @@ public:
     NM::ConnectionSettings::Ptr connectionSettings() const;
     void setConnectionSettings(NM::ConnectionSettings::Ptr newConnectionSettings);
 
+    bool autoConnect() const;
+    void setAutoConnect(bool newAutoConnect);
+
 public slots:
     Setting *setting(Setting::Type type) const;
 
 signals:
     void settingsChanged();
+
+    void autoConnectChanged();
 
 protected:
     void setSettings(const QList<Setting *> &newSettings);

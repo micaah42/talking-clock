@@ -63,6 +63,7 @@
         <file>Clock/Settings/PairedDevicesSection.qml</file>
         <file>Clock/Components/Expandable.qml</file>
         <file>Clock/Components/qmldir</file>
+        <file>Clock/Controls/CTabButton.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

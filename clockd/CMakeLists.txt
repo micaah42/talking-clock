@@ -20,6 +20,8 @@ FetchContent_Declare(TinyORM
     GIT_TAG v0.38.1
 )
 
+set(MYSQL_PING OFF)
+set(BUILD_MYSQL_DRIVER OFF)
 FetchContent_MakeAvailable(TinyORM)
 
 set(QML_IMPORT_PATH ${CMAKE_CURRENT_LIST_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "" FORCE)
