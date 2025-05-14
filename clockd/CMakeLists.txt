@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core WebSockets Quick QuickControls2 Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Core WebSockets Quick QuickControls2 Multimedia Sql)
 
 include(FetchContent)
 
@@ -20,9 +20,9 @@ FetchContent_Declare(TinyORM
     GIT_TAG v0.38.1
 )
 
+set(BUILD_DRIVERS OFF)
 set(MYSQL_PING OFF)
 set(BUILD_MYSQL_DRIVER OFF)
-set(BUILD_DRIVERS OFF)
 
 FetchContent_MakeAvailable(TinyORM)
 
@@ -100,6 +100,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Multimedia
+    Qt${QT_VERSION_MAJOR}::Sql
     networkmanager-qmlplugin
     #qnetworkmanager
     qperformance
