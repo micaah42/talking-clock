@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QRegularExpression>
 
+#define TINYORM_USING_QTSQLDRIVERS
 #include "orm/db.hpp"
 
 class ModelBase : public QObject

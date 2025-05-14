@@ -15,6 +15,17 @@ Section {
         placeholderText: 'Device Name'
         text: 'Talking Clock'
     }
+
+    CTextField {
+        placeholderText: 'Timezone'
+        readOnly: true
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: timezoneDialog.open()
+        }
+    }
+
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -43,6 +54,57 @@ Section {
             dialogBodyText: 'Are you sure you want to reboot the device?'
             dialogTitle: text
             text: 'Reboot'
+        }
+    }
+
+    Dialog {
+        id: timezoneDialog
+
+        title: 'Choose a Timezone'
+        standardButtons: Dialog.Ok | Dialog.Cancel
+
+        anchors.centerIn: Overlay.overlay
+        height: window.contentItem.height - 64
+        width: window.contentItem.width - 64
+
+        contentItem: ColumnLayout {
+            spacing: 0
+
+            CTextField {
+                Layout.fillWidth: true
+                placeholderText: 'Search Timezone'
+            }
+
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                clip: true
+
+                ListView {
+                    anchors.fill: parent
+                    anchors.topMargin: 8
+                    model: TimeZoneModel
+
+                    delegate: ItemDelegate {
+                        id: d
+
+                        property TimeZone timeZone: modelData
+                        width: ListView.view.width
+
+                        contentItem: ColumnLayout {
+                            width: parent.width
+
+                            Label {
+                                text: d.timeZone.id + index.toString()
+                            }
+                            CLabel {
+                                text: d.timeZone.displayName(new Date(), TimeZone.LongName)
+                                size: CLabel.Small
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

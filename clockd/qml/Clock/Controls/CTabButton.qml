@@ -4,5 +4,5 @@ import QtQuick.Controls
 import Clock.Style
 
 TabButton {
-    font.pixelSize: Theme.fontSizeLarge
+    font.pixelSize: Theme.fontSizeMedium
 }

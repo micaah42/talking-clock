@@ -31,6 +31,7 @@
 #include "staticlight.h"
 #include "system.h"
 #include "systemlight.h"
+#include "timezonemodel.h"
 #include "wavinglight.h"
 #include "websocketserver.h"
 
@@ -138,6 +139,11 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<Client>("Clock", 1, 0, "Client", "");
     qmlRegisterUncreatableType<ClientService>("Clock", 1, 0, "ClientService", "");
     qmlRegisterSingletonInstance("Clock", 1, 0, "ClientService", &clientService);
+
+    TimeZoneModel timeZones;
+    qmlRegisterUncreatableType<TimeZone>("Clock", 1, 0, "TimeZone", "");
+    qmlRegisterUncreatableType<TimeZoneModel>("Clock", 1, 0, "TimeZoneModel", "");
+    qmlRegisterSingletonInstance("Clock", 1, 0, "TimeZoneModel", &timeZones);
 
     const QUrl url("qrc:/Clock/Main.qml");
     QObject::connect(
