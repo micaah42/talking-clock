@@ -22,9 +22,10 @@ FetchContent_Declare(TinyORM
 
 set(MYSQL_PING OFF)
 set(BUILD_MYSQL_DRIVER OFF)
+set(BUILD_DRIVERS OFF)
+
 FetchContent_MakeAvailable(TinyORM)
 
-find_package(TinyOrm 0.38.1 CONFIG REQUIRED)
 
 set(QML_IMPORT_PATH ${CMAKE_CURRENT_LIST_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "" FORCE)
 
@@ -87,7 +88,8 @@ if (ANDROID)
     set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android)
 else()
     add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
-        src/model.h src/model.cpp)
+        src/model.h src/model.cpp
+        src/timezonemodel.h src/timezonemodel.cpp)
 endif()
 
 
