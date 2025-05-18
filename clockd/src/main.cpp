@@ -6,7 +6,10 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
+// Needs to be defined for yocto build!
+// NOLINTNEXTLINE
 #define TINYORM_USING_QTSQLDRIVERS
+
 #include "orm/db.hpp"
 
 #include <qobjectregistry.h>
@@ -63,7 +66,7 @@ int main(int argc, char *argv[])
 
     auto manager = Orm::DB::create({
         {"driver", "QSQLITE"},
-        {"database", qEnvironmentVariable("DB_DATABASE", "./share/clockd/actiondays.sqlite")},
+        {"database", qEnvironmentVariable("DB_DATABASE", "./usr/share/clockd/actiondays.sqlite")},
         {"foreign_key_constraints", qEnvironmentVariable("DB_FOREIGN_KEYS", "true")},
         {"check_database_exists", true},
         {"prefix", ""},
