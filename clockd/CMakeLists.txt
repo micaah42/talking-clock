@@ -13,16 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core WebSockets Quick QuickControls2 Multimedia Sql)
 
-include(FetchContent)
-
-FetchContent_Declare(TinyORM
-    GIT_REPOSITORY https://github.com/silverqx/TinyORM.git
-    GIT_TAG v0.38.1
-)
-
-set(BUILD_DRIVERS OFF)
-set(MYSQL_PING OFF)
-set(BUILD_MYSQL_DRIVER OFF)
+if(FETCHCONTENT_FULLY_DISCONNECTED)
+    find_package(TinyOrm 0.38.1 CONFIG REQUIRED)
+else()
+    include(FetchContent)
+    FetchContent_Declare(TinyORM
+        GIT_REPOSITORY https://github.com/silverqx/TinyORM.git
+        GIT_TAG v0.38.1
+    )
+endif()
 
 FetchContent_MakeAvailable(TinyORM)
 
@@ -123,5 +122,6 @@ install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-execute_process(COMMAND cp -r ${CMAKE_CURRENT_LIST_DIR}/share ${CMAKE_CURRENT_BINARY_DIR}/share)
+execute_process(COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/usr)
+execute_process(COMMAND cp -r ${CMAKE_CURRENT_LIST_DIR}/share ${CMAKE_CURRENT_BINARY_DIR}/usr)
 install(DIRECTORY share/ DESTINATION share/)

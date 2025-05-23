@@ -1,7 +1,7 @@
 #include "soundservice.h"
 
+#include <QDirIterator>
 #include <QLoggingCategory>
-//#include <QMediaPlaylist>
 
 namespace {
 Q_LOGGING_CATEGORY(self, "sounds")
@@ -9,15 +9,10 @@ Q_LOGGING_CATEGORY(self, "sounds")
 
 SoundService::SoundService(QObject *parent)
     : QObject(parent)
-    , _soundsFolder{":/sounds"}
+    , _soundsFolder{"./usr/share/clockd/sounds"}
+    , _volume{"Sounds/Volume", 1.}
 {
-    // stop player automatically after specified amount of time
-    connect(&_timer, &QTimer::timeout, this, &SoundService::stop);
-    _timer.setInterval(std::chrono::seconds(45));
-
-    // make louder
-    //connect(&_player, &QMediaPlayer::positionChanged, this, &SoundService::onPositionChanged);
-    refresh();
+    this->refresh();
 }
 
 QStringList SoundService::availableSounds()
@@ -25,49 +20,41 @@ QStringList SoundService::availableSounds()
     return _sounds;
 }
 
+QString SoundService::displayName(const QString &soundPath)
+{
+    return QFileInfo{soundPath}.baseName();
+}
+
 void SoundService::refresh()
 {
-    _soundsFolder.refresh();
+    _sounds.clear();
 
-    _sounds = _soundsFolder.entryList({"*.mp3", "*.wav"});
+    QDirIterator it{
+        _soundsFolder.path(),
+        {"*.mp3", "*.wav"},
+        QDir::Files,
+        QDirIterator::Subdirectories | QDirIterator::FollowSymlinks,
+    };
+
+    while (it.hasNext()) {
+        it.next();
+        _sounds.append(it.filePath());
+    }
+
     qCInfo(self) << "found" << _sounds.size() << "sounds" << _soundsFolder.exists();
     emit availableSoundsChanged();
 }
 
-void SoundService::play(const QString &sound)
+double SoundService::volume() const
 {
-    //auto playlist = new QMediaPlaylist{};
-    //playlist->setPlaybackMode(QMediaPlaylist::Loop);
+    return _volume;
+}
 
-    if (!_soundsFolder.exists(sound)) {
-        qCWarning(self) << "sound does not exist:" << _soundsFolder.filePath(sound);
+void SoundService::setVolume(double newVolume)
+{
+    if (qFuzzyCompare(_volume, newVolume))
         return;
-    }
 
-    //playlist->addMedia(QUrl{"file://" + _soundsFolder.filePath(sound)});
-
-    //_player.setPlaylist(playlist);
-    //_player.setVolume(40);
-    //_player.play();
-    //_timer.start();
-}
-
-void SoundService::stop()
-{
-    // _player.setPlaylist(nullptr);
-    //_player.stop();
-}
-
-void SoundService::onPositionChanged(int position)
-{
-    //if (position < _player.duration() /* ||!_player.isAudioAvailable()*/) {
-    //    // we actually want to handle the repeat-restarts only so return when not on end
-    //    return;
-    //}
-
-    // increment volume if possible
-    //if (_player.volume() < 100) {
-    //    _player.setVolume(_player.volume() + 15);
-    //    qCInfo(self) << "playing louder..." << _player.volume();
-    //}
+    _volume = newVolume;
+    emit volumeChanged();
 }

@@ -19,8 +19,8 @@ RowLayout {
 
             CLabel {
                 Layout.alignment: Qt.AlignHCenter
+                opacity: Theme.o72
                 text: col.title
-                opacity: 0.72
             }
             Button {
                 onClicked: msecs += col.duration

@@ -18,16 +18,16 @@ Flickable {
         Frame {
             Layout.fillWidth: true
             clip: true
-            NextAlarm {
-                alarm: AlarmService.nextAlarm
+            ActionDayItem {
+                implicitHeight: contentHeight
                 width: parent.width
             }
         }
         Frame {
             Layout.fillWidth: true
             clip: true
-            ActionDayItem {
-                implicitHeight: contentHeight
+            NextAlarm {
+                alarm: AlarmService.nextAlarm
                 width: parent.width
             }
         }

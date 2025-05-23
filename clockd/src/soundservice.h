@@ -6,33 +6,34 @@
 #include <QObject>
 #include <QTimer>
 
+#include "setting.h"
+
 class SoundService : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList availableSounds READ availableSounds NOTIFY availableSoundsChanged)
+    Q_PROPERTY(double volume READ volume WRITE setVolume NOTIFY volumeChanged FINAL)
+
 public:
     explicit SoundService(QObject *parent = nullptr);
     QStringList availableSounds();
 
-public slots:
-    void refresh();
+    double volume() const;
+    void setVolume(double newVolume);
 
-    void play(const QString &sound);
-    void stop();
+public slots:
+    QString displayName(const QString &soundPath);
+    void refresh();
 
 signals:
     void availableSoundsChanged();
 
-private slots:
-    void onPositionChanged(int position);
+    void volumeChanged();
 
 private:
     QDir _soundsFolder;
     QStringList _sounds;
-    //QMediaPlayer _player;
-    QTimer _timer;
-
-    // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-    Q_PROPERTY(QStringList availableSounds READ availableSounds NOTIFY availableSoundsChanged)
+    Setting<double> _volume;
 };
 
 #endif // SOUNDSERVICE_H

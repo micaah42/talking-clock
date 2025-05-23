@@ -15,11 +15,9 @@ ColumnLayout {
 
     MediaPlayer {
         id: player
-        Component.onCompleted: {
-            console.log('playing', source)
-            play()
-        }
-        source: alarm.sound.length ? `qrc:/sounds/${alarm.sound}` : ''
+
+        Component.onCompleted: play()
+        source: alarm.sound.length ? alarm.sound : SoundService.availableSounds[0] || ''
         loops: MediaPlayer.Infinite
 
         onErrorOccurred: function (error, errorString) {
@@ -34,8 +32,8 @@ ColumnLayout {
 
                 PropertyAnimation {
                     duration: 10 * 1000
-                    from: 0.1
-                    to: 1
+                    from: 0
+                    to: SoundService.volume
                 }
 
                 PauseAnimation {
@@ -44,7 +42,7 @@ ColumnLayout {
 
                 PropertyAnimation {
                     duration: 5 * 1000
-                    from: 1
+                    from: SoundService.volume
                     to: 0
                 }
             }
@@ -54,18 +52,19 @@ ColumnLayout {
     RowLayout {
         spacing: 4
         ValueDisplay {
+            id: valueDisplay
             Layout.preferredWidth: parent.width / 2
             visible: alarm.name !== ''
             labelText: 'Name'
             valueText: alarm.name
         }
         Rectangle {
+            Layout.preferredHeight: valueDisplay.implicitHeight
             visible: alarm.name !== ''
-            Layout.fillHeight: true
             Layout.preferredWidth: 1
             Layout.rightMargin: 4
             Layout.leftMargin: 4
-            opacity: 0.2
+            opacity: Theme.o24
         }
         ValueDisplay {
             Layout.preferredWidth: parent.width / 2
@@ -79,7 +78,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.bottomMargin: 8
         Layout.topMargin: 8
-        opacity: 0.2
+        opacity: Theme.o24
     }
 
     ActionDayItem {

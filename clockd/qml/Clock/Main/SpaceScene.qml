@@ -45,8 +45,8 @@ Item {
                 }
             }
 
-            property real minOpacity: Math.random() * 0.5
-            property real maxOpacity: minOpacity + Math.random() * 0.5
+            property real minOpacity: Math.random() * Theme.o56
+            property real maxOpacity: minOpacity + Math.random() * Theme.o56
 
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
@@ -72,11 +72,11 @@ Item {
         anchors.fill: parent
 
         SequentialAnimation {
+            id: rocketAnimation
             loops: Animation.Infinite
             running: true
 
             PathAnimation {
-                id: rocketAnimation
                 target: rocket
                 orientation: PathAnimation.TopFirst
                 duration: 10000

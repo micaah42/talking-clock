@@ -2,6 +2,8 @@ import QtQuick 2.14
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 
+import Clock.Style
+
 ColumnLayout {
     id: root
     property alias labelText: l.text
@@ -30,7 +32,7 @@ ColumnLayout {
                 return CLabel.Small
             }
         }
-        opacity: 0.72
+        opacity: Theme.o72
     }
 
     CLabel {

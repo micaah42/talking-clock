@@ -24,11 +24,12 @@ Item {
             color: Theme.primary
 
             Rectangle {
+                anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 20
                 height: 3
                 radius: height / 2
-                width: parent.width - 16
+                width: 7 * parent.width / 8
                 color: Theme.accent
             }
 

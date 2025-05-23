@@ -24,7 +24,7 @@ ColumnLayout {
                 anchors.right: parent.right
                 anchors.margins: -implicitHeight / 4
                 font.pixelSize: parent.width
-                opacity: 0.11
+                opacity: Theme.o11
                 text: {
                     const hours = alarm.nextTimeout.getHours()
                     if (8 <= hours && hours < 22)
@@ -84,7 +84,7 @@ ColumnLayout {
 
                 ValueDisplay {
                     labelText: "Sound"
-                    valueText: alarm.sound === '' ? 'No Sound!' : capitalize(alarm.sound.split('.')[0])
+                    valueText: alarm.sound === '' ? 'No Sound!' : capitalize(SoundService.displayName(alarm.sound))
 
                     function capitalize(string) {
                         return string.charAt(0).toUpperCase() + string.slice(1)

@@ -1,7 +1,8 @@
-import QtQuick 2.14
-import QtQuick.Controls 2.14
+import QtQuick
+import QtQuick.Controls
 
-import Clock 1.0
+import Clock
+import Clock.Style
 
 TextField {
     id: input
@@ -10,14 +11,11 @@ TextField {
 
     onAccepted: Qt.inputMethod.hide()
     font.family: FontService.family
-    //implicitHeight: 56
-    font.pixelSize: 24
 
-    //leftPadding: 12
-    //bottomPadding: 0
-    //topPadding: 16
-    implicitWidth: 244
+    implicitWidth: Theme.controlWidth
     width: implicitWidth
+    font.pixelSize: 24
+    topInset: 8
 
     CLabel {
         id: l

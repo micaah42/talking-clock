@@ -145,6 +145,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Clock", 1, 0, "ClientService", &clientService);
 
     TimeZoneModel timeZones;
+    qmlRegisterType<TimeZoneSortFilterModel>("Clock", 1, 0, "TimeZoneSortFilterModel");
     qmlRegisterUncreatableType<TimeZone>("Clock", 1, 0, "TimeZone", "");
     qmlRegisterUncreatableType<TimeZoneModel>("Clock", 1, 0, "TimeZoneModel", "");
     qmlRegisterSingletonInstance("Clock", 1, 0, "TimeZoneModel", &timeZones);

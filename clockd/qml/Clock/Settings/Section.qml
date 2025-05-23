@@ -6,6 +6,7 @@ import Clock.Style
 import Clock.Controls
 
 ColumnLayout {
+    default property alias content: contents.data
     property Component extraHeaderContent
     property string title
     property string icon
@@ -29,5 +30,11 @@ ColumnLayout {
         Loader {
             sourceComponent: extraHeaderContent
         }
+    }
+
+    ColumnLayout {
+        id: contents
+        Layout.fillWidth: true
+        spacing: 8
     }
 }

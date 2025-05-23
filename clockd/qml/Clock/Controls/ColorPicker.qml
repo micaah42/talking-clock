@@ -29,7 +29,7 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         spacing: root.spacing
-        opacity: enabled ? 1 : 0.16
+        opacity: enabled ? 1 : 0.24
 
         RowLayout {
             Layout.fillHeight: true

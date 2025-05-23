@@ -2,6 +2,8 @@ import QtQuick 2.14
 import QtQuick.Controls 2.14
 import QtQuick.Layouts
 
+import Clock.Style
+
 ColumnLayout {
     id: root
     property alias labelText: l.text
@@ -9,12 +11,12 @@ ColumnLayout {
 
     property alias spinBox: spinBox
 
+    implicitWidth: Theme.controlWidth
     width: implicitWidth
-    implicitWidth: 204
 
     CLabel {
         id: l
-        opacity: 0.56
+        opacity: Theme.o56
     }
     SpinBox {
         id: spinBox

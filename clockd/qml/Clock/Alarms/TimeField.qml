@@ -133,7 +133,7 @@ Frame {
             Layout.alignment: Qt.AlignTop
             CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: mode === TimeField.M5 ? 1 : 0.5
+                opacity: mode === TimeField.M5 ? 1 : Theme.o56
                 font.pixelSize: 24
                 text: '5m'
 
@@ -144,7 +144,7 @@ Frame {
             }
             CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: mode === TimeField.M1 ? 1 : 0.5
+                opacity: mode === TimeField.M1 ? 1 : Theme.o56
                 font.pixelSize: 24
                 text: '1m'
 
@@ -155,7 +155,7 @@ Frame {
             }
             CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: mode === TimeField.S1 ? 1 : 0.5
+                opacity: mode === TimeField.S1 ? 1 : Theme.o56
                 font.pixelSize: 24
                 text: '1s'
 

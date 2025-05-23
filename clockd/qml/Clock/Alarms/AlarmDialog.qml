@@ -117,16 +117,13 @@ Popup {
                             highlighted: ListView.isCurrentItem
                             onClicked: alarm.sound = modelData
                             width: list.width
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.rightMargin: 16
-                                anchors.leftMargin: 16
+                            contentItem: RowLayout {
+                                width: parent.width
+
                                 CLabel {
-                                    Material.foreground: d.highlighted ? Material.Red : parent.Material.foreground
-                                    text: modelData.split('.')[0]
-                                }
-                                Item {
                                     Layout.fillWidth: true
+                                    Material.foreground: d.highlighted ? Material.Red : parent.Material.foreground
+                                    text: SoundService.displayName(modelData)
                                 }
                                 ToolButton {
                                     font.family: Icons.fontFamily

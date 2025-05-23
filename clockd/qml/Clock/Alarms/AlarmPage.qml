@@ -46,7 +46,7 @@ Item {
                         text: "New Alarm"
                         onClicked: {
                             const alarm = AlarmService.newAlarm()
-                            alarm.sound = SoundService.availableSounds[0]
+                            alarm.sound = SoundService.availableSounds[0] || ''
                             AlarmService.addAlarm(alarm)
                             alarmDialog.alarm = alarm
                             alarmDialog.open()

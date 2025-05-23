@@ -30,8 +30,8 @@ ColumnLayout {
                         visible: alarm.name !== ''
                         Layout.fillWidth: true
                         size: CLabel.Medium
+                        opacity: Theme.o72
                         text: alarm.name
-                        opacity: 0.72
                     }
                 }
                 CLabel {
@@ -43,6 +43,5 @@ ColumnLayout {
                 }
             }
         }
-
     }
 }

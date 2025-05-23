@@ -38,8 +38,8 @@ Section {
             Repeater {
                 model: 5
                 delegate: Rectangle {
-                    opacity: 0.32
                     y: modelData * item.height / 4
+                    opacity: Theme.o42
                     width: item.width
                     height: 0.75
                 }

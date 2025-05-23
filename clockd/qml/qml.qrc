@@ -9,7 +9,6 @@
         <file>Clock/Controls/qmldir</file>
         <file>Clock/Main/Clock.qml</file>
         <file>Clock/Main/MainMenu.qml</file>
-        <file>Clock/Main/MajorAlarm.qml</file>
         <file>Clock/Main/SpaceScene.qml</file>
         <file>Clock/Pages/AboutPage.qml</file>
         <file>Clock/Pages/TaskPage.qml</file>

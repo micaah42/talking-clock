@@ -32,6 +32,12 @@ QtObject {
     readonly property color accent: accentColor(Material.ShadeA700)
     readonly property color background: '#000000'
 
+    readonly property real o11: 0.11
+    readonly property real o24: 0.24
+    readonly property real o42: 0.42
+    readonly property real o56: 0.56
+    readonly property real o72: 0.72
+
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     *  Font & Size Management                                          *
@@ -43,6 +49,12 @@ QtObject {
     readonly property real fontSizeLarge: 28
     readonly property real fontSizeXLarge: 36
     readonly property real fontSizeXXLarge: 48
+
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+       Controls
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    readonly property real controlWidth: 320
 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -19,9 +19,9 @@ Item {
             Layout.preferredWidth: 200
             Layout.fillHeight: true
 
-            model: sections.contentChildren
             currentIndex: sections.currentIndex
-            interactive: false
+            interactive: contentHeight > height
+            model: sections.contentChildren
 
             delegate: ItemDelegate {
                 RowLayout {
@@ -52,8 +52,8 @@ Item {
         Rectangle {
             Layout.preferredWidth: 1.5
             Layout.fillHeight: true
+            opacity: Theme.o56
             radius: width / 2
-            opacity: 0.5
         }
 
         SwipeView {
@@ -69,6 +69,7 @@ Item {
             AppearenceSection {}
             PairedDevicesSection {}
             SystemLightsSection {}
+            PerformanceSection {}
             Item {
                 property string title: 'About'
                 property string icon: Icons.info

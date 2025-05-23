@@ -33,7 +33,7 @@ Slider {
 
             Rectangle {
                 color: root.pressed ? Theme.accentColor(Material.Shade300) : Theme.accent
-                opacity: enabled ? 1 : 0.72
+                opacity: enabled ? 1 : Theme.o72
 
                 width: height + root.visualPosition * (parent.width - height)
                 radius: root.radius - background.border.width

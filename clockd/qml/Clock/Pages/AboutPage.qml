@@ -2,8 +2,9 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import Clock 1.0
-import Clock.Controls 1.0
+import Clock
+import Clock.Style
+import Clock.Controls
 
 RowLayout {
     anchors.fill: parent
@@ -22,15 +23,7 @@ RowLayout {
 
                 CLabel {
                     text: 'Talking Clock'
-                    font.pixelSize: 32
-
-                    CLabel {
-                        anchors.top: parent.bottom
-                        anchors.topMargin: -8
-
-                        font.pixelSize: 18
-                        text: 'by micaah42'
-                    }
+                    size: CLabel.Large
                 }
 
                 Item {
@@ -60,8 +53,8 @@ RowLayout {
             }
 
             CLabel {
-                text: `A fancy clock built with Qt and Yocto.\nVerison ${"0.1.0"}`
-                font.pixelSize: 18
+                Layout.topMargin: -parent.spacing
+                text: 'by micaah42'
             }
 
             Flickable {
@@ -73,6 +66,7 @@ RowLayout {
                 ColumnLayout {
                     id: textColumn
                     width: parent.width
+                    spacing: 16
 
                     CLabel {
                         Layout.fillWidth: true
@@ -194,6 +188,7 @@ RowLayout {
 
                             delegate: CLabel {
                                 font.family: 'Mono'
+                                wrapMode: Text.WordWrap
                                 width: list.width
                                 text: modelData
                                 clip: true
@@ -204,7 +199,7 @@ RowLayout {
 
                 Rectangle {
                     anchors.fill: parent
-                    opacity: 0.1
+                    opacity: Theme.o11
                     radius: 3
                 }
 

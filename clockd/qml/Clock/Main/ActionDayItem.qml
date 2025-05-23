@@ -49,7 +49,7 @@ Item {
                             elide: Text.ElideRight
                             text: modelData.desc
                             size: CLabel.Medium
-                            opacity: 0.72
+                            opacity: Theme.o72
                         }
                     }
                 }
@@ -62,7 +62,7 @@ Item {
             anchors.margins: -implicitHeight / 4
             font.pixelSize: parent.width
             text: Icons.calendar_month
-            opacity: 0.11
+            opacity: Theme.o11
         }
     }
 }
