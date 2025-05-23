@@ -17,13 +17,14 @@ if(FETCHCONTENT_FULLY_DISCONNECTED)
     find_package(TinyOrm 0.38.1 CONFIG REQUIRED)
 else()
     include(FetchContent)
+
     FetchContent_Declare(TinyORM
         GIT_REPOSITORY https://github.com/silverqx/TinyORM.git
         GIT_TAG v0.38.1
     )
+    FetchContent_MakeAvailable(TinyORM)
 endif()
 
-FetchContent_MakeAvailable(TinyORM)
 
 
 set(QML_IMPORT_PATH ${CMAKE_CURRENT_LIST_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "" FORCE)
