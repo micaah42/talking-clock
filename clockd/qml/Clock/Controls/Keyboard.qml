@@ -1,4 +1,4 @@
-import QtQuick 2.14
+import QtQuick 
 import QtQuick.Controls
 import QtQuick.VirtualKeyboard 2.15
 

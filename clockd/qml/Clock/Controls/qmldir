@@ -14,3 +14,4 @@ ConfirmButton 1.0 ConfirmButton.qml
 CSwitch 1.0 CSwitch.qml
 Dialog 1.0 Dialog.qml
 CTabButton 1.0 CTabButton.qml
+CFrame 1.0 CFrame.qml

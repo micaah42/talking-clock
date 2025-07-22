@@ -63,6 +63,11 @@
         <file>Clock/Components/Expandable.qml</file>
         <file>Clock/Components/qmldir</file>
         <file>Clock/Controls/CTabButton.qml</file>
+        <file>Clock/Controls/CFrame.qml</file>
+        <file>Clock/Lighting/LightingPage.qml</file>
+        <file>Clock/Lighting/qmldir</file>
+        <file>Clock/Settings/SectionNew.qml</file>
+        <file>Clock/Main/FPSOverlay.qml</file>
     </qresource>
     <qresource prefix="/controls"/>
 </RCC>

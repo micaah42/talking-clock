@@ -1,4 +1,4 @@
-import QtQuick 2.14
+import QtQuick 
 import QtQuick.Controls
 import QtQuick.Controls.Material
 
@@ -21,7 +21,7 @@ Slider {
         id: background
         anchors.fill: parent
         border.color: Material.foreground
-        border.width: root.pressed ? 2.5 : 2
+        border.width: root.pressed ? 2 : 1.5
 
         color: Theme.primary
         opacity: enabled ? 1 : 0.72

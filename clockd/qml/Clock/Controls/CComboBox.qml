@@ -1,5 +1,5 @@
-import QtQuick 2.14
-import QtQuick.Controls 2.14
+import QtQuick 
+import QtQuick.Controls 
 
 CTextField {
     id: ctrl
@@ -23,7 +23,7 @@ CTextField {
         popup.padding: 4
 
         popup.background: Rectangle {
-            border.color: Material.frameColor
+            border.color: Material.CframeColor
             color: Material.dialogColor
             radius: 3
         }

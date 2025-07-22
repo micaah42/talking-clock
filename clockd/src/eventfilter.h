@@ -14,6 +14,8 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *ev);
 
+    void makeScreenshot();
+
 signals:
     void userInactive();
 

@@ -1,9 +1,9 @@
 import QtQuick 2.15
+import QtQuick.Effects
 import QtQuick.Controls.Material
 
 import Clock 1.0
 import Clock.Style 1.0
-import QtQuick.Effects
 
 Item {
     id: root
@@ -17,49 +17,41 @@ Item {
         return shades[Math.ceil(Math.random() * shades.length)]
     }
 
-    function recalculateSpaceShip() {
-        rocketAnimation.start()
-        rocketAnimation.stop()
-    }
-
-    onHeightChanged: recalculateSpaceShip()
-    onWidthChanged: recalculateSpaceShip()
+    onHeightChanged: rocketAnimation.restart()
+    onWidthChanged: rocketAnimation.restart()
 
     Repeater {
         id: starsRepeater
-        model: 5
+        model: 2
         delegate: Item {
             id: d
             anchors.fill: parent
 
             Repeater {
-                model: SpaceTheme.stars / starsRepeater.count
-                delegate: Rectangle {
-                    y: parent.height * Math.random() - height / 2
-                    x: parent.width * Math.random() - width / 2
-
-                    color: Material.color(Material.Indigo, randomShade())
-                    width: 5.5 * Math.random() + 1.75
-                    radius: width / 2
-                    height: width
+                model: Math.floor(4 / starsRepeater.count)
+                Image {
+                    id: stars
+                    anchors.fill: parent
+                    fillMode: Image.PreserveAspectCrop
+                    source: `qrc:/space-theme/stars${index}.svg`
                 }
             }
 
-            property real minOpacity: Math.random() * Theme.o56
-            property real maxOpacity: minOpacity + Math.random() * Theme.o56
+            property real maxOpacity: Math.random() * Theme.o24 + Theme.o72
+            property real minOpacity: Math.random() * Theme.o11
 
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
 
-                OpacityAnimator {
-                    easing.type: Easing.InOutElastic
-                    duration: index * SpaceTheme.animationSpeed
+                PropertyAnimation {
+                    easing.type: Easing.OutBounce
+                    duration: (index + 5) * SpaceTheme.animationSpeed
                     from: d.minOpacity
                     to: d.maxOpacity
                 }
-                OpacityAnimator {
-                    easing.type: Easing.InOutElastic
-                    duration: index * SpaceTheme.animationSpeed
+                PropertyAnimation {
+                    easing.type: Easing.OutBounce
+                    duration: (index + 8) * SpaceTheme.animationSpeed
                     from: d.maxOpacity
                     to: d.minOpacity
                 }

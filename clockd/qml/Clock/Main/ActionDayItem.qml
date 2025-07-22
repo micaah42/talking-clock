@@ -30,9 +30,8 @@ Item {
                     spacing: 24
 
                     Icon {
-                        // Layout.alignment: Qt.AlignTop
                         font.pixelSize: Theme.fontSizeXLarge
-                        text: Icons[modelData.icon]
+                        text: Icons[modelData.icon] || Icons.calendar_today
                     }
 
                     ColumnLayout {

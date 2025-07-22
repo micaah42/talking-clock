@@ -28,8 +28,6 @@
 #include "palette.h"
 #include "pathservice.h"
 #include "pixel.h"
-#include "prettyrandomlight.h"
-#include "pulsatinglight.h"
 #include "soundservice.h"
 #include "spacetheme.h"
 #include "staticlight.h"
@@ -127,10 +125,7 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<LightMode>("Clock", 1, 0, "LightMode", "");
     qmlRegisterUncreatableType<StaticLight>("Clock", 1, 0, "StaticLight", "");
     qmlRegisterUncreatableType<WavingLight>("Clock", 1, 0, "WavingLight", "");
-    qmlRegisterUncreatableType<PrettyRandomLight>("Clock", 1, 0, "PrettyRandomLight", "");
-    qmlRegisterUncreatableType<PulsatingLight>("Clock", 1, 0, "PulsatingLight", "");
     qmlRegisterUncreatableType<MonoRotationLight>("Clock", 1, 0, "MonoRotationLight", "");
-    qmlRegisterUncreatableType<RaggedLight>("Clock", 1, 0, "RaggedLight", "");
     qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
     qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
     remoting.registerObject("lights", &lighting);

@@ -12,6 +12,9 @@ Section {
     icon: Icons.monitoring
     property bool isCurrentItem: SwipeView.isCurrentItem
 
+    Component.onDestruction: CPUMonitor.unsubscribe(this)
+    Component.onCompleted: CPUMonitor.subscribe(this)
+
     RowLayout {
         Layout.fillWidth: true
 
@@ -27,41 +30,39 @@ Section {
         }
     }
 
-    Loader {
+    Item {
         Layout.preferredHeight: parent.height / 3
         Layout.fillWidth: true
-        active: performanceSection.isCurrentItem
 
-        sourceComponent: Item {
-            id: item
+        id: item
 
-            Repeater {
-                model: 5
-                delegate: Rectangle {
-                    y: modelData * item.height / 4
-                    opacity: Theme.o42
-                    width: item.width
-                    height: 0.75
-                }
-            }
-
-            CLabel {
-                text: '100%'
-                y: 2
-            }
-            CLabel {
-                anchors.bottom: parent.bottom
-                text: graph.duration / 1000 + 's'
-            }
-
-            CPUGraph {
-                id: graph
-                anchors.fill: parent
-                colors: Palettes.palettes[2]["colors"]
-                cpu: CPUMonitor
+        Repeater {
+            model: 5
+            delegate: Rectangle {
+                y: modelData * item.height / 4
+                opacity: Theme.o42
+                width: item.width
+                height: 0.75
             }
         }
+
+        CLabel {
+            text: '100%'
+            y: 2
+        }
+        CLabel {
+            anchors.bottom: parent.bottom
+            text: graph.duration / 1000 + 's'
+        }
+
+        CPUGraph {
+            id: graph
+            anchors.fill: parent
+            colors: Palettes.palettes[2]["colors"]
+            cpu: CPUMonitor
+        }
     }
+
     GridLayout {
         Layout.fillWidth: true
         columns: 8
@@ -80,20 +81,11 @@ Section {
         }
     }
 
-    RowLayout {
-        Layout.fillHeight: true
+    ValueDisplay {
+        Layout.preferredWidth: 120
         Layout.topMargin: 16
-
-        ValueDisplay {
-            Layout.preferredWidth: 120
-            labelText: 'FPS'
-            valueText: window.fps.toFixed(0)
-        }
-        ValueDisplay {
-            Layout.preferredWidth: 120
-            labelText: 'CPU Temp'
-            valueText: CPUMonitor.temperature
-        }
+        labelText: 'CPU Temp'
+        valueText: CPUMonitor.temperature
     }
     Item {
         Layout.fillHeight: true

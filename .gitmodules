@@ -1,3 +1,6 @@
 [submodule "qopenremote"]
 	path = qopenremote
 	url = https://github.com/micaah42/qopenremote.git
+[submodule "doxygen-awesome-css"]
+	path = doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git

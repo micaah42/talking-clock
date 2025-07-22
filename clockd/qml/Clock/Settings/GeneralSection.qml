@@ -1,6 +1,6 @@
-import QtQuick 2.14
+import QtQuick 
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 2.14
+import QtQuick.Controls 
 
 import Clock 1.0
 import Clock.Style 1.0
@@ -128,7 +128,7 @@ Section {
                                 CLabel {
                                     property string mediumName: d.timeZone.displayName(new Date(), TimeZone.ShortName)
                                     property string cityName: (d.timeZone.id.split('/')[1] || '').replace('_', ' ')
-                                    text: `${cityName} ${d.timeZone.territory}  \u2022  ${mediumName}`
+                                    text: `${cityName}, ${d.timeZone.territory}  \u2022  ${mediumName}`
                                     Layout.fillWidth: true
                                 }
                                 CLabel {

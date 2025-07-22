@@ -38,7 +38,7 @@ void SoundService::refresh()
 
     while (it.hasNext()) {
         it.next();
-        _sounds.append(it.filePath());
+        _sounds.append(it.fileInfo().absoluteFilePath());
     }
 
     qCInfo(self) << "found" << _sounds.size() << "sounds" << _soundsFolder.exists();

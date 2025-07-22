@@ -19,7 +19,7 @@ Section {
 
         model: SystemLightManager.lights
 
-        delegate: Frame {
+        delegate: CFrame {
             id: d
 
             property SystemLight light: modelData
@@ -27,64 +27,80 @@ Section {
 
             contentItem: Expandable {
                 id: contentItem
-                title: `Light ${index + 1} - (${d.light.id.toUpperCase()})`
-                label.Layout.preferredWidth: 120
 
-                previewContent.children: Loader {
-                    width: parent.width
+                previewContent: [
+                    Switch {
+                        onClicked: d.light.brightness = checked ? 1 : 0
+                        checked: d.light.brightness
+                    },
+                    CLabel {
+                        text: `Light ${index + 1} - (${d.light.id.toUpperCase()})`
+                    },
+                    Slider {
+                        visible: d.light.max !== 1
+                        Layout.fillWidth: true
 
-                    Component {
-                        id: sliderComponent
-                        Item {
-                            Slider {
-                                anchors.centerIn: parent
-                                width: parent.width
-                                stepSize: d.light.stepSize ? 1 / d.light.stepSize : 1 / d.light.max
-                                onValueChanged: d.light.brightness = value
-                                value: d.light.brightness
-                                from: d.light.min
-                                to: 1
-                            }
-                        }
+                        stepSize: d.light.stepSize ? 1 / d.light.stepSize : 1 / d.light.max
+                        onValueChanged: d.light.brightness = value
+                        value: d.light.brightness
+                        from: d.light.min
+                        to: 1
+                    },
+                    Item {
+                        visible: d.light.max === 1
+                        Layout.fillWidth: true
                     }
-                    Component {
-                        id: switchComponent
-                        Item {
-                            Switch {
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.right: parent.right
-                                onClicked: d.light.brightness = checked ? 1 : 0
-                                checked: d.light.brightness
-                            }
-                        }
-                    }
-                    sourceComponent: d.light.max === 1 ? switchComponent : sliderComponent
-                }
+                ]
 
                 ValueDisplay {
+                    value.wrapMode: Text.WrapAnywhere
                     size: ValueDisplay.Compact
                     valueText: d.light.path
                     labelText: 'Path'
                 }
-                ValueDisplay {
-                    size: ValueDisplay.Compact
-                    labelText: 'Brightness'
-                    valueText: d.light.brightness
-                }
-                ValueDisplay {
-                    size: ValueDisplay.Compact
-                    labelText: 'Step Size'
-                    valueText: d.light.stepSize
-                }
-                ValueDisplay {
-                    size: ValueDisplay.Compact
-                    labelText: 'Min'
-                    valueText: d.light.min
-                }
-                ValueDisplay {
-                    size: ValueDisplay.Compact
-                    labelText: 'Max'
-                    valueText: d.light.max
+                RowLayout {
+                    Item {
+                        Layout.preferredHeight: l.height
+                        Layout.fillWidth: true
+
+                        ValueDisplay {
+                            id: l
+                            Layout.fillWidth: true
+                            size: ValueDisplay.Compact
+                            labelText: 'Brightness'
+                            valueText: d.light.brightness
+                        }
+                    }
+                    Item {
+                        Layout.preferredHeight: l.height
+                        Layout.fillWidth: true
+
+                        ValueDisplay {
+                            size: ValueDisplay.Compact
+                            labelText: 'Step Size'
+                            valueText: d.light.stepSize
+                        }
+                    }
+                    Item {
+                        Layout.preferredHeight: l.height
+                        Layout.fillWidth: true
+
+                        ValueDisplay {
+                            size: ValueDisplay.Compact
+                            labelText: 'Min'
+                            valueText: d.light.min
+                        }
+                    }
+                    Item {
+                        Layout.preferredHeight: l.height
+                        Layout.fillWidth: true
+
+                        ValueDisplay {
+                            size: ValueDisplay.Compact
+                            labelText: 'Max'
+                            valueText: d.light.max
+                        }
+                    }
                 }
             }
         }

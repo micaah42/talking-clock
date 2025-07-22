@@ -13,7 +13,7 @@ ColumnLayout {
         Layout.fillWidth: true
         active: alarm !== null
 
-        sourceComponent: Frame {
+        sourceComponent: CFrame {
             visible: alarm.nextTimeout.getTime() - AlarmService.now.getTime() < 15 * 60000
             contentItem: RowLayout {
                 ColumnLayout {
@@ -23,19 +23,19 @@ ColumnLayout {
                         id: v
                         Layout.fillWidth: true
                         text: alarm.nextTimeout.toLocaleTimeString()
-                        size: CLabel.Large
+                        size: CLabel.XLarge
                     }
                     CLabel {
                         id: l
                         visible: alarm.name !== ''
                         Layout.fillWidth: true
-                        size: CLabel.Medium
+                        size: CLabel.Large
                         opacity: Theme.o72
                         text: alarm.name
                     }
                 }
                 CLabel {
-                    Layout.alignment: Qt.AlignTop
+                    size: CLabel.Large
                     text: {
                         const msecs = alarm.nextTimeout.getTime() - AlarmService.now.getTime()
                         return `in ${Theme.durationString(msecs)}`

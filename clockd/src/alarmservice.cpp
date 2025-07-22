@@ -140,7 +140,7 @@ void AlarmService::saveAlarms()
 
 void AlarmService::loadAlarms()
 {
-    qCInfo(self) << "loading alarms ..." << QMetaType::fromType<Alarm *>().id() << QMetaType::fromType<const Alarm *>().id();
+    qCInfo(self) << "loading alarms ...";
 
     // check wether we can open the file
     if (!_alarmsFile.open(QIODevice::ReadOnly)) {

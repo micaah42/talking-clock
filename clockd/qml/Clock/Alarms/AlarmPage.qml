@@ -1,6 +1,6 @@
-import QtQuick 2.14
+import QtQuick
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 2.14
+import QtQuick.Controls
 import QtQuick.Shapes 1.15
 
 import Clock
@@ -11,7 +11,7 @@ Item {
     RowLayout {
         anchors.fill: parent
 
-        Frame {
+        CFrame {
             Layout.preferredWidth: parent.width / 3
             Layout.fillHeight: true
             Layout.margins: 8

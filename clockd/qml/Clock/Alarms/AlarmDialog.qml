@@ -1,5 +1,5 @@
-import QtQuick 2.14
-import QtQuick.Controls 2.14
+import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts 1.14
 
 import Clock 1.0
@@ -33,6 +33,7 @@ Popup {
                     Layout.fillHeight: true
                     checked: alarm.activated
                     onClicked: alarm.activated = checked
+                    font.pixelSize: Theme.fontSizeLarge
                     font.family: FontService.family
                     scale: 1.4
                 }
@@ -41,25 +42,34 @@ Popup {
                     Layout.fillWidth: true
                 }
 
-                Row {
+                DayOfWeekRow {
                     id: weekdays
-                    spacing: 4
+                    spacing: 16
 
                     function getRepeat(i) {
-                        return alarm.repeatRule[i]
+                        return Array.from(alarm.repeatRule)[i]
                     }
                     function setRepeat(i, v) {
                         var rule = alarm.repeatRule
                         rule[i] = v
                         alarm.repeatRule = rule
                     }
-                    Repeater {
-                        model: 7
-                        delegate: CheckBox {
+
+                    delegate: ColumnLayout {
+                        id: d1
+                        required property string shortName
+                        required property int day
+                        spacing: -4
+
+                        CheckBox {
                             width: 32
                             scale: 1.5
-                            checked: weekdays.getRepeat(modelData)
-                            onClicked: weekdays.setRepeat(modelData, checked)
+                            onClicked: weekdays.setRepeat(d1.day - 1, checked)
+                            checked: weekdays.getRepeat(d1.day - 1)
+                        }
+                        CLabel {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: d1.shortName
                         }
                     }
                 }

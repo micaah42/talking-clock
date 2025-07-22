@@ -20,5 +20,21 @@
         <file>new/MaterialSymbolsOutlined.properties.txt</file>
         <file>new/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf</file>
         <file>new/update.py</file>
+        <file>space-theme/stars0.svg</file>
+        <file>space-theme/stars1.svg</file>
+        <file>space-theme/stars2.svg</file>
+        <file>space-theme/stars3.svg</file>
+        <file>space-theme/stars4.svg</file>
+        <file>space-theme/stars5.svg</file>
+        <file>space-theme/stars6.svg</file>
+        <file>space-theme/stars7.svg</file>
+        <file>space-theme/stars8.svg</file>
+        <file>space-theme/stars9.svg</file>
+        <file>space-theme/stars10.svg</file>
+        <file>space-theme/stars11.svg</file>
+        <file>space-theme/stars12.svg</file>
+        <file>space-theme/stars13.svg</file>
+        <file>space-theme/stars14.svg</file>
+        <file>space-theme/stars15.svg</file>
     </qresource>
 </RCC>

@@ -41,31 +41,11 @@ Card {
             }
         }
 
-        Item {
+        FeedbackLoader {
             Layout.fillHeight: true
             Layout.fillWidth: true
 
-            Loader {
-                id: loader
-                anchors.fill: parent
-                asynchronous: true
-
-                sourceComponent: currentPage?.comp || null
-                opacity: status === Loader.Ready ? 1 : 0
-
-                Behavior on opacity {
-                    PropertyAnimation {}
-                }
-            }
-
-            BusyIndicator {
-                anchors.centerIn: parent
-                opacity: loader.status === Loader.Loading ? 1 : 0
-
-                Behavior on opacity {
-                    PropertyAnimation {}
-                }
-            }
+            sourceComponent: currentPage?.comp || null
         }
     }
 }

@@ -6,41 +6,32 @@ import Clock.Controls
 
 ColumnLayout {
     property bool expanded: false
-    property string title
 
     default property alias contentData: content.data
     property alias indicator: indicator
     property alias content: content
-    property alias label: label
 
-    property alias previewContent: previewContent
+    property alias previewContent: preview.data
     property alias preview: preview
     spacing: 16
 
     RowLayout {
-        id: preview
+        id: mainContainer
         Layout.fillWidth: true
-        spacing: 24
+        spacing: 16
 
-        CLabel {
-            id: label
-            Layout.preferredWidth: 80
-            visible: title
-            text: title
-        }
-
-        Item {
-            id: previewContent
+        RowLayout {
+            id: preview
             Layout.fillWidth: true
+            spacing: 8
         }
 
         CToolButton {
             id: indicator
-
-            text: Icons.keyboard_arrow_down
             onClicked: expanded = !expanded
-            rotation: expanded ? 180 : 0
+            text: Icons.chevron_left
 
+            rotation: expanded ? 90 : -90
             Behavior on rotation {
                 PropertyAnimation {}
             }

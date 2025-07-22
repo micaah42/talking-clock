@@ -13,9 +13,11 @@ Flickable {
 
     ColumnLayout {
         id: column
-        width: parent.width
 
-        Frame {
+        width: parent.width
+        spacing: 16
+
+        CFrame {
             Layout.fillWidth: true
             clip: true
             ActionDayItem {
@@ -23,7 +25,7 @@ Flickable {
                 width: parent.width
             }
         }
-        Frame {
+        CFrame {
             Layout.fillWidth: true
             clip: true
             NextAlarm {

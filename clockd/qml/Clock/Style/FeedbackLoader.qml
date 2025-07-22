@@ -1,27 +1,26 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.14
+import QtQuick.Controls
 
-Loader {
-    id: loader
-    asynchronous: true
-    onStatusChanged: console.log('#', status)
+Item {
+    property alias sourceComponent: loader.sourceComponent
 
-    Popup {
-        visible: loader.status === Loader.Loading
-        closePolicy: Popup.NoAutoClose
-        modal: true
-        dim: false
+    Loader {
+        id: loader
+        anchors.fill: parent
+        asynchronous: true
+        opacity: status === Loader.Ready ? 1 : 0
 
-        anchors.centerIn: Overlay.overlay
-        height: width
-        width: 128
-
-        BusyIndicator {
-            anchors.fill: parent
+        Behavior on opacity {
+            PropertyAnimation {}
         }
+    }
 
-        background: Card {
-            bright: true
+    BusyIndicator {
+        anchors.centerIn: parent
+        opacity: loader.status === Loader.Loading ? 1 : 0
+
+        Behavior on opacity {
+            PropertyAnimation {}
         }
     }
 }

@@ -1,13 +1,13 @@
-import QtQuick 2.14
+import QtQuick
 import QtQml 2.0
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 2.14
+import QtQuick.Controls
 
 import Clock 1.0
 import Clock.Style
 import Clock.Controls 1.0
 
-Frame {
+CFrame {
     id: ctrl
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -47,7 +47,7 @@ Frame {
 
             font.pixelSize: {
                 var displacement = 2 * Math.abs(Tumbler.displacement) / visibleItems
-                return Math.max(64 - 32 * displacement, 24)
+                return Math.max(56 - 32 * displacement, 24)
             }
 
             MouseArea {
@@ -112,20 +112,21 @@ Frame {
             font.pixelSize: 32
         }
 
-        Tumbler {
-            visible: seconds
-
+        Loader {
+            active: seconds
             Layout.fillHeight: true
             Layout.fillWidth: true
             clip: true
 
-            model: [...Array(60 / secondStepSize).keys()].map(x => secondStepSize * x)
-            delegate: delegateComponent
+            sourceComponent: Tumbler {
+                model: [...Array(60 / secondStepSize).keys()].map(x => secondStepSize * x)
+                delegate: delegateComponent
 
-            currentIndex: currentIndex = Math.round(time.getSeconds() / secondStepSize)
-            onCurrentIndexChanged: {
-                time = new Date(time.setSeconds(model[currentIndex]))
-                console.log('new seconds:', model[currentIndex], time)
+                currentIndex: currentIndex = Math.round(time.getSeconds() / secondStepSize)
+                onCurrentIndexChanged: {
+                    time = new Date(time.setSeconds(model[currentIndex]))
+                    console.log('new seconds:', model[currentIndex], time)
+                }
             }
         }
 

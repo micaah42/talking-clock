@@ -23,6 +23,7 @@ GridLayout {
         width: 7 * window.width / 8
 
         title: 'Custom Color'
+        modal: true
 
         contentItem: ColorPicker {
             id: customColorPicker
@@ -60,11 +61,18 @@ GridLayout {
         delegate: Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            onClicked: value = modelData
+            onClicked: valueEdited(modelData)
             Material.background: modelData
             implicitHeight: 0
             bottomInset: 0
             topInset: 0
+        }
+    }
+    Repeater {
+        model: (rows - 1) * columns - currentPalette.colors.length
+        delegate: Item {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
     }
 

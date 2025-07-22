@@ -1,8 +1,8 @@
-import QtQuick 2.14
-import QtQuick.Window 2.14
+import QtQuick
+import QtQuick.Window
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 2.14
-import QtQuick.Controls.Material 2.14
+import QtQuick.Controls
+import QtQuick.Controls.Material
 import QtQuick.VirtualKeyboard
 import QtMultimedia 5.15
 
@@ -172,22 +172,11 @@ Window {
         }
     }
 
-    property var lastSwap: new Date()
-    property real fps: 0
-
-    onFrameSwapped: {
-        const now = new Date()
-        const diff = (now.getTime() - lastSwap.getTime())
-        fps = 1000 / diff
-        lastSwap = now
-    }
-
-    CLabel {
+    FPSOverlay {
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.margins: 8
-        visible: SpaceTheme.fpsVisible
-        font.pixelSize: 24
-        text: fps.toFixed()
+        anchors.margins: 16
+        width: 300
+        height: 80
     }
 }

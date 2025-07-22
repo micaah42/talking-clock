@@ -10,7 +10,7 @@ RowLayout {
     anchors.fill: parent
     spacing: 8
 
-    Frame {
+    CFrame {
         Layout.preferredWidth: 330
         Layout.fillHeight: true
 
@@ -119,7 +119,7 @@ RowLayout {
         }
     }
 
-    Frame {
+    CFrame {
         Layout.fillHeight: true
         Layout.fillWidth: true
 

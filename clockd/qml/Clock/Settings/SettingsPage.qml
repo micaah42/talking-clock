@@ -1,6 +1,6 @@
-import QtQuick 2.14
+import QtQuick
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 2.14
+import QtQuick.Controls
 
 import QtQml.Models
 
@@ -10,18 +10,72 @@ import Clock.Style
 import Clock.Controls
 
 Item {
+    readonly property list<SectionNew> modeScreens: [
+        SectionNew {
+            content: GeneralSection {}
+            title: 'General'
+            icon: Icons.home
+        },
+        SectionNew {
+            content: WirelessSection {}
+            title: 'Wireless'
+            icon: 'wifi'
+        },
+        SectionNew {
+            content: AppearenceSection {}
+            icon: Icons.display_settings
+            title: 'Appearence'
+        },
+        SectionNew {
+            content: PairedDevicesSection {}
+            title: 'Paired Devices'
+            icon: Icons.devices
+        },
+        SectionNew {
+            content: SystemLightsSection {}
+            title: 'System Lights'
+            icon: Icons.model_training
+        },
+        SectionNew {
+            content: PerformanceSection {}
+            title: 'Performance'
+            icon: Icons.monitoring
+        },
+        SectionNew {
+            content: Item {
+                property string title: 'About'
+                property string icon: Icons.info
+                AboutPage {}
+            }
+            icon: Icons.info
+            title: 'About'
+        }
+    ]
+
+    Component {
+        id: sectionLoader
+        FeedbackLoader {}
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 8
         clip: true
 
         ListView {
+            id: navigationList
             Layout.preferredWidth: 200
             Layout.fillHeight: true
 
-            currentIndex: sections.currentIndex
             interactive: contentHeight > height
-            model: sections.contentChildren
+            model: modeScreens
+
+            onCurrentIndexChanged: {
+                const properties = {
+                    "sourceComponent": modeScreens[currentIndex].content
+                }
+                sections.replace(sectionLoader, properties)
+            }
 
             delegate: ItemDelegate {
                 RowLayout {
@@ -43,7 +97,7 @@ Item {
                 }
 
                 highlighted: ListView.isCurrentItem
-                onClicked: sections.currentIndex = index
+                onClicked: navigationList.currentIndex = index
                 width: parent.width
                 height: 56
             }
@@ -56,25 +110,12 @@ Item {
             radius: width / 2
         }
 
-        SwipeView {
+        StackView {
             id: sections
-            orientation: Qt.Vertical
             Layout.fillHeight: true
             Layout.fillWidth: true
-            interactive: false
-            spacing: 8
-
-            GeneralSection {}
-            WirelessSection {}
-            AppearenceSection {}
-            PairedDevicesSection {}
-            SystemLightsSection {}
-            PerformanceSection {}
-            Item {
-                property string title: 'About'
-                property string icon: Icons.info
-                AboutPage {}
-            }
+            initialItem: Item {}
+            clip: true
         }
     }
 }

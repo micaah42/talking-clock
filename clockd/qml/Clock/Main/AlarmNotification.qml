@@ -17,7 +17,13 @@ ColumnLayout {
         id: player
 
         Component.onCompleted: play()
-        source: alarm.sound.length ? alarm.sound : SoundService.availableSounds[0] || ''
+        source: {
+            const sound = alarm.sound.length ? alarm.sound : SoundService.availableSounds[0] || ''
+            if (sound === '')
+                return ''
+            console.log(sound)
+            return `file://${sound}`
+        }
         loops: MediaPlayer.Infinite
 
         onErrorOccurred: function (error, errorString) {
