@@ -15,11 +15,20 @@ class LightMode : public QObject
     Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged FINAL)
 
 public:
+    enum Type {
+        TypeStatic,
+        TypeWaving,
+        TypeMonoRotation,
+    };
+    Q_ENUM(Type);
+
     explicit LightMode(Lighting &lighting);
+
     static QList<QColor> gradient(int steps, const QColor &a, const QColor &b);
     static QColor interpolate(double f, const QColor &a, const QColor &b);
 
     virtual QString name() const = 0;
+    virtual Type type() const = 0;
 
     virtual void start() = 0;
     virtual void stop() = 0;
@@ -35,8 +44,8 @@ protected:
     Lighting &_lighting;
 
 private:
-    bool m_active;
-    QString m_name;
+    bool _active;
+    QString _name;
 };
 
 class AnimatedLightMode : public LightMode
@@ -52,7 +61,6 @@ public:
 
     virtual void start();
     virtual void stop();
-    ;
 
     void setInterval(int newInterval);
     int interval() const;

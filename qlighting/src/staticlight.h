@@ -16,8 +16,10 @@ class StaticLight : public LightMode
 public:
     explicit StaticLight(Lighting &lighting);
 
-    virtual QString name() const override { return "Static"; };
-    virtual void start() override { apply(); };
+    virtual QString name() const override;
+    virtual Type type() const override;
+
+    virtual void start() override;
     virtual void stop() override {};
 
     QColor color() const;

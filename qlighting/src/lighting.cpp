@@ -35,13 +35,14 @@ Lighting::Lighting(int ledCount, QObject *parent)
                           .brightness = 0,
                       }},
       }}
-    , _brightness{1.}
-    , _enabled{true}
+    , _modeType{"Lighting/Mode", LightMode::TypeStatic}
+    , _brightness{"Lighting/Brighness", 1.}
+    , _enabled{"Lighting/Enabled", true}
+    , _mode{nullptr}
     , _staticLight{new StaticLight{*this}}
     , _wavingLight{new WavingLight{*this}}
-    , _pulsatingLight{new PulsatingLight{*this}}
     , _monoRotationLight{new MonoRotationLight{*this}}
-    , _raggedLight{new RaggedLight{*this}}
+    , _modes{_staticLight, _wavingLight, _monoRotationLight}
 {
     ws2811_return_t ret;
 
@@ -54,6 +55,8 @@ Lighting::Lighting(int ledCount, QObject *parent)
 
     for (int i = 0; i < LED_COUNT; i++)
         _pixels.append(new Pixel{leds[i]});
+
+    this->setModeType(_modeType);
 }
 
 Lighting::~Lighting() {}
@@ -85,6 +88,7 @@ void Lighting::setMode(LightMode *newMode)
     if (_mode)
         _mode->setActive(false);
 
+    _modeType = newMode->type();
     _mode = newMode;
     emit modeChanged();
 
@@ -151,17 +155,17 @@ WavingLight *Lighting::wavingLight() const
     return _wavingLight;
 }
 
-PulsatingLight *Lighting::pulsatingLight() const
-{
-    return _pulsatingLight;
-}
-
 MonoRotationLight *Lighting::monoRotationLight() const
 {
     return _monoRotationLight;
 }
 
-RaggedLight *Lighting::raggedLight() const
+void Lighting::setModeType(LightMode::Type type)
 {
-    return _raggedLight;
+    auto it = std::find_if(_modes.begin(), _modes.end(), [this](const LightMode *m) { //
+        return _modeType == m->type();
+    });
+
+    if (it != _modes.end())
+        this->setMode(*it);
 }

@@ -8,6 +8,16 @@ StaticLight::StaticLight(Lighting &lighting)
     , m_color{0xff, 0, 0}
 {}
 
+QString StaticLight::name() const
+{
+    return "Static";
+}
+
+LightMode::Type StaticLight::type() const
+{
+    return TypeStatic;
+}
+
 void StaticLight::apply()
 {
     for (auto &pixel : _pixels) {
@@ -32,3 +42,7 @@ void StaticLight::setColor(const QColor &newColor)
 
     apply();
 }
+void StaticLight::start()
+{
+    apply();
+};

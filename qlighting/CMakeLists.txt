@@ -28,12 +28,6 @@ add_library(${PROJECT_NAME} SHARED
     src/staticlight.cpp
     src/staticlight.h
 
-    src/prettyrandomlight.cpp
-    src/prettyrandomlight.h
-
-    src/pulsatinglight.cpp
-    src/pulsatinglight.h
-
     src/pixel.cpp
     src/pixel.h
 
@@ -45,9 +39,6 @@ add_library(${PROJECT_NAME} SHARED
 
     src/systemlight.cpp
     src/systemlight.h
-
-    src/raggedlight.cpp
-    src/raggedlight.h
 )
 
 
@@ -58,7 +49,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:src/>
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
@@ -76,8 +67,6 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
-
-
 
 add_executable(${PROJECT_NAME}-cli
     src/main.cpp

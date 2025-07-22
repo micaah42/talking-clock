@@ -18,7 +18,8 @@ class MonoRotationLight : public LightMode
 public:
     explicit MonoRotationLight(Lighting &lighting);
     virtual QString name() const override;
-    ;
+    virtual Type type() const override;
+
     virtual void start() override;
     virtual void stop() override;
     QList<QColor> colors() const;

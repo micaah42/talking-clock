@@ -4,12 +4,12 @@
 #include <QObject>
 #include <memory>
 
+#include "setting.h"
+
 #include "lightmode.h"
 #include "pixel.h"
 
 #include "monorotation.h"
-#include "pulsatinglight.h"
-#include "raggedlight.h"
 #include "staticlight.h"
 #include "wavinglight.h"
 
@@ -23,9 +23,7 @@ class Lighting : public QObject
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged FINAL)
     Q_PROPERTY(StaticLight *staticLight READ staticLight CONSTANT FINAL)
     Q_PROPERTY(WavingLight *wavingLight READ wavingLight CONSTANT FINAL)
-    Q_PROPERTY(PulsatingLight *pulsatingLight READ pulsatingLight CONSTANT FINAL)
     Q_PROPERTY(MonoRotationLight *monoRotationLight READ monoRotationLight CONSTANT FINAL)
-    Q_PROPERTY(RaggedLight *raggedLight READ raggedLight CONSTANT FINAL)
 
 public:
     explicit Lighting(int ledCount, QObject *parent = nullptr);
@@ -48,9 +46,10 @@ public:
 
     StaticLight *staticLight() const;
     WavingLight *wavingLight() const;
-    PulsatingLight *pulsatingLight() const;
     MonoRotationLight *monoRotationLight() const;
-    RaggedLight *raggedLight() const;
+
+public slots:
+    void setModeType(LightMode::Type type);
 
 signals:
     void modeChanged();
@@ -64,15 +63,15 @@ protected:
 
 private:
     std::unique_ptr<ws2811_t> _ws2811;
-    LightMode *_mode = nullptr;
-    double _brightness;
-    bool _enabled;
+    Setting<LightMode::Type> _modeType;
+    Setting<double> _brightness;
+    Setting<bool> _enabled;
 
+    LightMode *_mode;
     StaticLight *_staticLight;
     WavingLight *_wavingLight;
-    PulsatingLight *_pulsatingLight;
     MonoRotationLight *_monoRotationLight;
-    RaggedLight *_raggedLight = nullptr;
+    QList<LightMode *> _modes;
 };
 
 #endif // LIGHTING_H

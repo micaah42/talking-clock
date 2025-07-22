@@ -16,7 +16,8 @@ class WavingLight : public AnimatedLightMode
 public:
     explicit WavingLight(Lighting &lighting);
 
-    virtual QString name() const override { return "Waving"; };
+    virtual QString name() const override;
+    virtual Type type() const override;
 
     int length() const;
     void setLength(int newLength);

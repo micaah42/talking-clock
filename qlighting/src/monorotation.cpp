@@ -30,6 +30,11 @@ QString MonoRotationLight::name() const
     return "Mono Rotation";
 }
 
+LightMode::Type MonoRotationLight::type() const
+{
+    return TypeMonoRotation;
+}
+
 void MonoRotationLight::start()
 {
     _animation->start();

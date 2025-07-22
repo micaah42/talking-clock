@@ -19,6 +19,11 @@ WavingLight::WavingLight(Lighting &lighting)
     qCInfo(self) << "created" << this;
 }
 
+LightMode::Type WavingLight::type() const
+{
+    return TypeWaving;
+}
+
 int WavingLight::length() const
 {
     return _length;
@@ -74,3 +79,7 @@ void WavingLight::animate(double delta)
 
     _lighting.render();
 }
+QString WavingLight::name() const
+{
+    return "Waving";
+};

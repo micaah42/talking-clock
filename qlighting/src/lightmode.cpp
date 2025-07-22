@@ -9,7 +9,7 @@ LightMode::LightMode(Lighting &lighting)
     : QObject{&lighting}
     , _pixels{lighting._pixels}
     , _lighting{lighting}
-    , m_active{false}
+    , _active{false}
 {}
 
 QList<QColor> LightMode::gradient(int steps, const QColor &a, const QColor &b)
@@ -34,18 +34,18 @@ QColor LightMode::interpolate(double f, const QColor &a, const QColor &b)
 
 bool LightMode::active() const
 {
-    return m_active;
+    return _active;
 }
 
 void LightMode::setActive(bool newActive)
 {
-    if (m_active == newActive)
+    if (_active == newActive)
         return;
 
-    m_active = newActive;
+    _active = newActive;
     emit activeChanged();
 
-    m_active ? start() : stop();
+    _active ? start() : stop();
 }
 
 AnimatedLightMode::AnimatedLightMode(Lighting &lighting)
