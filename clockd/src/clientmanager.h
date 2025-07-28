@@ -4,7 +4,7 @@
 #include <QDateTime>
 #include <QObject>
 
-#include "qlistmodel.h"
+#include "listmodel.h"
 
 class Client;
 class WebSocketServer;
@@ -14,10 +14,10 @@ class ClientService : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int activeClientCount READ activeClientCount NOTIFY activeClientCountChanged FINAL)
-    Q_PROPERTY(QListModelBase *clients READ clients CONSTANT FINAL)
+    Q_PROPERTY(ListModelBase *clients READ clients CONSTANT FINAL)
 public:
     explicit ClientService(WebSocketServer &server, QObject *parent = nullptr);
-    QListModel<Client *> *clients();
+    ListModel<Client *> *clients();
 
     int activeClientCount() const;
 
@@ -35,7 +35,7 @@ private slots:
 
 private:
     WebSocketServer &_server;
-    QListModel<Client *> _clients;
+    ListModel<Client *> _clients;
 
     int m_activeClientCount;
 };

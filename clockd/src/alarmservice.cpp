@@ -193,7 +193,7 @@ const QDateTime &AlarmService::now() const
     return _now;
 }
 
-QListModel<Alarm *> *AlarmService::model()
+ListModel<Alarm *> *AlarmService::model()
 {
     return &_alarmModel;
 }
@@ -235,3 +235,5 @@ void AlarmService::setNextAlarm(Alarm *newNextAlarm)
     _nextAlarm = newNextAlarm;
     emit nextAlarmChanged();
 }
+
+SortFilterAlarmModel::SortFilterAlarmModel() {}

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QSortFilterProxyModel>
 #include <QTimeZone>
-#include <qlistmodel.h>
+#include <listmodel.h>
 
 class QProcess;
 
@@ -55,7 +55,7 @@ private:
     QString _searchString;
 };
 
-class TimeZoneModel : public QListModel<TimeZone *>
+class TimeZoneModel : public ListModel<TimeZone *>
 {
     Q_OBJECT
     Q_PROPERTY(bool refreshing READ refreshing WRITE setRefreshing NOTIFY refreshingChanged FINAL)

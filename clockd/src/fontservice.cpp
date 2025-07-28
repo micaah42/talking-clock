@@ -71,14 +71,4 @@ void FontService::setFamily(const QString &family)
     QGuiApplication::setFont(QFont{family});
     _family = family;
     emit familyChanged();
-
-    if (!_engine) {
-        qCCritical(self) << "engine not set! cannot reload qml!";
-        return;
-    }
-
-    if (_engine->rootObjects().isEmpty()) {
-        qCInfo(self) << "engine already about to load";
-        return;
-    }
 }

@@ -41,5 +41,5 @@ void CPUGraph::setCpu(CPUMonitor *newCpu)
 
 void CPUGraph::onUsagesChanged()
 {
-    this->newValues(m_cpu->usages().mid(1), QDateTime::currentMSecsSinceEpoch());
+    this->pushValues2(m_cpu->usages().mid(1), QDateTime::currentMSecsSinceEpoch());
 }

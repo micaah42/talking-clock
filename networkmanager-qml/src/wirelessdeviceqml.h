@@ -7,7 +7,7 @@
 #include <NetworkManagerQt/Connection>
 #include <NetworkManagerQt/WirelessDevice>
 
-#include "qlistmodel.h"
+#include "listmodel.h"
 
 #include "activeconnection.h"
 #include "wirelessnetworkqml.h"
@@ -21,11 +21,11 @@ class WirelessDevice : public QObject
     QML_UNCREATABLE("")
     Q_PROPERTY(ActiveConnection *activeConnection READ activeConnection WRITE setActiveConnection NOTIFY activeConnectionChanged FINAL)
     Q_PROPERTY(WirelessNetwork *activeNetwork READ activeNetwork NOTIFY activeNetworkChanged FINAL)
-    Q_PROPERTY(QListModelBase *wirelessNetworks READ wirelessNetworks CONSTANT FINAL)
+    Q_PROPERTY(ListModelBase *wirelessNetworks READ wirelessNetworks CONSTANT FINAL)
 
 public:
     explicit WirelessDevice(NM::WirelessDevice::Ptr &wirelessDevice, QObject *parent = nullptr);
-    QListModel<WirelessNetwork *> *wirelessNetworks();
+    ListModel<WirelessNetwork *> *wirelessNetworks();
     WirelessNetwork *activeNetwork() const;
     ActiveConnection *activeConnection() const;
 
@@ -49,7 +49,7 @@ protected:
 
 private:
     NM::WirelessDevice::Ptr _wirelessDevice;
-    QListModel<WirelessNetwork *> _wirelessNetworks;
+    ListModel<WirelessNetwork *> _wirelessNetworks;
     WirelessNetwork *m_activeNetwork = nullptr;
     ActiveConnection *m_activeConnection = nullptr;
 };

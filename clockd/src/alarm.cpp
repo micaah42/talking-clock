@@ -2,7 +2,7 @@
 
 #include <QLoggingCategory>
 
-#include "qlistmodel.h"
+#include "listmodel.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "alarm");

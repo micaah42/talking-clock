@@ -68,7 +68,7 @@ void WirelessDevice::onActiveConnectionChanged()
     this->setActiveConnection(new ActiveConnection{_wirelessDevice->activeConnection(), this});
 }
 
-QListModel<WirelessNetwork *> *WirelessDevice::wirelessNetworks()
+ListModel<WirelessNetwork *> *WirelessDevice::wirelessNetworks()
 {
     return &_wirelessNetworks;
 }

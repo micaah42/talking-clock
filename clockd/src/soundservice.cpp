@@ -12,6 +12,7 @@ SoundService::SoundService(QObject *parent)
     , _soundsFolder{"./usr/share/clockd/sounds"}
     , _volume{"Sounds/Volume", 1.}
 {
+    _clickEffect.setSource(QUrl{"qrc:/sounds/click.wav"});
     this->refresh();
 }
 
@@ -23,6 +24,11 @@ QStringList SoundService::availableSounds()
 QString SoundService::displayName(const QString &soundPath)
 {
     return QFileInfo{soundPath}.baseName();
+}
+
+void SoundService::playClickEffect()
+{
+    _clickEffect.play();
 }
 
 void SoundService::refresh()

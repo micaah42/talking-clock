@@ -80,13 +80,14 @@ int main(int argc, char *argv[])
     remoting.registerObject("remoting", &remoting);
 
     Palette palette;
-    qmlRegisterSingletonInstance<Palette>("Clock", 1, 0, "ColorService", &palette);
+    qmlRegisterSingletonInstance("Clock", 1, 0, "ColorService", &palette);
 
     FontService fontService{&engine};
     qmlRegisterSingletonInstance("Clock", 1, 0, "FontService", &fontService);
 
     AlarmService alarms(500);
     qmlRegisterType<Alarm>("Clock", 1, 0, "Alarm");
+    qmlRegisterType<SortFilterAlarmModel>("Clock", 1, 0, "SortFilterAlarmModel");
     qmlRegisterSingletonInstance("Clock", 1, 0, "AlarmService", &alarms);
     remoting.registerObject("alarms", &alarms);
 
@@ -158,11 +159,11 @@ int main(int argc, char *argv[])
         },
         Qt::QueuedConnection);
 
-    engine.addImportPath(":/");
-    engine.addPluginPath(":/");
+    // engine.addImportPath(":/");
+    // engine.addPluginPath(":/");
 
     qInfo() << "loading view...";
-    engine.load(url);
+    engine.loadFromModule("Clock", "Main");
     qInfo() << "done!";
 
     return app.exec();

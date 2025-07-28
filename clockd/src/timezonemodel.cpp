@@ -93,7 +93,7 @@ QDateTime TimeZone::convertDateTime(const QDateTime &dateTime)
 }
 
 TimeZoneModel::TimeZoneModel(QObject *parent)
-    : QListModel<TimeZone *>{parent}
+    : ListModel<TimeZone *>{parent}
     , _refreshing{false}
     , _systemTimeZone{nullptr}
 {

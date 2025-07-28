@@ -7,25 +7,44 @@
 #include <QObject>
 #include <QTimer>
 
-#include <qlistmodel.h>
+#include <listmodel.h>
+#include <sortfilterproxylistmodel.h>
 
 #include "alarm.h"
 
 #define MAX_ALARMS 1024
 #define ALARMS_FILE "./alarms.json"
 
+class SortFilterAlarmModel : public SortFilterProxyListModel<Alarm *>
+{
+    Q_OBJECT
+
+public:
+    explicit SortFilterAlarmModel();
+
+public:
+    virtual bool filterAcceptsRow(int index, Alarm *t) const override { return true; };
+    virtual bool lessThan(Alarm *a, Alarm *b) const override
+    {
+        if (!a->nextTimeout().isValid())
+            return false;
+
+        return a->nextTimeout() < b->nextTimeout();
+    };
+};
+
 class AlarmService : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Alarm *nextAlarm READ nextAlarm NOTIFY nextAlarmChanged FINAL)
-    Q_PROPERTY(QListModelBase *model READ model CONSTANT)
+    Q_PROPERTY(ListModelBase *model READ model CONSTANT)
     Q_PROPERTY(QDateTime now READ now NOTIFY clockTicked)
 
 public:
     AlarmService(const int tickRate = 500, QObject *parent = nullptr);
 
     const QDateTime &now() const;
-    QListModel<Alarm *> *model();
+    ListModel<Alarm *> *model();
     Alarm *nextAlarm() const;
 
 public slots:
@@ -57,7 +76,7 @@ private:
     QMap<Alarm *, QDateTime> _timeoutMap;
     QMultiMap<QDateTime, Alarm *> _alarmQueue;
 
-    QListModel<Alarm *> _alarmModel;
+    ListModel<Alarm *> _alarmModel;
     QFile _alarmsFile;
     Alarm *_nextAlarm;
 };

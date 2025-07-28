@@ -85,7 +85,7 @@ void Client::setOnline(bool newOnline)
     emit onlineChanged();
 }
 
-QListModel<Client *> *ClientService::clients()
+ListModel<Client *> *ClientService::clients()
 {
     return &_clients;
 }

@@ -2,8 +2,9 @@
 #define SOUNDSERVICE_H
 
 #include <QDir>
-#include <QMediaPlayer>
+
 #include <QObject>
+#include <QSoundEffect>
 #include <QTimer>
 
 #include "setting.h"
@@ -23,17 +24,18 @@ public:
 
 public slots:
     QString displayName(const QString &soundPath);
+    void playClickEffect();
     void refresh();
 
 signals:
     void availableSoundsChanged();
-
     void volumeChanged();
 
 private:
     QDir _soundsFolder;
     QStringList _sounds;
     Setting<double> _volume;
+    QSoundEffect _clickEffect;
 };
 
 #endif // SOUNDSERVICE_H

@@ -1,0 +1,13 @@
+import QtQuick 
+import QtQuick.Controls as T
+import QtQuick.Controls.Material
+
+import Clock
+import "../Style"
+
+T.Button {
+    font.pixelSize: Theme.fontSizeMedium
+    font.family: FontService.family
+    Material.roundedScale: Material.ExtraSmallScale
+    Material.accent: Theme.accentDark
+}

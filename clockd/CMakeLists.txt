@@ -26,83 +26,54 @@ else()
 endif()
 
 
-
-set(QML_IMPORT_PATH ${CMAKE_CURRENT_LIST_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "" FORCE)
+qt_standard_project_setup(REQUIRES 6.5)
 
 set(PROJECT_SOURCES
-    icons/icons.qrc
     fonts/fonts.qrc
-    qml/qml.qrc
-
+    icons/icons.qrc
     src/main.cpp
-
-    src/constants.h
-    src/defines.h
-
-    src/alarm.h
-    src/alarm.cpp
-
-    src/alarmservice.h
-    src/alarmservice.cpp
-
-    src/fontservice.h
-    src/fontservice.cpp
-
-    src/eventfilter.h
-    src/eventfilter.cpp
-
-    src/loghandling.h
-    src/loghandling.cpp
-
-    src/palette.h
-    src/palette.cpp
-
-    src/pathservice.h
-    src/pathservice.cpp
-
-    src/soundservice.h
-    src/soundservice.cpp
-
-    src/actionday.h
-    src/actionday.cpp
-
-    src/about.cpp
-    src/about.h
-
-    src/spacetheme.cpp
-    src/spacetheme.h
-
-    src/cpugraph.cpp
-    src/cpugraph.h
-
-    src/clientmanager.cpp
-    src/clientmanager.h
-
-    src/system.cpp
-    src/system.h
-
 )
 
-if (ANDROID)
-    add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES})
-    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android)
-else()
-    add_executable(${PROJECT_NAME} ${PROJECT_SOURCES}
-        src/model.h src/model.cpp
-        src/timezonemodel.h src/timezonemodel.cpp)
-endif()
+file(GLOB_RECURSE SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/*.h
+)
+list(REMOVE_ITEM SOURCES src/main.cpp)
 
 
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
+file(GLOB_RECURSE QML_FILES
+    RELATIVE ${CMAKE_CURRENT_LIST_DIR}
+    Clock/*.qml
+)
+
+set(QML_SINGLETONS
+    Clock/Style/Icons.qml
+    Clock/Style/Theme.qml
+    Clock/Style/Palettes.qml
+)
+
+set_source_files_properties(${QML_SINGLETONS}
+    PROPERTIES QT_QML_SINGLETON_TYPE TRUE
+)
+
+qt_add_qml_module(${PROJECT_NAME}
+    DEPENDENCIES QtQuick.Controls
+    QML_FILES ${QML_FILES}
+    SOURCES ${SOURCES}
+    URI Clock
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src)
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::WebSockets
+    Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Quick
-    Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Multimedia
+    Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Sql
     networkmanager-qmlplugin
-    #qnetworkmanager
     qperformance
     qopenremote
     qlighting
@@ -119,8 +90,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 install(TARGETS ${PROJECT_NAME}
-    BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    BUNDLE DESTINATION .
 )
 
 execute_process(COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/usr)

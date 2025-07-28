@@ -3,6 +3,7 @@
 
 #include <QColor>
 #include <QObject>
+#include <QQmlEngine>
 #include <QVariantMap>
 
 #include "setting.h"
@@ -10,6 +11,8 @@
 class Palette : public QObject
 {
     Q_OBJECT
+    QML_UNCREATABLE("Singleton")
+
     Q_PROPERTY(QColor primary READ primary WRITE setPrimary NOTIFY primaryChanged)
     Q_PROPERTY(QColor darkPrimary READ darkPrimary WRITE setDarkPrimary NOTIFY darkPrimaryChanged)
     Q_PROPERTY(QColor accent READ accent WRITE setAccent NOTIFY accentChanged)
