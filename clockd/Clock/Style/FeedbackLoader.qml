@@ -3,6 +3,7 @@ import QtQuick.Controls
 
 Item {
     property alias sourceComponent: loader.sourceComponent
+    property alias active: loader.active
 
     Loader {
         id: loader

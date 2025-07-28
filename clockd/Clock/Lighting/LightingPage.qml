@@ -14,6 +14,8 @@ ColumnLayout {
         [monoRotationLightComponent, Lighting.monoRotationLight] //@
     ]
 
+    Component.onCompleted: group.updateStackView()
+
     RowLayout {
         Layout.minimumHeight: 56
         Layout.maximumHeight: 56
@@ -57,7 +59,11 @@ ColumnLayout {
 
         property int currentIndex: modeScreens.findIndex(x => x[1] === Lighting.mode)
         checkedButton: currentIndex === -1 ? null : buttons[currentIndex] || null
-        onCurrentIndexChanged: swipeView.replace(null, modeScreens[currentIndex][0])
+        onCurrentIndexChanged: updateStackView()
+
+        function updateStackView() {
+            swipeView.replace(null, modeScreens[currentIndex][0])
+        }
     }
 
     RowLayout {
@@ -112,7 +118,7 @@ ColumnLayout {
         title: 'Custom Color'
         contentItem: ColorPicker {
             id: customColorPicker
-            onCurrentColorChanged: valueEdited(currentColor)
+            // onCurrentColorChanged: valueEdited(currentColor)
             value: value
         }
     }

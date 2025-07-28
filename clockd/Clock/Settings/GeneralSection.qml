@@ -1,6 +1,6 @@
-import QtQuick 
+import QtQuick
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 
+import QtQuick.Controls
 
 import Clock 1.0
 import "../Style"
@@ -90,9 +90,10 @@ Section {
                 Layout.fillWidth: true
             }
 
-            Item {
+            FeedbackLoader {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+                active: timezoneDialog.visible
                 clip: true
 
                 ListView {

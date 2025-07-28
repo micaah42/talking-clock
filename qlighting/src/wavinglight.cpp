@@ -11,9 +11,9 @@ Q_LOGGING_CATEGORY(self, "waving", QtInfoMsg)
 
 WavingLight::WavingLight(Lighting &lighting)
     : AnimatedLightMode{lighting}
-    , _length{30}
-    , _a{0xff, 0, 0}
-    , _b{0, 0, 0xff}
+    , _length{"WavingLight/Length", 30}
+    , _a{"WavingLight/Color1", QColor{0xff, 0, 0}}
+    , _b{"WavingLight/Color2", QColor{0, 0, 0xff}}
     , _t{0}
 {
     qCInfo(self) << "created" << this;

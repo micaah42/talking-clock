@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-add_custom_target(scripts SOURCES
+add_custom_target(tools SOURCES
     update.sh
 )
 

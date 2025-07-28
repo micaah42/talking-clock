@@ -74,7 +74,7 @@ PROJECT_BRIEF          = "A Raspberry PI embedded linux clock built with Qt"
 # entered, it will be relative to the location where Doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = docs
+OUTPUT_DIRECTORY       = build/documentation
 
 # If the CREATE_SUBDIRS tag is set to YES then Doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
@@ -967,7 +967,9 @@ WARN_LOGFILE           =
 
 INPUT                  = clockd \
                          qperformance \
-                         qlighting
+                         qlighting \
+                         docker \
+                         tools \
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses

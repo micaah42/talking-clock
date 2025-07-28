@@ -4,6 +4,8 @@
 #include <QColor>
 #include <QObject>
 
+#include <setting.h>
+
 #include "lightmode.h"
 
 class WavingLight : public AnimatedLightMode
@@ -37,9 +39,9 @@ protected:
     virtual void animate(double delta) override;
 
 private:
-    int _length;
-    QColor _a;
-    QColor _b;
+    Setting<int> _length;
+    Setting<QColor> _a;
+    Setting<QColor> _b;
     double _t;
 };
 

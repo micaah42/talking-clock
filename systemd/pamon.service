@@ -1,0 +1,9 @@
+[Unit]
+Description=This starts pamon in order to avoid the talking clock from powering down.
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pamon
+
+[Install]
+WantedBy=multi-user.target

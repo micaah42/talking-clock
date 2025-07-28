@@ -15,7 +15,6 @@ Item {
     property var lastSwap: new Date()
     property int swapCount: 0
 
-    Component.onCompleted: SpaceTheme.fpsVisible = true
     Connections {
         target: window
         enabled: SpaceTheme.fpsVisible
