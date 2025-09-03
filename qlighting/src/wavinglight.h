@@ -7,16 +7,19 @@
 #include <setting.h>
 
 #include "lightmode.h"
+#include "qlighting_global.h"
 
 class WavingLight : public AnimatedLightMode
 {
     Q_OBJECT
+    QLIGHTING_SINGLETON
+
     Q_PROPERTY(int length READ length WRITE setLength NOTIFY lengthChanged FINAL)
     Q_PROPERTY(QColor a READ a WRITE setA NOTIFY aChanged FINAL)
     Q_PROPERTY(QColor b READ b WRITE setB NOTIFY bChanged FINAL)
 
 public:
-    explicit WavingLight(Lighting &lighting);
+    explicit WavingLight();
 
     virtual QString name() const override;
     virtual Type type() const override;
@@ -36,7 +39,7 @@ signals:
     void bChanged();
 
 protected:
-    virtual void animate(double delta) override;
+    virtual void render(double delta, QList<Pixel *> &pixels) override;
 
 private:
     Setting<int> _length;

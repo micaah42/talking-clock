@@ -3,14 +3,15 @@
 #include <QColor>
 #include <QDateTime>
 
-#include "lighting.h"
+LightMode::LightMode()
+{
+    LightMode::allModes()->append(this);
+}
 
-LightMode::LightMode(Lighting &lighting)
-    : QObject{&lighting}
-    , _pixels{lighting._pixels}
-    , _lighting{lighting}
-    , _active{false}
-{}
+void LightMode::update()
+{
+    emit updateReqested(QPrivateSignal());
+}
 
 QList<QColor> LightMode::gradient(int steps, const QColor &a, const QColor &b)
 {
@@ -32,65 +33,15 @@ QColor LightMode::interpolate(double f, const QColor &a, const QColor &b)
     return QColor(255 * red, 255 * green, 255 * blue, 255 * white);
 }
 
-bool LightMode::active() const
+ListModel<LightMode *> *LightMode::allModes()
 {
-    return _active;
+    static ListModel<LightMode *> lightModes;
+    return &lightModes;
 }
 
-void LightMode::setActive(bool newActive)
-{
-    if (_active == newActive)
-        return;
-
-    _active = newActive;
-    emit activeChanged();
-
-    _active ? start() : stop();
-}
-
-AnimatedLightMode::AnimatedLightMode(Lighting &lighting)
-    : LightMode{lighting}
-    , _pixels{LightMode::_pixels}
-    , _speed{1}
-{
-    _timer.callOnTimeout(this, &AnimatedLightMode::onTimeout);
-    _timer.setTimerType(Qt::PreciseTimer);
-    _timer.setInterval(75);
-}
-
-void AnimatedLightMode::start()
-{
-    _lastTime = QDateTime::currentMSecsSinceEpoch();
-    _timer.start();
-
-    this->animate(0);
-}
-
-void AnimatedLightMode::stop()
-{
-    _timer.stop();
-}
-
-void AnimatedLightMode::onTimeout()
-{
-    auto now = QDateTime::currentMSecsSinceEpoch();
-    this->animate(_speed * (now - _lastTime) / 1000.);
-    _lastTime = now;
-}
-
-int AnimatedLightMode::interval() const
-{
-    return _timer.interval();
-}
-
-void AnimatedLightMode::setInterval(int newInterval)
-{
-    if (_timer.interval() == newInterval)
-        return;
-
-    _timer.setInterval(newInterval);
-    emit intervalChanged();
-}
+AnimatedLightMode::AnimatedLightMode()
+    : _speed{1}
+{}
 
 double AnimatedLightMode::speed() const
 {

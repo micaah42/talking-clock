@@ -21,6 +21,11 @@ EventFilter::EventFilter(QObject *parent)
     _inactivityTimer.start();
 }
 
+void EventFilter::installToObject(QObject *object)
+{
+    object->installEventFilter(this);
+}
+
 bool EventFilter::eventFilter(QObject *obj, QEvent *ev)
 {
     switch (ev->type()) {

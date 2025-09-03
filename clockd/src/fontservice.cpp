@@ -15,7 +15,6 @@ Q_LOGGING_CATEGORY(self, "fonts")
 FontService::FontService(QQmlApplicationEngine *parent)
     : QObject(parent)
     , _fontDirectories(QList<QDir>{QDir(":/fonts")})
-    , _engine(parent)
     , _family{"Font/Family", "Working Man"}
 {
     this->refreshFamilies();
@@ -33,7 +32,8 @@ void FontService::refreshFamilies()
             qCCritical(self) << "fonts directory does not exist:" << fonts.path();
         }
 
-        for (auto const &info : fonts.entryInfoList()) {
+        const auto infos = fonts.entryInfoList();
+        for (auto const &info : infos) {
             if (info.suffix() != "ttf") {
                 continue;
             }

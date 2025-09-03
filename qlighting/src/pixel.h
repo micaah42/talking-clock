@@ -1,6 +1,7 @@
 #ifndef PIXEL_H
 #define PIXEL_H
 
+#include "qlighting_global.h"
 #include <QColor>
 #include <QObject>
 
@@ -9,6 +10,9 @@ typedef uint32_t ws2811_led_t;
 class Pixel : public QObject
 {
     Q_OBJECT
+    QLIGHTING_ELEMENT
+    QML_UNCREATABLE("Private")
+
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
 public:

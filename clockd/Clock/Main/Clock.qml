@@ -19,7 +19,7 @@ Item {
 
         CLabel {
             Layout.alignment: Qt.AlignHCenter
-            text: AlarmService.now.toLocaleString(Qt.locale(), "HH:mm")
+            text: '21:12' //AlarmService.now.toLocaleString(Qt.locale(), "HH:mm")
             font.pixelSize: 160 * ctrl.timeScale
             color: Theme.primary
 
@@ -40,7 +40,7 @@ Item {
 
                 anchors.top: parent.top
                 anchors.topMargin: 16
-                text: AlarmService.now.toLocaleString(Qt.locale(), "ss")
+                text: '00' // AlarmService.now.toLocaleString(Qt.locale(), "ss")
                 font.pixelSize: 64 * ctrl.timeScale
                 color: Theme.primary
             }

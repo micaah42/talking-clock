@@ -1,12 +1,16 @@
 #include "staticlight.h"
 
-#include "lighting.h"
 #include "pixel.h"
 
-StaticLight::StaticLight(Lighting &lighting)
-    : LightMode{lighting}
-    , m_color{0xff, 0, 0}
+StaticLight::StaticLight()
+    : _color{"StaticLight/Color", Qt::blue}
 {}
+
+void StaticLight::render(double delta, QList<Pixel *> &pixels)
+{
+    for (auto pixel : std::as_const(pixels))
+        pixel->setColor(_color);
+}
 
 QString StaticLight::name() const
 {
@@ -18,31 +22,19 @@ LightMode::Type StaticLight::type() const
     return TypeStatic;
 }
 
-void StaticLight::apply()
-{
-    for (auto &pixel : _pixels) {
-        pixel->setColor(m_color);
-    }
-
-    _lighting.render();
-}
 
 QColor StaticLight::color() const
 {
-    return m_color;
+    return _color;
 }
 
 void StaticLight::setColor(const QColor &newColor)
 {
-    if (m_color == newColor)
+    if (_color == newColor)
         return;
 
-    m_color = newColor;
+    _color = newColor;
     emit colorChanged();
 
-    apply();
+    this->update();
 }
-void StaticLight::start()
-{
-    apply();
-};

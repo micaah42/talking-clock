@@ -5,6 +5,7 @@
 #include <QJsonArray>
 #include <QMap>
 #include <QObject>
+#include <QQmlEngine>
 #include <QTimer>
 
 #include <listmodel.h>
@@ -18,6 +19,7 @@
 class SortFilterAlarmModel : public SortFilterProxyListModel<Alarm *>
 {
     Q_OBJECT
+    QML_ELEMENT
 
 public:
     explicit SortFilterAlarmModel();
@@ -36,6 +38,9 @@ public:
 class AlarmService : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(Alarm *nextAlarm READ nextAlarm NOTIFY nextAlarmChanged FINAL)
     Q_PROPERTY(ListModelBase *model READ model CONSTANT)
     Q_PROPERTY(QDateTime now READ now NOTIFY clockTicked)

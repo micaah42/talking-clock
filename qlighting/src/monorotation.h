@@ -3,25 +3,25 @@
 
 #include <QColor>
 #include <QObject>
+#include <QVariantAnimation>
 
 #include "lightmode.h"
-
-class Lighting;
-class QVariantAnimation;
-class QSequentialAnimationGroup;
+#include "qlighting_global.h"
 
 class MonoRotationLight : public LightMode
 {
     Q_OBJECT
+    QLIGHTING_SINGLETON
+
     Q_PROPERTY(QList<QColor> colors READ colors WRITE setColors NOTIFY colorsChanged FINAL)
     Q_PROPERTY(int duration READ duration WRITE setDuration NOTIFY durationChanged FINAL)
 public:
-    explicit MonoRotationLight(Lighting &lighting);
+    explicit MonoRotationLight();
+
+    virtual void render(double delta, QList<Pixel *> &pixels) override;
     virtual QString name() const override;
     virtual Type type() const override;
 
-    virtual void start() override;
-    virtual void stop() override;
     QList<QColor> colors() const;
     void setColors(const QList<QColor> &newColors);
 
@@ -34,11 +34,11 @@ signals:
     void durationChanged();
 
 protected:
-    void resetAnimation();
     QVariantAnimation *animation(const QColor &from, const QColor &to, int duration);
+    void resetAnimation();
 
 private:
-    QVariantAnimation *_animation;
+    QScopedPointer<QVariantAnimation> _animation;
     QList<QColor> _colors;
     int _duration;
 };

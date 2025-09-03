@@ -5,6 +5,7 @@
 #include <QFontDatabase>
 #include <QJsonArray>
 #include <QObject>
+#include <QQmlEngine>
 #include <QSortFilterProxyModel>
 #include <QStringListModel>
 #include <QVariant>
@@ -16,6 +17,9 @@ class QQmlApplicationEngine;
 class FontService : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(QSortFilterProxyModel *families READ families NOTIFY familiesChanged)
     Q_PROPERTY(QString family READ family WRITE setFamily NOTIFY familyChanged)
 
@@ -43,9 +47,6 @@ private:
 
     // for setting the font
     Setting<QString> _family;
-    QQmlApplicationEngine *_engine;
-
-    // --- --- ---
 };
 
 #endif // FONTSERVICE_H

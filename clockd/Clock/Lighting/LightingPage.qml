@@ -3,6 +3,8 @@ import QtQuick.Layouts
 import QtQuick.Controls.Material
 
 import Clock
+import QLighting
+
 import "../Style"
 import "../Controls"
 import "../Lighting"

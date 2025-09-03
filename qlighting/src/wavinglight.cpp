@@ -9,9 +9,8 @@ namespace {
 Q_LOGGING_CATEGORY(self, "waving", QtInfoMsg)
 }
 
-WavingLight::WavingLight(Lighting &lighting)
-    : AnimatedLightMode{lighting}
-    , _length{"WavingLight/Length", 30}
+WavingLight::WavingLight()
+    : _length{"WavingLight/Length", 30}
     , _a{"WavingLight/Color1", QColor{0xff, 0, 0}}
     , _b{"WavingLight/Color2", QColor{0, 0, 0xff}}
     , _t{0}
@@ -66,7 +65,7 @@ void WavingLight::setB(const QColor &newB)
     emit bChanged();
 }
 
-void WavingLight::animate(double delta)
+void WavingLight::render(double delta, QList<Pixel *> &_pixels)
 {
     _t += delta;
     double f = 2 * M_PI / _length;
@@ -76,8 +75,6 @@ void WavingLight::animate(double delta)
         double y = (sin(x) + 1.) / 2.;
         _pixels[i]->setColor(interpolate(y, _a, _b));
     }
-
-    _lighting.render();
 }
 QString WavingLight::name() const
 {

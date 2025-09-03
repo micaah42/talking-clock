@@ -39,10 +39,6 @@ Lighting::Lighting(int ledCount, QObject *parent)
     , _brightness{"Lighting/Brighness", 1.}
     , _enabled{"Lighting/Enabled", true}
     , _mode{nullptr}
-    , _staticLight{new StaticLight{*this}}
-    , _wavingLight{new WavingLight{*this}}
-    , _monoRotationLight{new MonoRotationLight{*this}}
-    , _modes{_staticLight, _wavingLight, _monoRotationLight}
 {
     ws2811_return_t ret;
 
@@ -57,11 +53,19 @@ Lighting::Lighting(int ledCount, QObject *parent)
         _pixels.append(new Pixel{leds[i]});
 
     this->setModeType(_modeType);
+
+    _timer.callOnTimeout(this, &Lighting::onTimeout);
+    _timer.setTimerType(Qt::PreciseTimer);
+    _timer.setInterval(75);
 }
 
-Lighting::~Lighting() {}
+Lighting::~Lighting()
+{
+    _ws2811->channel[0].brightness = 255 * _brightness;
+    this->renderPixels();
+}
 
-void Lighting::render()
+void Lighting::renderPixels()
 {
     emit rendered();
 
@@ -85,15 +89,17 @@ void Lighting::setMode(LightMode *newMode)
     if (_mode == newMode)
         return;
 
-    if (_mode)
-        _mode->setActive(false);
+    if (_mode) {
+        disconnect(_mode, &LightMode::updateReqested, this, &Lighting::onTimeout);
+    }
 
-    _modeType = newMode->type();
     _mode = newMode;
     emit modeChanged();
 
-    if (_mode && _enabled)
-        _mode->setActive(true);
+    if (_mode) {
+        connect(_mode, &LightMode::updateReqested, this, &Lighting::onTimeout);
+        _modeType = newMode->type();
+    }
 }
 
 double Lighting::brightness() const
@@ -111,13 +117,19 @@ void Lighting::setBrightness(double newBrightness)
 
     if (_enabled) {
         _ws2811->channel[0].brightness = 255 * _brightness;
-        this->render();
+        this->renderPixels();
     }
 }
 
 bool Lighting::enabled() const
 {
     return _enabled;
+}
+
+void Lighting::onTimeout()
+{
+    _mode->render(_elapsedTimer.restart(), _pixels);
+    this->renderPixels();
 }
 
 void Lighting::setEnabled(bool newEnabled)
@@ -128,11 +140,10 @@ void Lighting::setEnabled(bool newEnabled)
     _enabled = newEnabled;
     emit enabledChanged();
 
-    if (_mode)
-        _mode->setActive(_enabled);
-
     _ws2811->channel[0].brightness = _enabled ? 255 * _brightness : 0;
-    this->render();
+    this->renderPixels();
+
+    _enabled ? _timer.start() : _timer.stop();
 }
 
 const QList<Pixel *> &Lighting::pixels() const
@@ -140,25 +151,7 @@ const QList<Pixel *> &Lighting::pixels() const
     return _pixels;
 }
 
-QList<Pixel *> &Lighting::pixels()
-{
-    return _pixels;
-}
 
-StaticLight *Lighting::staticLight() const
-{
-    return _staticLight;
-}
-
-WavingLight *Lighting::wavingLight() const
-{
-    return _wavingLight;
-}
-
-MonoRotationLight *Lighting::monoRotationLight() const
-{
-    return _monoRotationLight;
-}
 
 void Lighting::setModeType(LightMode::Type type)
 {
@@ -168,4 +161,23 @@ void Lighting::setModeType(LightMode::Type type)
 
     if (it != _modes.end())
         this->setMode(*it);
+}
+
+ListModelBase *Lighting::lightModes() const
+{
+    return LightMode::allModes();
+}
+
+int Lighting::interval() const
+{
+    return _timer.interval();
+}
+
+void Lighting::setInterval(int newInterval)
+{
+    if (_timer.interval() == newInterval)
+        return;
+
+    _timer.setInterval(newInterval);
+    emit intervalChanged();
 }

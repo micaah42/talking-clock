@@ -2,12 +2,16 @@
 #define SPACETHEME_H
 
 #include <QObject>
+#include <QQmlEngine>
 
 #include "setting.h"
 
 class SpaceTheme : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(double clockSize READ clockSize WRITE setClockSize NOTIFY clockSizeChanged FINAL)
     Q_PROPERTY(bool fpsVisible READ fpsVisible WRITE setFpsVisible NOTIFY fpsVisibleChanged FINAL)
     Q_PROPERTY(bool spaceShip READ spaceShip WRITE setSpaceShip NOTIFY spaceShipChanged FINAL)

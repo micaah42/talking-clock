@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Layouts 1.14
+import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.VirtualKeyboard
-import QtMultimedia 5.15
+import QtMultimedia
 
 import Clock
 
@@ -13,26 +13,11 @@ import "../Controls"
 import "../Style"
 import "."
 
-Window {
-    id: window
-
-    onWidthChanged: console.warn(`window.width=${width}`)
-    width: 1920 / 2
-
-    onHeightChanged: console.warn(`window.height=${height}`)
-    height: 1080 / 2
-
-    visible: true
-
-    Material.theme: Material.Dark
-    Material.accent: Theme.accentDark
-    Material.primary: Theme.primaryDark
-    Material.background: Theme.background
-
-    color: Theme.background
-
+Item {
     property real sidebarWidth: width / 2
     property real drawerHeight: 148
+
+    Component.onCompleted: EventFilter.installToObject(window)
 
     SpaceScene {
         anchors.fill: parent

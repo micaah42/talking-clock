@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts 1.14
 
-import Clock 1.0
+import Clock
 import "../Style"
 import "../Controls"
 
@@ -64,8 +64,8 @@ Popup {
                         CheckBox {
                             width: 32
                             scale: 1.5
-                            onClicked: weekdays.setRepeat(d1.day - 1, checked)
-                            checked: weekdays.getRepeat(d1.day - 1)
+                            onClicked: weekdays.setRepeat(d1.day, checked)
+                            checked: weekdays.getRepeat(d1.day)
                         }
                         CLabel {
                             Layout.alignment: Qt.AlignHCenter

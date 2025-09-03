@@ -11,7 +11,8 @@
 class Palette : public QObject
 {
     Q_OBJECT
-    QML_UNCREATABLE("Singleton")
+    QML_ELEMENT
+    QML_SINGLETON
 
     Q_PROPERTY(QColor primary READ primary WRITE setPrimary NOTIFY primaryChanged)
     Q_PROPERTY(QColor darkPrimary READ darkPrimary WRITE setDarkPrimary NOTIFY darkPrimaryChanged)

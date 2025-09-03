@@ -74,9 +74,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Sql
     networkmanager-qmlplugin
+    qlightingplugin
     qperformance
     qopenremote
-    qlighting
     ws2811
     TinyOrm
 )

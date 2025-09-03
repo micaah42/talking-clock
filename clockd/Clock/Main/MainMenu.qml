@@ -3,7 +3,9 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
 
-import Clock 1.0
+import Clock
+import QLighting
+
 import "../Style"
 import "../Controls"
 

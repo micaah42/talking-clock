@@ -3,12 +3,16 @@
 
 #include <QDir>
 #include <QObject>
+#include <QQmlEngine>
 #include <QSortFilterProxyModel>
 #include <QStringListModel>
 
 class About : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(QSortFilterProxyModel *packages READ packages CONSTANT FINAL)
 public:
     explicit About(QObject *parent = nullptr);

@@ -5,11 +5,14 @@
 #include <QFile>
 #include <QObject>
 
+#include "qlighting_global.h"
 #include "setting.h"
 
 class SystemLight : public QObject
 {
     Q_OBJECT
+    QLIGHTING_ELEMENT
+
     Q_PROPERTY(QString path READ path CONSTANT FINAL)
     Q_PROPERTY(QString id READ id CONSTANT FINAL)
     Q_PROPERTY(int min READ min WRITE setMin NOTIFY minChanged FINAL)
@@ -62,6 +65,8 @@ private:
 class SystemLightManager : public QObject
 {
     Q_OBJECT
+    QLIGHTING_SINGLETON
+
     Q_PROPERTY(QList<SystemLight *> lights READ lights WRITE setLights NOTIFY lightsChanged FINAL)
     Q_PROPERTY(bool refreshing READ refreshing WRITE setRefreshing NOTIFY refreshingChanged FINAL)
 

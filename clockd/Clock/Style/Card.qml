@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 
-import Clock 1.0
+import Clock
 
 Item {
     property bool bright: false

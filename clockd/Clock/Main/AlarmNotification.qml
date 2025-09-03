@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtMultimedia
 
-import Clock 1.0
+import Clock
 import "../Controls"
 import "../Style"
 

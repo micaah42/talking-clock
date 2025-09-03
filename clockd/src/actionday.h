@@ -4,6 +4,7 @@
 #include <QDate>
 #include <QFile>
 #include <QObject>
+#include <QQmlEngine>
 #include <QTimer>
 
 #include "model.h"
@@ -11,6 +12,8 @@
 class ActionDay : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+
     // Q_PROPERTY(QDate date READ date WRITE setDate NOTIFY dateChanged FINAL)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
     Q_PROPERTY(QString desc READ desc WRITE setDesc NOTIFY descChanged FINAL)
@@ -53,6 +56,9 @@ private:
 class ActionDayService : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(QList<ActionDay *> days READ days NOTIFY daysChanged FINAL)
 public:
     explicit ActionDayService(QObject *parent = nullptr);

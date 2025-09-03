@@ -2,12 +2,16 @@
 #define SYSTEM_H
 
 #include <QObject>
+#include <QQmlEngine>
 
 #include "setting.h"
 
 class System : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
 public:
     explicit System(QObject *parent = nullptr);
 

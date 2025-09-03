@@ -2,7 +2,8 @@ import QtQuick 2.15
 import QtQuick.Effects
 import QtQuick.Controls.Material
 
-import Clock 1.0
+import Clock
+
 import "../Style"
 
 Item {
@@ -19,30 +20,31 @@ Item {
     onHeightChanged: rocketAnimation.restart()
     onWidthChanged: rocketAnimation.restart()
 
-    Item {
-        anchors.fill: parent
-        layer.enabled: true
-
-        Repeater {
-            id: staticStars
-            model: 6
-
-            delegate: Image {
-                id: stars
-                anchors.fill: parent
-                opacity: Math.random() * Theme.o56 + Theme.o24
-                fillMode: Image.PreserveAspectCrop
-                source: `qrc:/space-theme/stars${index}.svg`
-            }
-        }
-    }
-
     Repeater {
         id: animatedStars
-        model: maxLayers - staticStars.count
+        model: SpaceTheme.animatedStars
         delegate: Item {
             id: d
             anchors.fill: parent
+            property int i: index
+
+            Item {
+                anchors.fill: parent
+                layer.enabled: true
+
+                Repeater {
+                    id: staticStars
+                    model: Math.floor(SpaceTheme.stars / animatedStars.count)
+
+                    delegate: Image {
+                        id: stars
+                        anchors.fill: parent
+                        opacity: Math.random() * Theme.o56 + Theme.o24
+                        fillMode: Image.PreserveAspectCrop
+                        source: `qrc:/space-theme/stars${d.i * staticStars.count + index}.svg`
+                    }
+                }
+            }
 
             property real maxOpacity: Math.random() * Theme.o24 + Theme.o72
             property real minOpacity: Math.random() * Theme.o11

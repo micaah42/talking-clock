@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts 1.14
 import QtQuick.Controls
 
-import Clock 1.0
+import Clock
 import "../Controls"
 import "../Style"
 
@@ -16,9 +16,17 @@ Section {
         labelText: 'Star Count'
         spinBox.onValueModified: SpaceTheme.stars = spinBox.value
         spinBox.value: SpaceTheme.stars
-        spinBox.stepSize: 25
-        spinBox.from: 25
-        spinBox.to: 500
+        spinBox.stepSize: 1
+        spinBox.from: 1
+        spinBox.to: 8
+    }
+    CSpinBox {
+        labelText: 'Animation Count'
+        spinBox.onValueModified: SpaceTheme.animatedStars = spinBox.value
+        spinBox.value: SpaceTheme.animatedStars
+        spinBox.stepSize: 1
+        spinBox.from: 1
+        spinBox.to: 4
     }
     CSpinBox {
         labelText: 'Animation Speed'

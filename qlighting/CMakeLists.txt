@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -Wall -Werror")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Gui Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Quick)
 
-add_library(${PROJECT_NAME} SHARED
+set(SOURCES
     src/qlighting_global.h
 
     src/lighting.cpp
@@ -41,6 +41,12 @@ add_library(${PROJECT_NAME} SHARED
     src/systemlight.h
 )
 
+add_library(${PROJECT_NAME} STATIC)
+
+qt_add_qml_module(${PROJECT_NAME}
+    SOURCES ${SOURCES}
+    URI QLighting
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})
 
@@ -73,6 +79,7 @@ add_executable(${PROJECT_NAME}-cli
 )
 
 target_link_libraries(${PROJECT_NAME}-cli PRIVATE
+    Qt${QT_VERSION_MAJOR}::Quick
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     ${PROJECT_NAME}

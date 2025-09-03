@@ -13,7 +13,6 @@ qt_add_library(${PROJECT_NAME} STATIC)
 
 qt_add_qml_module(${PROJECT_NAME}
     URI NetworkManagerQml
-    VERSION 1.0
 
     SOURCES
     src/networkmanagerqml.cpp
@@ -39,7 +38,9 @@ qt_add_qml_module(${PROJECT_NAME}
 
     src/dbusreplyqml.cpp
     src/dbusreplyqml.h
-    SOURCES src/activeconnection.h src/activeconnection.cpp
+
+    src/activeconnection.cpp
+    src/activeconnection.h
 
 
 )

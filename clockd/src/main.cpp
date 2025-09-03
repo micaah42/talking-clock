@@ -6,36 +6,14 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
-// Needs to be defined for yocto build!
-// NOLINTNEXTLINE
+#ifndef TINYORM_USING_QTSQLDRIVERS
 #define TINYORM_USING_QTSQLDRIVERS
+#endif
 
-#include "orm/db.hpp"
+#include <orm/db.hpp>
 
-#include <qobjectregistry.h>
-
-#include "about.h"
-#include "actionday.h"
-#include "alarmservice.h"
-#include "clientmanager.h"
-#include "cpugraph.h"
-#include "cpumonitor.h"
-#include "eventfilter.h"
-#include "fontservice.h"
-#include "lighting.h"
-#include "lightingdisplay.h"
 #include "loghandling.h"
-#include "palette.h"
 #include "pathservice.h"
-#include "pixel.h"
-#include "soundservice.h"
-#include "spacetheme.h"
-#include "staticlight.h"
-#include "system.h"
-#include "systemlight.h"
-#include "timezonemodel.h"
-#include "wavinglight.h"
-#include "websocketserver.h"
 
 void printApplicationStart();
 
@@ -58,6 +36,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon{":/favicon.ico"});
 
+    QQuickStyle::setStyle("Material");
+
 #ifndef Q_PROCESSOR_X86_64
     app.setOverrideCursor(QCursor(Qt::BlankCursor));
 #endif
@@ -73,97 +53,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.addImportPath(":/");
 
-    QQuickStyle::setStyle("Material");
-
-    QObjectRegistry remoting;
-    WebSocketServer server{remoting};
-    remoting.registerObject("remoting", &remoting);
-
-    Palette palette;
-    qmlRegisterSingletonInstance("Clock", 1, 0, "ColorService", &palette);
-
-    FontService fontService{&engine};
-    qmlRegisterSingletonInstance("Clock", 1, 0, "FontService", &fontService);
-
-    AlarmService alarms(500);
-    qmlRegisterType<Alarm>("Clock", 1, 0, "Alarm");
-    qmlRegisterType<SortFilterAlarmModel>("Clock", 1, 0, "SortFilterAlarmModel");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "AlarmService", &alarms);
-    remoting.registerObject("alarms", &alarms);
-
-    SoundService soundService(&alarms);
-    qmlRegisterSingletonInstance("Clock", 1, 0, "SoundService", &soundService);
-    remoting.registerObject("sounds", &soundService);
-
-    EventFilter eventFilter;
-    app.installEventFilter(&eventFilter);
-    qmlRegisterSingletonInstance<EventFilter>("Clock", 1, 0, "EventFilter", &eventFilter);
-
-    ActionDayService actionDayManager;
-    qmlRegisterSingletonInstance("Clock", 1, 0, "ActionDayManager", &actionDayManager);
-    remoting.registerObject("actiondays", &actionDayManager);
-
-    About about;
-    qmlRegisterSingletonInstance("Clock", 1, 0, "About", &about);
-
-    SpaceTheme spaceTheme;
-    qmlRegisterUncreatableType<SpaceTheme>("Clock", 1, 0, "SpaceTheme", "");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "SpaceTheme", &spaceTheme);
-
-    CPUMonitor cpu;
-    qmlRegisterType<CPUGraph>("Clock", 1, 0, "CPUGraph");
-    qmlRegisterUncreatableType<CPUMonitor>("Clock", 1, 0, "CPUMonitor", "");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "CPUMonitor", &cpu);
-
-    SystemLightManager systemLightManager;
-    qmlRegisterUncreatableType<SystemLight>("Clock", 1, 0, "SystemLight", "");
-    qmlRegisterUncreatableType<SystemLightManager>("Clock", 1, 0, "SystemLightManager", "");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "SystemLightManager", &systemLightManager);
-
-    Lighting lighting{300};
-    qmlRegisterUncreatableType<Pixel>("Clock", 1, 0, "Pixel", "");
-    qmlRegisterUncreatableType<Lighting>("Clock", 1, 0, "Lighting", "");
-    qmlRegisterUncreatableType<LightMode>("Clock", 1, 0, "LightMode", "");
-    qmlRegisterUncreatableType<StaticLight>("Clock", 1, 0, "StaticLight", "");
-    qmlRegisterUncreatableType<WavingLight>("Clock", 1, 0, "WavingLight", "");
-    qmlRegisterUncreatableType<MonoRotationLight>("Clock", 1, 0, "MonoRotationLight", "");
-    qmlRegisterType<LightingDisplay>("Clock", 1, 0, "LightingDisplay");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "Lighting", &lighting);
-    remoting.registerObject("lights", &lighting);
-
-    System system;
-    qmlRegisterUncreatableType<System>("Clock", 1, 0, "System", "");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "System", &system);
-
-    ClientService clientService{server};
-    qmlRegisterUncreatableType<Client>("Clock", 1, 0, "Client", "");
-    qmlRegisterUncreatableType<ClientService>("Clock", 1, 0, "ClientService", "");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "ClientService", &clientService);
-
-    TimeZoneModel timeZones;
-    qmlRegisterType<TimeZoneSortFilterModel>("Clock", 1, 0, "TimeZoneSortFilterModel");
-    qmlRegisterUncreatableType<TimeZone>("Clock", 1, 0, "TimeZone", "");
-    qmlRegisterUncreatableType<TimeZoneModel>("Clock", 1, 0, "TimeZoneModel", "");
-    qmlRegisterSingletonInstance("Clock", 1, 0, "TimeZoneModel", &timeZones);
-
-    const QUrl url("qrc:/Clock/Main.qml");
-    QObject::connect(
-        &engine,
-        &QQmlApplicationEngine::objectCreated,
-        &app,
-        [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl) {
-                qWarning() << "loading went wrong!";
-                QCoreApplication::exit(-2);
-            }
-        },
-        Qt::QueuedConnection);
-
-    // engine.addImportPath(":/");
-    // engine.addPluginPath(":/");
-
     qInfo() << "loading view...";
-    engine.loadFromModule("Clock", "Main");
+    engine.loadFromModule("Clock", "MainWindow");
     qInfo() << "done!";
 
     return app.exec();

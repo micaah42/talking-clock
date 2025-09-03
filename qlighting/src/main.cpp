@@ -5,6 +5,7 @@
 #include <QTimer>
 
 #include "lighting.h"
+#include "staticlight.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,8 +24,9 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.parse(app.arguments());
 
+    StaticLight staticLight;
     Lighting lighting{parser.value("leds").toInt()};
-    lighting.setMode(lighting.staticLight());
+    lighting.setMode(&staticLight);
 
     bool ok;
 
@@ -34,7 +36,7 @@ int main(int argc, char *argv[])
     if (ok && colorValue <= 0xffffff && colorString.size() == 6)
         colorString.prepend('#');
 
-    lighting.staticLight()->setColor(colorString);
+    staticLight.setColor(colorString);
 
     QTimer timer;
     timer.setTimerType(Qt::PreciseTimer);

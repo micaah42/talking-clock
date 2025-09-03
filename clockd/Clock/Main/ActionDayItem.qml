@@ -1,7 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Layouts
 
-import Clock 1.0
+import Clock
+
 import "../Style"
 import "../Controls"
 
@@ -24,7 +25,7 @@ Item {
             }
 
             Repeater {
-                model: ActionDayManager.days
+                model: ActionDayService.days
 
                 delegate: RowLayout {
                     spacing: 24

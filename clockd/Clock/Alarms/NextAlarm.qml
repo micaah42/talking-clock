@@ -4,7 +4,7 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 import QtQuick.Shapes 1.14
 
-import Clock 1.0
+import Clock
 import "../Style"
 import "../Controls"
 

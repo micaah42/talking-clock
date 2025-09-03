@@ -2,8 +2,10 @@
 #define TIMEZONEMODEL_H
 
 #include <QObject>
+#include <QQmlEngine>
 #include <QSortFilterProxyModel>
 #include <QTimeZone>
+
 #include <listmodel.h>
 
 class QProcess;
@@ -11,6 +13,8 @@ class QProcess;
 class TimeZone : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+
     Q_PROPERTY(QString id READ id CONSTANT FINAL)
     Q_PROPERTY(QString territory READ territory CONSTANT FINAL)
     Q_PROPERTY(QString comment READ comment CONSTANT FINAL)
@@ -58,6 +62,9 @@ private:
 class TimeZoneModel : public ListModel<TimeZone *>
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(bool refreshing READ refreshing WRITE setRefreshing NOTIFY refreshingChanged FINAL)
     Q_PROPERTY(TimeZone *systemTimeZone READ systemTimeZone WRITE setSystemTimeZone NOTIFY systemTimeZoneChanged FINAL)
 public:
@@ -86,6 +93,8 @@ private:
 class TimeZoneSortFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
+    QML_ELEMENT
+
     Q_PROPERTY(TimeZoneModel *model READ model WRITE setModel NOTIFY modelChanged FINAL)
 
 public:

@@ -3,12 +3,15 @@
 
 #include <QDateTime>
 #include <QObject>
+#include <QQmlEngine>
 #include <QTime>
 #include <QTimer>
 
 class Alarm : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+
     Q_PROPERTY(bool activated READ activated WRITE setActivated NOTIFY activatedChanged FINAL)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
     Q_PROPERTY(QTime time READ time WRITE setTime NOTIFY timeChanged FINAL)

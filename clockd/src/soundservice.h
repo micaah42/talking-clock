@@ -4,6 +4,7 @@
 #include <QDir>
 
 #include <QObject>
+#include <QQmlEngine>
 #include <QSoundEffect>
 #include <QTimer>
 
@@ -12,6 +13,9 @@
 class SoundService : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
     Q_PROPERTY(QStringList availableSounds READ availableSounds NOTIFY availableSoundsChanged)
     Q_PROPERTY(double volume READ volume WRITE setVolume NOTIFY volumeChanged FINAL)
 

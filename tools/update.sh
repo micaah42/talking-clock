@@ -20,6 +20,7 @@ cmake ../.. \
       -DFETCHCONTENT_FULLY_DISCONNECTED=ON
 
 cmake --build . \
+      -j $(nproc --ignore 2) \
       --target all package
 
 

@@ -9,4 +9,16 @@
 #define QLIGHTING_EXPORT Q_DECL_IMPORT
 #endif
 
+#if 1
+
+#include <QQmlEngine>
+
+#define QLIGHTING_SINGLETON \
+    QML_ELEMENT \
+    QML_SINGLETON
+
+#define QLIGHTING_ELEMENT QML_ELEMENT
+
+#endif
+
 #endif // QLIGHTING_GLOBAL_H
