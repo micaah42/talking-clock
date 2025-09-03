@@ -29,8 +29,6 @@ It displays the time and date, controls **WS2811 LED strips**, and will soon fea
 * QtCreator
 * Qt 6.8
 * docker
-Perfect 👍 Here’s the **full updated section** including how to pull and run the container before connecting via SSH:
-
 
 ## 🔧 Building with Yocto Container
 
