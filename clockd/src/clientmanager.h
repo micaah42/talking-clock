@@ -59,7 +59,8 @@ private:
 class ClientService : public QObject
 {
     Q_OBJECT
-    QML_UNCREATABLE("Singleton")
+    QML_ELEMENT
+    QML_SINGLETON
 
     Q_PROPERTY(int activeClientCount READ activeClientCount NOTIFY activeClientCountChanged FINAL)
     Q_PROPERTY(ListModelBase *clients READ clients CONSTANT FINAL)

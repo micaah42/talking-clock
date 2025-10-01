@@ -19,7 +19,7 @@ CFrame {
     }
 
     property int mode: TimeField.Mode.M5
-    property int visibleItems: 9
+    property int visibleItems: 7
     readonly property int secondStepSize: mode === TimeField.S1 ? 1 : 60
     readonly property int minuteStepSize: mode === TimeField.M5 ? 5 : 1
     readonly property bool seconds: mode === TimeField.S1
@@ -39,16 +39,11 @@ CFrame {
         id: delegateComponent
 
         CLabel {
+            property Tumbler tumbler: Tumbler.tumbler
             text: modelData.toString().padStart(2, "0")
+            size: Math.abs(Tumbler.displacement) < 0.5 ? CLabel.XXLarge : CLabel.Large
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            font.family: FontService.family
-            property Tumbler tumbler: Tumbler.tumbler
-
-            font.pixelSize: {
-                var displacement = 2 * Math.abs(Tumbler.displacement) / visibleItems
-                return Math.max(56 - 32 * displacement, 24)
-            }
 
             MouseArea {
                 anchors.fill: parent
@@ -70,8 +65,9 @@ CFrame {
             Layout.fillWidth: true
             clip: true
 
-            model: 24
+            visibleItemCount: visibleItems
             delegate: delegateComponent
+            model: 24
 
             currentIndex: currentIndex = time.getHours()
             onCurrentIndexChanged: {
@@ -93,6 +89,7 @@ CFrame {
             Layout.fillWidth: true
             clip: true
 
+            visibleItemCount: visibleItems
             model: [...Array(60 / minuteStepSize).keys()].map(x => minuteStepSize * x)
             delegate: delegateComponent
 
@@ -122,6 +119,7 @@ CFrame {
                 model: [...Array(60 / secondStepSize).keys()].map(x => secondStepSize * x)
                 delegate: delegateComponent
 
+                visibleItemCount: visibleItems
                 currentIndex: currentIndex = Math.round(time.getSeconds() / secondStepSize)
                 onCurrentIndexChanged: {
                     time = new Date(time.setSeconds(model[currentIndex]))

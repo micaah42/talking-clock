@@ -1,4 +1,5 @@
 # Talking Clock
+
 ⏰ A customizable **alarm clock** for the **Raspberry Pi 4**, powered by a **Yocto Embedded Linux** image.
 It displays the time and date, controls **WS2811 LED strips**, and will soon feature a **local LLM** to wake you up with custom spoken outputs.
 

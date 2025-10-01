@@ -39,7 +39,6 @@ Item {
                     delegate: Image {
                         id: stars
                         anchors.fill: parent
-                        opacity: Math.random() * Theme.o56 + Theme.o24
                         fillMode: Image.PreserveAspectCrop
                         source: `qrc:/space-theme/stars${d.i * staticStars.count + index}.svg`
                     }
@@ -47,7 +46,7 @@ Item {
             }
 
             property real maxOpacity: Math.random() * Theme.o24 + Theme.o72
-            property real minOpacity: Math.random() * Theme.o11
+            property real minOpacity: Theme.o24
 
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
@@ -59,7 +58,7 @@ Item {
                     to: d.maxOpacity
                 }
                 OpacityAnimator {
-                    easing.type: Easing.OutBounce
+                    easing.type: Easing.InBounce
                     duration: (index + 8) * SpaceTheme.animationSpeed
                     from: d.maxOpacity
                     to: d.minOpacity

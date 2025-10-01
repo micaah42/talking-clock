@@ -33,6 +33,8 @@ NetworkManagerQml::NetworkManagerQml()
     auto notifier = NM::notifier();
     connect(notifier, &NM::Notifier::networkingEnabledChanged, this, &NetworkManagerQml::networkingEnabledChanged);
     connect(notifier, &NM::Notifier::wirelessEnabledChanged, this, &NetworkManagerQml::wirelessEnabledChanged);
+    connect(notifier, &NM::Notifier::connectivityChanged, this, &NetworkManagerQml::connectivityChanged);
+    qmlRegisterUncreatableMetaObject(NM::staticMetaObject, "NetworkManagerQml", 1, 0, "NetworkManagerNS", "");
 }
 
 WirelessDevice *NetworkManagerQml::wirelessDevice() const
@@ -90,4 +92,9 @@ void NetworkManagerQml::setWirelessEnabled(bool newWirelessEnabled)
         return;
 
     NM::setWirelessEnabled(newWirelessEnabled);
+}
+
+NetworkManager::Connectivity NetworkManagerQml::connectivity() const
+{
+    return NM::connectivity();
 }

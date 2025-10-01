@@ -7,9 +7,12 @@ import QtQuick.VirtualKeyboard
 import QtMultimedia
 
 import Clock
+import NetworkManagerQml
 
 import "../Alarms"
 import "../Controls"
+import "../Components"
+import "../Lighting"
 import "../Style"
 import "."
 
@@ -17,7 +20,10 @@ Item {
     property real sidebarWidth: width / 2
     property real drawerHeight: 148
 
-    Component.onCompleted: EventFilter.installToObject(window)
+    Component.onCompleted: {
+        EventFilter.installToObject(window)
+        LightingInit.init()
+    }
 
     SpaceScene {
         anchors.fill: parent
@@ -63,6 +69,62 @@ Item {
             id: mainMenu
             onCurrentPageChanged: drawer.open = false
             anchors.fill: parent
+        }
+    }
+
+    CFrame {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 16
+        width: parent.width / 2 - 2 * anchors.margins
+
+        opacity: NetworkManagerQml.connectivity === 4 ? connChangedTimer.running : 1
+
+        Behavior on opacity {
+            OpacityAnimator {}
+        }
+
+        contentItem: SimpleListItem {
+            id: connectivity
+            descriptionItem.wrapMode: Text.Wrap
+
+            property int con: {
+                switch (NetworkManagerQml.connectivity) {
+                case 0:
+                    icon = Icons.cloud_sync
+                    title = 'Unknown Connectivity'
+                    description = 'Network connectivity is unknown.'
+                    break
+                case 1:
+                    icon = Icons.cloud_alert
+                    title = 'No Connectivity'
+                    description = 'The host is not connected to any network.'
+                    break
+                case 2:
+                    icon = Icons.captive_portal
+                    title = 'Portal'
+                    description = 'The host is behind a captive portal and cannot reach the full Internet.'
+                    break
+                case 3:
+                    icon = Icons.cloud_alert
+                    title = 'Limited'
+                    description = 'The host is connected to a network, but does not appear to be able to reach the full Internet.'
+                    break
+                case 4:
+                    icon = Icons.cloud_done
+                    title = 'Full'
+                    description = 'The host is connected to a network, and appears to be able to reach the full Internet.'
+                    break
+                }
+
+                connChangedTimer.start()
+                return NetworkManagerQml.connectivity
+            }
+
+            Timer {
+                id: connChangedTimer
+                interval: 15000
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import QPerformance
+import QPerformanceQml
 
 import Clock
 import "../Style"

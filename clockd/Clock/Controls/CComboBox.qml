@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
+import Clock
+
 CTextField {
     id: ctrl
     property alias model: input.model
@@ -19,6 +21,7 @@ CTextField {
         background: Item {}
         displayText: ""
 
+        font.family: FontService.family
         popup.y: parent.height + 2
         popup.padding: 4
 

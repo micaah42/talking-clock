@@ -4,7 +4,7 @@ project(networkmanager-qml VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(QT_QML_OUTPUT_DIRECTORY  ${CMAKE_BINARY_DIR})
+set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 find_package(Qt6 6.5 COMPONENTS Quick REQUIRED)
 find_package(KF6NetworkManagerQt)
@@ -41,8 +41,6 @@ qt_add_qml_module(${PROJECT_NAME}
 
     src/activeconnection.cpp
     src/activeconnection.h
-
-
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

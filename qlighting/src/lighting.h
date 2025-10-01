@@ -23,7 +23,7 @@ class QLIGHTING_EXPORT Lighting : public QObject
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged FINAL)
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged FINAL)
     Q_PROPERTY(LightMode *mode READ mode WRITE setMode NOTIFY modeChanged FINAL)
-    Q_PROPERTY(ListModelBase *lightModes READ lightModes CONSTANT FINAL)
+    Q_PROPERTY(int modeIndex READ modeIndex WRITE setModeIndex NOTIFY modeIndexChanged FINAL)
 
     Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged FINAL)
 
@@ -41,19 +41,15 @@ public:
     void setEnabled(bool newEnabled);
 
     const QList<Pixel *> &pixels() const;
-    // QList<Pixel *> &pixels();
     void renderPixels();
 
-    // void setInterval(int newInterval);
-    // int interval() const;
-
-    ListModelBase *lightModes() const;
-
-    int interval() const;
     void setInterval(int newInterval);
+    int interval() const;
+
+    int modeIndex() const;
+    void setModeIndex(int newModeIndex);
 
 public slots:
-    void setModeType(LightMode::Type type);
 
 signals:
     void modeChanged();
@@ -61,13 +57,13 @@ signals:
     void enabledChanged();
     void intervalChanged();
     void rendered();
+    void modeIndexChanged();
 
 protected:
     void onTimeout();
 
 private:
     std::unique_ptr<ws2811_t> _ws2811;
-    Setting<LightMode::Type> _modeType;
     Setting<double> _brightness;
     Setting<bool> _enabled;
     QList<Pixel *> _pixels;
@@ -76,8 +72,7 @@ private:
     QElapsedTimer _elapsedTimer;
 
     LightMode *_mode;
-    QList<LightMode *> _modes;
-    ListModelBase *_lightModes = nullptr;
+    Setting<int> _modeIndex;
 };
 
 #endif // LIGHTING_H

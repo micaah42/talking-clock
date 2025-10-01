@@ -30,6 +30,7 @@ void CPUGraph::setCpu(CPUMonitor *newCpu)
         m_cpu->unsubscribe();
     }
 
+    qCInfo(self) << "change cpu" << m_cpu;
     m_cpu = newCpu;
     emit cpuChanged();
 

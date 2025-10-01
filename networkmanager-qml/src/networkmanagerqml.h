@@ -32,6 +32,7 @@ class NetworkManagerQml : public QObject
     Q_PROPERTY(WirelessDevice *wirelessDevice READ wirelessDevice WRITE setWirelessDevice NOTIFY wirelessDeviceChanged FINAL)
     Q_PROPERTY(bool networkingEnabled READ networkingEnabled WRITE setNetworkingEnabled NOTIFY networkingEnabledChanged FINAL)
     Q_PROPERTY(bool wirelessEnabled READ wirelessEnabled WRITE setWirelessEnabled NOTIFY wirelessEnabledChanged FINAL)
+    Q_PROPERTY(NM::Connectivity connectivity READ connectivity NOTIFY connectivityChanged FINAL)
 
 public:
     explicit NetworkManagerQml();
@@ -45,17 +46,18 @@ public:
     bool wirelessEnabled() const;
     void setWirelessEnabled(bool newWirelessEnabled);
 
+    NM::Connectivity connectivity() const;
+
 public slots:
     DBusReply *addAndActivateConnection(Settings *settings, QObject *parent = nullptr);
     DBusReply *activateConnection(Connection *connection, QObject *parent = nullptr);
     DBusReply *addConnection(Settings *settings, QObject *parent = nullptr);
 
 signals:
-    void wirelessDeviceChanged();
-
     void networkingEnabledChanged();
-
     void wirelessEnabledChanged();
+    void wirelessDeviceChanged();
+    void connectivityChanged();
 
 private:
     NM::SecretAgent *_secretAgent;

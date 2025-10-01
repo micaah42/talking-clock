@@ -1,6 +1,6 @@
-import QtQuick 
+import QtQuick
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 
+import QtQuick.Controls
 
 import Clock
 import "../Controls"
@@ -45,7 +45,7 @@ ItemDelegate {
             }
 
             CLabel {
-                text: new Date(alarm.time).toLocaleTimeString(Qt.locale())
+                text: new Date(alarm.time).toLocaleTimeString(Qt.locale(), Locale.ShortFormat)
                 size: CLabel.Large
             }
 
@@ -85,7 +85,7 @@ ItemDelegate {
                         onClicked: AlarmService.removeAlarm(alarm)
                         font.family: Icons.fontFamily
                         text: Icons._delete
-                        visible: wasHeld
+                        visible: wasHeld || width
                     }
                 }
             }

@@ -14,6 +14,7 @@ class TimeZone : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
+    QML_UNCREATABLE("")
 
     Q_PROPERTY(QString id READ id CONSTANT FINAL)
     Q_PROPERTY(QString territory READ territory CONSTANT FINAL)

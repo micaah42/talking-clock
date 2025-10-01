@@ -11,12 +11,11 @@ import "../Lighting"
 
 ColumnLayout {
     readonly property var modeScreens: [//@
-        [staticLightComponent, Lighting.staticLight], //@
-        [wavingLightComponent, Lighting.wavingLight], //@
-        [monoRotationLightComponent, Lighting.monoRotationLight] //@
+        [staticLightComponent, StaticLight], //@
+        [wavingLightComponent, WavingLight], //@
+        [monoRotationLightComponent, MonoRotationLight], //@
+        [perlinLightComponent, PerlinLight] //@
     ]
-
-    Component.onCompleted: group.updateStackView()
 
     RowLayout {
         Layout.minimumHeight: 56
@@ -28,8 +27,8 @@ ColumnLayout {
             Layout.fillHeight: true
 
             Material.roundedScale: Material.MediumScale
-            highlighted: Lighting.enabled
             onClicked: Lighting.enabled = !Lighting.enabled
+            highlighted: Lighting.enabled
             bottomInset: 0
             topInset: 0
 
@@ -55,32 +54,21 @@ ColumnLayout {
         }
     }
 
-    ButtonGroup {
-        id: group
-        buttons: buttonsRow
-
-        property int currentIndex: modeScreens.findIndex(x => x[1] === Lighting.mode)
-        checkedButton: currentIndex === -1 ? null : buttons[currentIndex] || null
-        onCurrentIndexChanged: updateStackView()
-
-        function updateStackView() {
-            swipeView.replace(null, modeScreens[currentIndex][0])
-        }
-    }
-
     RowLayout {
         id: buttonsRow
         enabled: Lighting.enabled
 
         Repeater {
-            model: modeScreens
+            model: LightingInit.modes
             delegate: Button {
+                property LightMode lightMode: modelData
                 Layout.fillWidth: true
                 implicitWidth: 0
 
-                highlighted: modelData[1] === Lighting.mode
-                onClicked: Lighting.mode = modelData[1]
-                text: modelData[1].name
+                onClicked: LightingInit.mode = lightMode
+                checked: lightMode === LightingInit.mode
+                highlighted: checked
+                text: lightMode.name
             }
         }
     }
@@ -100,13 +88,32 @@ ColumnLayout {
             topPadding: 24
 
             StackView {
-                id: swipeView
+                id: stackView
                 anchors.fill: parent
                 anchors.margins: 8
-                initialItem: Item {}
                 enabled: Lighting.enabled
                 spacing: 32
                 clip: true
+
+                property Component comp: {
+                    switch (LightingInit.mode.type) {
+                    case LightMode.TypeStatic:
+                        return staticLightComponent
+                    case LightMode.TypeWaving:
+                        return wavingLightComponent
+                    case LightMode.TypeMonoRotation:
+                        return monoRotationLightComponent
+                    case LightMode.TypePerlin:
+                        return perlinLightComponent
+                    }
+                }
+
+                onCompChanged: {
+                    clear()
+                    push(comp)
+                }
+
+                initialItem: comp
             }
         }
     }
@@ -130,8 +137,8 @@ ColumnLayout {
         Item {
             ColorPicker {
                 anchors.fill: parent
-                onCurrentColorChanged: Lighting.staticLight.color = currentColor
-                value: Lighting.staticLight
+                onCurrentColorChanged: StaticLight.color = currentColor
+                value: StaticLight.color
             }
         }
     }
@@ -163,7 +170,7 @@ ColumnLayout {
                 }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: Lighting.monoRotationLight.colors = modelData.colors
+                    onClicked: MonoRotationLight.colors = modelData.colors
                 }
             }
         }
@@ -174,36 +181,72 @@ ColumnLayout {
             spacing: 16
 
             ColorPicker {
-                onCurrentColorChanged: Lighting.wavingLight.a = currentColor
-                value: Lighting.wavingLight.a
+                onCurrentColorChanged: WavingLight.a = currentColor
+                value: WavingLight.a
                 Layout.fillHeight: true
                 Layout.fillWidth: true
             }
             ColorPicker {
-                onCurrentColorChanged: Lighting.wavingLight.b = currentColor
-                value: Lighting.wavingLight.b
+                onCurrentColorChanged: WavingLight.b = currentColor
+                value: WavingLight.b
                 Layout.fillHeight: true
                 Layout.fillWidth: true
             }
             ColumnLayout {
                 CSpinBox {
                     labelText: 'Length'
-                    spinBox.onValueChanged: Lighting.wavingLight.length = spinBox.value
-                    spinBox.value: Lighting.wavingLight.length
+                    spinBox.onValueChanged: WavingLight.length = spinBox.value
+                    spinBox.value: WavingLight.length
                     spinBox.stepSize: 5
                     spinBox.from: 5
                     spinBox.to: 250
                 }
                 CSpinBox {
                     labelText: 'Speed'
-                    spinBox.onValueChanged: Lighting.wavingLight.speed = spinBox.value / 10
-                    spinBox.value: 10 * Lighting.wavingLight.speed
+                    spinBox.onValueChanged: WavingLight.speed = spinBox.value / 10
+                    spinBox.value: 10 * WavingLight.speed
                     spinBox.from: 1
                     spinBox.to: 25
                 }
                 Item {
                     Layout.fillHeight: true
                 }
+            }
+        }
+    }
+    Component {
+        id: perlinLightComponent
+        ColumnLayout {
+            Slider {
+                Layout.fillWidth: true
+
+                property var values: [0.1, 0.25, 0.5, 1, 1.5, 2]
+                onValueChanged: PerlinLight.speed = values[value]
+                value: Math.max(0, values.indexOf(PerlinLight.speed))
+
+                snapMode: Slider.SnapAlways
+                to: values.length - 1
+                stepSize: 1
+                from: 0
+            }
+            Slider {
+                Layout.fillWidth: true
+
+                property var values: [0.001, 0.0025, 0.005, 0.0075, 0.01, 0.025, 0.05]
+                onValueChanged: PerlinLight.stretch = values[value]
+                value: Math.max(0, values.indexOf(PerlinLight.stretch))
+
+                snapMode: Slider.SnapAlways
+                to: values.length - 1
+                stepSize: 1
+                from: 0
+            }
+
+            CGradientEdit {
+                Layout.preferredHeight: 80
+                Layout.fillWidth: true
+
+                lightingGradient: PerlinLight.gradient
             }
         }
     }

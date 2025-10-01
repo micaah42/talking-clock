@@ -75,21 +75,15 @@ Popup {
                 }
             }
 
-            CTextField {
-                Layout.fillWidth: true
-                placeholderText: 'Name'
-                text: alarm.name
-                onTextEdited: alarm.name = text
-            }
-
             RowLayout {
-                Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.fillWidth: true
+                spacing: 8
 
                 TimeField {
                     id: timeField
+                    Layout.preferredWidth: parent.width / 2
                     Layout.fillHeight: true
-                    Layout.fillWidth: true
                     onTimeChanged: alarm.time = time
                     mode: {
                         if (alarm.time.getSeconds() !== 0)
@@ -104,9 +98,22 @@ Popup {
                 }
 
                 ColumnLayout {
-                    Layout.minimumWidth: parent.width / 3
-                    Layout.maximumWidth: parent.width / 3
+                    Layout.preferredWidth: parent.width / 2
                     Layout.fillHeight: true
+
+                    CTextField {
+                        Layout.fillWidth: true
+                        placeholderText: 'Name'
+                        text: alarm.name
+                        onTextEdited: alarm.name = text
+                    }
+                    CComboBox {
+                        Layout.fillWidth: true
+                        model: SoundService.availableSounds.map(SoundService.displayName)
+                        currentIndex: model.indexOf(alarm.sound)
+                        onAccepted: index => alarm.sound = model[index]
+                        placeholderText: 'Sound'
+                    }
 
                     ListView {
                         id: list
@@ -115,6 +122,7 @@ Popup {
                         currentIndex: model.indexOf(alarm.sound)
                         model: SoundService.availableSounds
                         clip: true
+                        visible: false
 
                         header: CLabel {
                             text: 'Sound'
@@ -143,6 +151,9 @@ Popup {
                             }
                         }
                     }
+                    Item {
+                        Layout.fillHeight: true
+                    }
 
                     DelayButton {
                         Layout.bottomMargin: -8
@@ -152,6 +163,7 @@ Popup {
                         property bool wasActivated: false
                         text: "Remove"
 
+                        font.family: FontService.family
                         font.pixelSize: Theme.fontSizeMedium
                         onActivated: wasActivated = true
                         delay: 1000

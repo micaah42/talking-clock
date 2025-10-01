@@ -14,7 +14,8 @@ class Lighting;
 class StaticLight : public LightMode
 {
     Q_OBJECT
-    QLIGHTING_SINGLETON
+    QML_ELEMENT
+    QML_SINGLETON
 
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 

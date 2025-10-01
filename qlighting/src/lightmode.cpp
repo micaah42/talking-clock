@@ -40,12 +40,24 @@ ListModel<LightMode *> *LightMode::allModes()
 }
 
 AnimatedLightMode::AnimatedLightMode()
-    : _speed{1}
+    : _t{0}
+    , _speed{1}
 {}
+
+void AnimatedLightMode::render(double delta, QList<Pixel *> &pixels)
+{
+    _t += _speed * delta;
+    this->animatedRender(pixels);
+}
 
 double AnimatedLightMode::speed() const
 {
     return _speed;
+}
+
+double AnimatedLightMode::t() const
+{
+    return _t;
 }
 
 void AnimatedLightMode::setSpeed(double newSpeed)

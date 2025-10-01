@@ -11,6 +11,7 @@ class CPUGraph : public PerformanceChart
 {
     Q_OBJECT
     QML_ELEMENT
+
     Q_PROPERTY(CPUMonitor *cpu READ cpu WRITE setCpu NOTIFY cpuChanged FINAL)
 
 public:

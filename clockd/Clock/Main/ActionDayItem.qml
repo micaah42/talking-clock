@@ -5,6 +5,7 @@ import Clock
 
 import "../Style"
 import "../Controls"
+import "../Components"
 
 Item {
     property real contentHeight: column.implicitHeight
@@ -27,31 +28,12 @@ Item {
             Repeater {
                 model: ActionDayService.days
 
-                delegate: RowLayout {
-                    spacing: 24
-
-                    Icon {
-                        font.pixelSize: Theme.fontSizeXLarge
-                        text: Icons[modelData.icon] || Icons.calendar_today
-                    }
-
-                    ColumnLayout {
-                        spacing: 0
-
-                        CLabel {
-                            Layout.fillWidth: true
-                            elide: Text.ElideRight
-                            text: modelData.name
-                            size: CLabel.Large
-                        }
-                        CLabel {
-                            Layout.fillWidth: true
-                            elide: Text.ElideRight
-                            text: modelData.desc
-                            size: CLabel.Medium
-                            opacity: Theme.o72
-                        }
-                    }
+                delegate: SimpleListItem {
+                    Layout.fillWidth: true
+                    property ActionDay actionDay: modelData
+                    icon: actionDay.icon
+                    title: actionDay.name
+                    description: actionDay.desc
                 }
             }
         }

@@ -13,7 +13,6 @@ WavingLight::WavingLight()
     : _length{"WavingLight/Length", 30}
     , _a{"WavingLight/Color1", QColor{0xff, 0, 0}}
     , _b{"WavingLight/Color2", QColor{0, 0, 0xff}}
-    , _t{0}
 {
     qCInfo(self) << "created" << this;
 }
@@ -65,17 +64,17 @@ void WavingLight::setB(const QColor &newB)
     emit bChanged();
 }
 
-void WavingLight::render(double delta, QList<Pixel *> &_pixels)
+void WavingLight::animatedRender(QList<Pixel *> &_pixels)
 {
-    _t += delta;
     double f = 2 * M_PI / _length;
 
     for (int i = 0; i < _pixels.size(); i++) {
-        double x = i * f + _t;
+        double x = i * f + this->t();
         double y = (sin(x) + 1.) / 2.;
         _pixels[i]->setColor(interpolate(y, _a, _b));
     }
 }
+
 QString WavingLight::name() const
 {
     return "Waving";

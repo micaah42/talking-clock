@@ -2,12 +2,9 @@ cmake_minimum_required(VERSION 3.22)
 
 project(qlighting LANGUAGES CXX VERSION 2.0)
 
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -Wall -Werror")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Gui Quick)
@@ -39,9 +36,19 @@ set(SOURCES
 
     src/systemlight.cpp
     src/systemlight.h
+
+    src/gradient.cpp
+    src/gradient.h
+
+    src/perlinlight.cpp
+    src/perlinlight.h
 )
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_library(${PROJECT_NAME} STATIC)
+
+target_link_libraries(qlighting PRIVATE Qt6::Core)
 
 qt_add_qml_module(${PROJECT_NAME}
     SOURCES ${SOURCES}

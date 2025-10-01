@@ -52,6 +52,7 @@ set(QML_SINGLETONS
     Clock/Style/Icons.qml
     Clock/Style/Theme.qml
     Clock/Style/Palettes.qml
+    Clock/Lighting/LightingInit.qml
 )
 
 set_source_files_properties(${QML_SINGLETONS}
@@ -66,6 +67,7 @@ qt_add_qml_module(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::WebSockets
     Qt${QT_VERSION_MAJOR}::Core
@@ -74,8 +76,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Sql
     networkmanager-qmlplugin
+    qperformanceplugin
     qlightingplugin
-    qperformance
     qopenremote
     ws2811
     TinyOrm

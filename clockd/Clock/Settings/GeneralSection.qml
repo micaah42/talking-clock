@@ -19,12 +19,21 @@ Section {
 
     CTextField {
         placeholderText: 'Timezone'
-        text: AlarmService.now.toLocaleString()
+        text: AlarmService.now.toLocaleString(Qt.locale(), 'tttt')
         readOnly: true
 
         MouseArea {
             anchors.fill: parent
             onClicked: timezoneDialog.open()
+        }
+    }
+    CLabel {
+        opacity: Theme.o72
+        size: CLabel.Large
+        text: {
+            const tstring = AlarmService.now.toLocaleTimeString(Qt.locale(), Locale.ShortFormat)
+            const dstring = AlarmService.now.toLocaleDateString()
+            return dstring + ', ' + tstring
         }
     }
 

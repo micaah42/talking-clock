@@ -26,46 +26,63 @@ Window {
     Loader {
         id: loader
         anchors.fill: parent
+        asynchronous: true
         sourceComponent: Main {}
-        active: true
+        onLoaded: hide.start()
     }
 
-    ColumnLayout {
-        anchors.centerIn: parent
-        opacity: loader.status !== Loader.Ready
-        visible: opacity
-        spacing: 16
+    Rectangle {
+        id: loadingScreen
+        anchors.fill: parent
+        color: Material.background
 
-        Behavior on opacity {
-            OpacityAnimator {}
-        }
+        SequentialAnimation on opacity {
+            id: hide
+            onFinished: loadingScreen.visible = false
 
-        Image {
-            id: image
-            Layout.alignment: Qt.AlignHCenter
-            source: 'qrc:/icon-latest.png'
-        }
-
-        Item {
-            id: rotators
-            Layout.preferredHeight: 2 * image.height / 5
-            Layout.preferredWidth: height
-            Layout.alignment: Qt.AlignHCenter
-
-            BusyIndicator {
-                id: indicator2
-                anchors.fill: rotators
-                anchors.margins: 8
-                Material.accent: '#f61f33'
-
-                transform: Scale {
-                    origin.x: indicator2.width / 2
-                    xScale: -1
-                }
+            PauseAnimation {
+                duration: 1500
             }
-            BusyIndicator {
-                anchors.fill: rotators
-                Material.accent: '#4d92e5'
+            OpacityAnimator {
+                target: loadingScreen
+                duration: 250
+                from: 1
+                to: 0
+            }
+        }
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 16
+
+            Image {
+                id: image
+                Layout.alignment: Qt.AlignHCenter
+                source: 'qrc:/icon-latest.png'
+            }
+
+            Item {
+                id: rotators
+                Layout.preferredHeight: 2 * image.height / 5
+                Layout.preferredWidth: height
+                Layout.alignment: Qt.AlignHCenter
+
+                BusyIndicator {
+                    id: indicator2
+                    anchors.fill: rotators
+                    anchors.margins: 8
+                    Material.accent: '#f61f33'
+
+                    transform: Scale {
+                        origin.x: indicator2.width / 2
+                        xScale: -1
+                    }
+                }
+
+                BusyIndicator {
+                    anchors.fill: rotators
+                    Material.accent: '#4d92e5'
+                }
             }
         }
     }

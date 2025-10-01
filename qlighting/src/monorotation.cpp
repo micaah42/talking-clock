@@ -3,7 +3,6 @@
 #include <QSequentialAnimationGroup>
 #include <QVariantAnimation>
 
-#include "lighting.h"
 #include "pixel.h"
 
 MonoRotationLight::MonoRotationLight()

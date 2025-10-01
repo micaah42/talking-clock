@@ -12,7 +12,8 @@
 class WavingLight : public AnimatedLightMode
 {
     Q_OBJECT
-    QLIGHTING_SINGLETON
+    QML_ELEMENT
+    QML_SINGLETON
 
     Q_PROPERTY(int length READ length WRITE setLength NOTIFY lengthChanged FINAL)
     Q_PROPERTY(QColor a READ a WRITE setA NOTIFY aChanged FINAL)
@@ -39,13 +40,12 @@ signals:
     void bChanged();
 
 protected:
-    virtual void render(double delta, QList<Pixel *> &pixels) override;
+    virtual void animatedRender(QList<Pixel *> &pixels) override;
 
 private:
     Setting<int> _length;
     Setting<QColor> _a;
     Setting<QColor> _b;
-    double _t;
 };
 
 #endif // WAVINGLIGHT_H

@@ -35,10 +35,10 @@ Lighting::Lighting(int ledCount, QObject *parent)
                           .brightness = 0,
                       }},
       }}
-    , _modeType{"Lighting/Mode", LightMode::TypeStatic}
     , _brightness{"Lighting/Brighness", 1.}
     , _enabled{"Lighting/Enabled", true}
     , _mode{nullptr}
+    , _modeIndex{"Lighting/ModeIndex", 0}
 {
     ws2811_return_t ret;
 
@@ -52,11 +52,13 @@ Lighting::Lighting(int ledCount, QObject *parent)
     for (int i = 0; i < LED_COUNT; i++)
         _pixels.append(new Pixel{leds[i]});
 
-    this->setModeType(_modeType);
-
     _timer.callOnTimeout(this, &Lighting::onTimeout);
     _timer.setTimerType(Qt::PreciseTimer);
     _timer.setInterval(75);
+
+    auto enabled = this->enabled();
+    this->setEnabled(!enabled);
+    this->setEnabled(enabled);
 }
 
 Lighting::~Lighting()
@@ -98,7 +100,8 @@ void Lighting::setMode(LightMode *newMode)
 
     if (_mode) {
         connect(_mode, &LightMode::updateReqested, this, &Lighting::onTimeout);
-        _modeType = newMode->type();
+        _mode->render(_elapsedTimer.restart(), _pixels);
+        this->renderPixels();
     }
 }
 
@@ -128,7 +131,10 @@ bool Lighting::enabled() const
 
 void Lighting::onTimeout()
 {
-    _mode->render(_elapsedTimer.restart(), _pixels);
+    if (_mode == nullptr)
+        return;
+
+    _mode->render(_elapsedTimer.restart() / 1000., _pixels);
     this->renderPixels();
 }
 
@@ -143,29 +149,20 @@ void Lighting::setEnabled(bool newEnabled)
     _ws2811->channel[0].brightness = _enabled ? 255 * _brightness : 0;
     this->renderPixels();
 
-    _enabled ? _timer.start() : _timer.stop();
+    if (_enabled) {
+        _elapsedTimer.start();
+        _timer.start();
+    }
+
+    else {
+        _elapsedTimer.invalidate();
+        _timer.stop();
+    }
 }
 
 const QList<Pixel *> &Lighting::pixels() const
 {
     return _pixels;
-}
-
-
-
-void Lighting::setModeType(LightMode::Type type)
-{
-    auto it = std::find_if(_modes.begin(), _modes.end(), [this](const LightMode *m) { //
-        return _modeType == m->type();
-    });
-
-    if (it != _modes.end())
-        this->setMode(*it);
-}
-
-ListModelBase *Lighting::lightModes() const
-{
-    return LightMode::allModes();
 }
 
 int Lighting::interval() const
@@ -180,4 +177,17 @@ void Lighting::setInterval(int newInterval)
 
     _timer.setInterval(newInterval);
     emit intervalChanged();
+}
+
+int Lighting::modeIndex() const
+{
+    return _modeIndex;
+}
+
+void Lighting::setModeIndex(int newModeIndex)
+{
+    if (_modeIndex == newModeIndex)
+        return;
+    _modeIndex = newModeIndex;
+    emit modeIndexChanged();
 }
