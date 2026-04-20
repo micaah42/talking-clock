@@ -20,7 +20,7 @@ QtObject {
     }
 
     function init() {
-        const singletons = [About, ActionDayService, AlarmService, SoundService, TimeZoneModel, System]
+        const singletons = [About, ActionDayService, AlarmService, SoundService, TimeZoneModel, System, SystemLightManager]
         Lighting.mode = mode
     }
 }

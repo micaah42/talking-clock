@@ -44,11 +44,7 @@ set(SOURCES
     src/perlinlight.h
 )
 
-find_package(Qt6 REQUIRED COMPONENTS Core)
-
 add_library(${PROJECT_NAME} STATIC)
-
-target_link_libraries(qlighting PRIVATE Qt6::Core)
 
 qt_add_qml_module(${PROJECT_NAME}
     SOURCES ${SOURCES}

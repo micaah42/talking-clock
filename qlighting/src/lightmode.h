@@ -41,6 +41,7 @@ public:
 
     virtual QString name() const = 0;
     virtual Type type() const = 0;
+    virtual void reset() {};
 
 signals:
     void updateReqested(QPrivateSignal);
@@ -61,6 +62,7 @@ public:
 
     virtual void animatedRender(QList<Pixel *> &pixels) = 0;
     virtual void render(double delta, QList<Pixel *> &pixels);
+    virtual void reset() { _t = 0; };
 
     void setSpeed(double newSpeed);
     double speed() const;

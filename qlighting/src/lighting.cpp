@@ -100,7 +100,10 @@ void Lighting::setMode(LightMode *newMode)
 
     if (_mode) {
         connect(_mode, &LightMode::updateReqested, this, &Lighting::onTimeout);
-        _mode->render(_elapsedTimer.restart(), _pixels);
+
+        _mode->reset();
+        _mode->render(0, _pixels);
+
         this->renderPixels();
     }
 }
@@ -188,6 +191,7 @@ void Lighting::setModeIndex(int newModeIndex)
 {
     if (_modeIndex == newModeIndex)
         return;
+
     _modeIndex = newModeIndex;
     emit modeIndexChanged();
 }

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Material
+import QtQuick.Effects
 
 import Clock
 import QLighting
@@ -22,7 +23,7 @@ ColumnLayout {
         Layout.maximumHeight: 56
         spacing: 8
 
-        Button {
+        CButton {
             Layout.preferredWidth: 2 * height
             Layout.fillHeight: true
 
@@ -60,7 +61,7 @@ ColumnLayout {
 
         Repeater {
             model: LightingInit.modes
-            delegate: Button {
+            delegate: CButton {
                 property LightMode lightMode: modelData
                 Layout.fillWidth: true
                 implicitWidth: 0
@@ -73,15 +74,39 @@ ColumnLayout {
         }
     }
 
+    Rectangle {
+        Layout.preferredHeight: 32
+        Layout.fillWidth: true
+        color: 'black'
+        radius: 7
+
+        Item {
+            id: sourceItem
+            anchors.fill: parent
+
+            LightingDisplay {
+                anchors.centerIn: parent
+                width: parent.width - 16
+                lighting: Lighting
+                radius: 0.5
+                spacing: 1
+                height: 2
+            }
+        }
+
+        MultiEffect {
+            source: sourceItem
+            anchors.fill: sourceItem
+            blurEnabled: true
+            blurMultiplier: 8
+            blurMax: 64
+            blur: 1.0
+        }
+    }
+
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true
-
-        LightingDisplay {
-            lighting: Lighting
-            width: parent.width
-            height: 16
-        }
 
         CFrame {
             anchors.fill: parent
@@ -108,12 +133,8 @@ ColumnLayout {
                     }
                 }
 
-                onCompChanged: {
-                    clear()
-                    push(comp)
-                }
-
-                initialItem: comp
+                onCompChanged: replace(null, comp)
+                initialItem: Item {}
             }
         }
     }
@@ -145,32 +166,34 @@ ColumnLayout {
     Component {
         id: monoRotationLightComponent
         ListView {
-            model: Palettes.palettes
-            delegate: Item {
-                height: frame.implicitHeight
+            model: LightingGradient.NumPresets
+            delegate: ItemDelegate {
+                id: d
                 width: ListView.view.width
 
-                CFrame {
-                    id: frame
+                property LightingGradient gradient: LightingGradient {
+                    preset: index || 0
+                }
+                text: gradient.presetName(modelData)
+
+                Rectangle {
                     width: parent.width
-                    ColumnLayout {
-                        Label {
-                            text: modelData.name
-                        }
-                        RowLayout {
-                            Repeater {
-                                model: modelData.colors
-                                delegate: Button {
-                                    Material.background: modelData
-                                    Layout.fillWidth: true
-                                }
-                            }
+                    height: 16
+
+                    Component {
+                        id: gradientStop
+                        GradientStop {}
+                    }
+
+                    gradient: Gradient {
+                        property LightingGradient lightingGradient: d.gradient
+                        orientation: Gradient.Horizontal
+
+                        stops: {
+                            const model = Array.from(lightingGradient.gradientStops)
+                            return model.map(stop => gradientStop.createObject(this, stop))
                         }
                     }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: MonoRotationLight.colors = modelData.colors
                 }
             }
         }

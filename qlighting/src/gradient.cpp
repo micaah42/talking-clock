@@ -8,6 +8,19 @@ namespace {
 Q_LOGGING_CATEGORY(self, "gradient")
 }
 
+template<typename Enum>
+QString enumName(Enum enumValue)
+{
+    static const auto metaEnum = QMetaEnum::fromType<Enum>();
+    return QString(metaEnum.valueToKey(static_cast<int>(enumValue)));
+}
+
+template<typename Enum>
+QString enumName(int enumValue)
+{
+    return enumName(static_cast<Enum>(enumValue));
+}
+
 LightingGradient::LightingGradient(QObject *parent)
     : QObject{parent}
     , _resolution{1024}
@@ -68,7 +81,7 @@ void LightingGradient::setGradientStops(const QVariantList &newGradientStops)
 
     QGradientStops stops;
 
-    for (auto const &variant : _gradientStops) {
+    for (auto const &variant : std::as_const(_gradientStops)) {
         auto variantMap = variant.toMap();
         stops.append(QGradientStop{
             variantMap["position"].toDouble(),
@@ -91,5 +104,30 @@ void LightingGradient::updateGradientStops()
         });
     }
 
-    this->setGradientStops(gradientStops);
+    _gradientStops = gradientStops;
+    emit gradientStopsChanged();
+}
+
+LightingGradient::Preset LightingGradient::preset() const
+{
+    return _preset;
+}
+
+void LightingGradient::setPreset(const Preset &newPreset)
+{
+    if (_preset == newPreset)
+        return;
+
+    _preset = newPreset;
+    emit presetChanged();
+
+    QGradient g{static_cast<QGradient::Preset>(newPreset)};
+    this->setStops(g.stops());
+    this->updateGradientStops();
+    this->updateColors();
+}
+
+QString LightingGradient::presetName(int preset)
+{
+    return enumName<Preset>(preset);
 }
