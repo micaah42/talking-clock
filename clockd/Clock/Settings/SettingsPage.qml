@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Layouts 1.14
+import QtQuick.Layouts
 import QtQuick.Controls
 
 import QtQml.Models
@@ -16,6 +16,21 @@ Item {
             icon: Icons.home
         },
         SectionNew {
+            content: SideBarSection {}
+            icon: Icons.dock_to_right
+            title: 'Sidebar'
+        },
+        SectionNew {
+            content: AudioSection {}
+            title: 'Audio & Sound'
+            icon: Icons.volume_up
+        },
+        SectionNew {
+            content: ChatbotSection {}
+            title: 'ChatBot'
+            icon: Icons.robot_2
+        },
+        SectionNew {
             content: WirelessSection {}
             title: 'Wireless'
             icon: 'wifi'
@@ -25,11 +40,11 @@ Item {
             icon: Icons.display_settings
             title: 'Appearence'
         },
-        SectionNew {
-            content: PairedDevicesSection {}
-            title: 'Paired Devices'
-            icon: Icons.devices
-        },
+        // SectionNew {
+        //     content: PairedDevicesSection {}
+        //     title: 'Paired Devices'
+        //     icon: Icons.devices
+        // },
         SectionNew {
             content: SystemLightsSection {}
             title: 'System Lights'
@@ -61,44 +76,49 @@ Item {
         spacing: 8
         clip: true
 
-        ListView {
-            id: navigationList
+        Loader {
             Layout.preferredWidth: 200
             Layout.fillHeight: true
+            asynchronous: true
 
-            interactive: contentHeight > height
-            model: modeScreens
+            sourceComponent: ListView {
+                id: navigationList
+                anchors.fill: parent
 
-            onCurrentIndexChanged: {
-                const properties = {
-                    "sourceComponent": modeScreens[currentIndex].content
-                }
-                sections.replace(sectionLoader, properties)
-            }
+                interactive: contentHeight > height
+                model: modeScreens
 
-            delegate: ItemDelegate {
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    spacing: 16
-
-                    Icon {
-                        text: modelData.icon
+                onCurrentIndexChanged: {
+                    const properties = {
+                        "sourceComponent": modeScreens[currentIndex].content
                     }
-                    CLabel {
-                        text: modelData.title
-                        font.pixelSize: 24
-                    }
-                    Item {
-                        Layout.fillWidth: true
-                    }
+                    sections.replace(sectionLoader, properties)
                 }
 
-                highlighted: ListView.isCurrentItem
-                onClicked: navigationList.currentIndex = index
-                width: parent.width
-                height: 56
+                delegate: ItemDelegate {
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+                        spacing: 16
+
+                        Icon {
+                            text: modelData.icon
+                        }
+                        CLabel {
+                            text: modelData.title
+                            font.pixelSize: 24
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                    highlighted: ListView.isCurrentItem
+                    onClicked: navigationList.currentIndex = index
+                    width: parent.width
+                    height: 56
+                }
             }
         }
 

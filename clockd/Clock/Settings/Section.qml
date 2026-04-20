@@ -1,6 +1,6 @@
-import QtQuick 
+import QtQuick
 import QtQuick.Layouts 1.14
-import QtQuick.Controls 
+import QtQuick.Controls
 
 import "../Style"
 import "../Controls"
@@ -10,23 +10,22 @@ ColumnLayout {
     property Component extraHeaderContent
     property string title
     property string icon
-    spacing: 16
+    spacing: 24
 
     RowLayout {
-        Layout.bottomMargin: 16
+        Layout.bottomMargin: 8
         spacing: 16
 
         Icon {
+            font.pixelSize: Theme.fontSizeXLarge
             text: icon
         }
-
         CLabel {
             Layout.fillWidth: true
             font.weight: Font.DemiBold
-            font.pixelSize: 28
+            size: CLabel.Large
             text: title
         }
-
         Loader {
             sourceComponent: extraHeaderContent
         }

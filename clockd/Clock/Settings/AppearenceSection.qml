@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Layouts 1.14
+import QtQuick.Layouts
 import QtQuick.Controls
 
 import Clock
@@ -7,7 +7,7 @@ import "../Controls"
 import "../Style"
 
 Section {
-    id: objectModel
+    id: root
 
     title: 'Appearence'
     icon: Icons.display_settings

@@ -37,8 +37,9 @@ Section {
 
         Switch {
             id: switchItem
-            onCheckableChanged: NetworkManagerQml.wirelessEnabled = checked
-            checked: NetworkManagerQml.wirelessEnabled
+            onClicked: NetworkManagerQml.wirelessEnabled = checked
+            checked: device && NetworkManagerQml.wirelessEnabled
+            enabled: device
         }
     }
 
@@ -117,6 +118,7 @@ Section {
     RowLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
+        visible: device
 
         ListView {
             Layout.fillHeight: true
@@ -171,7 +173,7 @@ Section {
                         text: 'Connected'
                     }
 
-                    Button {
+                    CButton {
                         id: bttn
                         visible: d.network.connection
                         font.family: Icons.fontFamily
@@ -184,6 +186,27 @@ Section {
                         }
                     }
                 }
+            }
+        }
+    }
+    Item {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        visible: device === null
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            opacity: Theme.o72
+
+            Icon {
+                Layout.alignment: Qt.AlignHCenter
+                font.pixelSize: Theme.fontSizeXXLarge
+                text: Icons.wifi_off
+            }
+            CLabel {
+                Layout.alignment: Qt.AlignHCenter
+                font.pixelSize: Theme.fontSizeLarge
+                text: 'No wireless device found.'
             }
         }
     }
