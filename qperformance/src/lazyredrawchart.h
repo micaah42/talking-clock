@@ -1,26 +1,26 @@
-#ifndef PERFORMANCECHART_H
-#define PERFORMANCECHART_H
+#ifndef LAZYREDRAWCHART_H
+#define LAZYREDRAWCHART_H
+
+#include <QImage>
 
 #include "performancechartbase.h"
 
-#include <deque>
-
 /**
- * @class PerformanceChart
+ * @class LazyRedrawChart
  * @brief A QML-compatible chart widget for displaying long time-series data efficiently.
  *
- * LongTimeChart is a QQuickPaintedItem that visualizes one or more data series over a user-defined duration.
+ * LazyRedrawChart is a QQuickPaintedItem that visualizes one or more data series over a user-defined duration.
  * It optimizes performance by only redrawing the most recent portion of the data when new values are added.
  * Although it uses some inefficient image copying internally, this tradeoff can improve rendering performance
  * for high-frequency data visualization.
  */
-class PerformanceChart : public PerformanceChartBase
+class LazyRedrawChart : public PerformanceChartBase
 {
     Q_OBJECT
     QML_ELEMENT
 
 public:
-    PerformanceChart();
+    LazyRedrawChart();
 
 public slots:
     virtual void pushValues2(const QList<double> &values, qint64 t) override;
@@ -30,8 +30,12 @@ protected:
     virtual void paint(QPainter *painter) override;
 
 private:
-    std::deque<QList<double>> _values;
-    std::deque<qint64> _ts;
+    QList<double> _values;
+    double _t;
+
+    QList<double> _prevValues;
+    double _prevT;
+    QImage _image;
 };
 
-#endif // PERFORMANCECHART_H
+#endif // LAZYREDRAWCHART_H
