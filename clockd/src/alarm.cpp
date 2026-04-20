@@ -13,6 +13,7 @@ Alarm::Alarm(QObject *parent)
     , _activated{true}
     , _time{12, 0}
     , _repeats{false}
+    , _singleShot{false}
 
 {
     _repeatRule.fill(false, 7);
@@ -171,4 +172,18 @@ QDebug operator<<(QDebug debug, const Alarm &c)
     QString templ{"Alarm(activated=%1,name='%2',time='%3',sound='%5')"};
     debug << templ.arg(c.activated() ? "true" : "false", c.name(), c.time().toString(), c.sound());
     return debug;
+}
+
+bool Alarm::singleShot() const
+{
+    return _singleShot;
+}
+
+void Alarm::setSingleShot(bool newSingleshot)
+{
+    if (_singleShot == newSingleshot)
+        return;
+
+    _singleShot = newSingleshot;
+    emit singleShotChanged();
 }

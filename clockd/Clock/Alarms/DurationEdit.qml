@@ -22,7 +22,7 @@ RowLayout {
                 opacity: Theme.o72
                 text: col.title
             }
-            Button {
+            CButton {
                 onClicked: msecs += col.duration
                 font.pixelSize: Theme.fontSizeLarge
                 Layout.fillWidth: true
@@ -36,7 +36,7 @@ RowLayout {
                 Layout.fillHeight: true
                 size: CLabel.XLarge
             }
-            Button {
+            CButton {
                 onClicked: msecs -= col.duration
                 enabled: msecs >= col.duration
                 font.pixelSize: Theme.fontSizeLarge

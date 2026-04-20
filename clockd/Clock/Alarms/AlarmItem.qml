@@ -10,21 +10,16 @@ ItemDelegate {
     id: ctrl
 
     property Alarm alarm
-
     property bool wasHeld: false
 
     onPressAndHold: wasHeld = true
-
-    Rectangle {
-        anchors.fill: parent
-        border.color: Theme.primary
-        opacity: 0
-        radius: 5
-    }
+    bottomPadding: 12
+    topPadding: 12
 
     contentItem: Loader {
         width: parent.width
         active: alarm !== null
+        asynchronous: true
 
         sourceComponent: RowLayout {
             id: row
@@ -49,29 +44,37 @@ ItemDelegate {
                 size: CLabel.Large
             }
 
-            Row {
+            RowLayout {
                 id: weekdays
+
+                Layout.bottomMargin: 1
+                Layout.topMargin: 4
+                spacing: 0
+
                 function getRepeat(i) {
                     return alarm.repeatRule[i]
                 }
+
                 function setRepeat(i, v) {
                     var rule = alarm.repeatRule
                     rule[i] = v
                     alarm.repeatRule = rule
                 }
+
                 Repeater {
                     model: 7
                     delegate: CheckBox {
                         onClicked: weekdays.setRepeat(modelData, checked)
                         checked: weekdays.getRepeat(modelData)
+                        Layout.preferredWidth: 27
                         scale: 1.25
-                        width: 27
                     }
                 }
                 Item {
                     height: parent.parent.height
                     width: 0.1
-                    Button {
+
+                    CButton {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         height: row.height

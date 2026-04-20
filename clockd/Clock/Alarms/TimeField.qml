@@ -19,7 +19,7 @@ CFrame {
     }
 
     property int mode: TimeField.Mode.M5
-    property int visibleItems: 7
+    property int visibleItems: 9
     readonly property int secondStepSize: mode === TimeField.S1 ? 1 : 60
     readonly property int minuteStepSize: mode === TimeField.M5 ? 5 : 1
     readonly property bool seconds: mode === TimeField.S1

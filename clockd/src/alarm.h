@@ -16,6 +16,8 @@ class Alarm : public QObject
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
     Q_PROPERTY(QTime time READ time WRITE setTime NOTIFY timeChanged FINAL)
     Q_PROPERTY(QVariantList repeatRule READ repeatRule WRITE setRepeatRule NOTIFY repeatRuleChanged FINAL)
+    Q_PROPERTY(bool singleShot READ singleShot WRITE setSingleShot NOTIFY singleShotChanged FINAL)
+
     Q_PROPERTY(bool repeats READ repeats NOTIFY repeatsChanged FINAL)
     Q_PROPERTY(QString sound READ sound WRITE setSound NOTIFY soundChanged FINAL)
     Q_PROPERTY(QDateTime nextTimeout READ nextTimeout NOTIFY nextTimeoutChanged FINAL)
@@ -41,6 +43,9 @@ public:
     QDateTime nextTimeout() const;
     bool repeats() const;
 
+    bool singleShot() const;
+    void setSingleShot(bool newSingleshot);
+
 public slots:
     void findNextTimeout(QDateTime after = QDateTime::currentDateTime());
     void snooze(int minutes);
@@ -53,6 +58,7 @@ signals:
     void soundChanged();
     void nextTimeoutChanged();
     void repeatsChanged();
+    void singleShotChanged();
 
 protected:
     void setNextTimeout(const QDateTime &newNextTimeout);
@@ -68,6 +74,7 @@ private:
     bool _repeats;
 
     QTimer _timer;
+    bool _singleShot;
 };
 
 QDebug operator<<(QDebug debug, const Alarm &c);

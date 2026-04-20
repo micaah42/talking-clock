@@ -31,7 +31,7 @@ Item {
                 id: view
 
                 anchors.fill: parent
-                spacing: 5
+                spacing: 16
                 clip: true
 
                 model: SortFilterAlarmModel {
@@ -42,7 +42,7 @@ Item {
                     width: parent.width
                     height: 56
 
-                    Button {
+                    CButton {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         text: "New Alarm"
@@ -55,7 +55,7 @@ Item {
                         }
                     }
 
-                    Button {
+                    CButton {
                         Layout.preferredWidth: height
                         Layout.fillHeight: true
                         font.family: Icons.fontFamily
@@ -66,12 +66,27 @@ Item {
                             id: menu
                             x: parent.width - width
                             y: parent.height + 8
-                            MenuItem {
+
+                            CMenuItem {
                                 text: 'New Timer'
                                 onClicked: {
                                     const alarm = AlarmService.newAlarm()
+                                    alarm.singleShot = true
                                     timerDialog.alarm = alarm
                                     timerDialog.open()
+                                }
+                            }
+
+                            CMenuItem {
+                                text: 'Remove all'
+                                onClicked: removeAllDialog.open()
+
+                                Dialog {
+                                    id: removeAllDialog
+                                    title: 'Remove all alarms?'
+                                    standardButtons: Dialog.Ok | Dialog.Cancel
+                                    onAccepted: AlarmService.removeAllAlarms()
+                                    anchors.centerIn: Overlay.overlay
                                 }
                             }
                         }
@@ -112,6 +127,7 @@ Item {
 
         onRejected: alarm.destroy()
         onAccepted: {
+            alarm.name = `Timer (${Theme.durationString(durationEdit.msecs, Locale.NarrowFormat)})`
             alarm.time = new Date(AlarmService.now.getTime() + durationEdit.msecs)
             AlarmService.addAlarm(alarm)
         }

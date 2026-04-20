@@ -35,6 +35,17 @@ public:
     };
 };
 
+class AlarmListModel : public ListModel<Alarm *>
+{
+    Q_OBJECT
+    QML_ELEMENT
+
+public:
+    explicit AlarmListModel(QObject *parent = nullptr)
+        : ListModel<Alarm *>(parent)
+    {}
+};
+
 class AlarmService : public QObject
 {
     Q_OBJECT
@@ -54,6 +65,8 @@ public:
 
 public slots:
     void removeAlarm(Alarm *alarm);
+    void removeAllAlarms();
+
     void addAlarm(Alarm *alarm);
     Alarm *newAlarm();
 
@@ -64,6 +77,7 @@ signals:
 
 protected:
     void setNextAlarm(Alarm *newNextAlarm);
+    void updateNextAlarm();
 
 private slots:
     void onClockTriggered();

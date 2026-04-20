@@ -27,7 +27,7 @@ AlarmService::AlarmService(const int tickRate, QObject *parent)
     _saveTimer.setSingleShot(true);
     _saveTimer.setInterval(500);
 
-    _alarmsFile.setFileName(PathService::create("alarms.json"));
+    _alarmsFile.setFileName(PathService::configFilePath("alarms.json"));
     this->loadAlarms();
 }
 
@@ -60,6 +60,9 @@ void AlarmService::onClockTriggered()
 
         if (!_alarmQueue.empty())
             nextTimeout = _alarmQueue.firstKey();
+
+        if (alarm->singleShot())
+            this->removeAlarm(alarm);
     }
 }
 
@@ -79,10 +82,7 @@ void AlarmService::onTimeoutChanged()
         _timeoutMap.insert(alarm, alarm->nextTimeout());
     }
 
-    if (!_alarmQueue.empty())
-        this->setNextAlarm(_alarmQueue.first());
-    else
-        this->setNextAlarm(nullptr);
+    this->updateNextAlarm();
 }
 
 void AlarmService::registerAlarm(Alarm *alarm)
@@ -106,13 +106,9 @@ void AlarmService::registerAlarm(Alarm *alarm)
     connect(alarm, &Alarm::nextTimeoutChanged, this, &AlarmService::onTimeoutChanged);
 
     connect(alarm, &Alarm::destroyed, this, [this, alarm]() {
-        _alarmQueue.remove(alarm->nextTimeout());
+        _alarmQueue.remove(alarm->nextTimeout(), alarm);
         _timeoutMap.remove(alarm);
-
-        if (!_alarmQueue.empty())
-            this->setNextAlarm(_alarmQueue.first());
-        else
-            this->setNextAlarm(nullptr);
+        this->updateNextAlarm();
     });
 }
 
@@ -180,11 +176,7 @@ void AlarmService::loadAlarms()
         alarm->setParent(this);
     }
 
-    if (!_alarmQueue.empty())
-        this->setNextAlarm(_alarmQueue.first());
-    else
-        this->setNextAlarm(nullptr);
-
+    this->updateNextAlarm();
     _alarmsFile.close();
 }
 
@@ -206,18 +198,23 @@ Alarm *AlarmService::nextAlarm() const
 void AlarmService::removeAlarm(Alarm *alarm)
 {
     _alarmModel.removeAll(alarm);
+    _alarmQueue.remove(alarm->nextTimeout(), alarm);
+    _timeoutMap.remove(alarm);
+
     alarm->deleteLater();
+}
+
+void AlarmService::removeAllAlarms()
+{
+    auto const alarms = _alarmModel.list();
+    QTimer::singleShot(1000, [alarms]() { qDeleteAll(alarms); });
+    _alarmModel.clear();
 }
 
 void AlarmService::addAlarm(Alarm *alarm)
 {
     this->registerAlarm(alarm);
     _alarmModel.append(alarm);
-
-    if (!_alarmQueue.empty())
-        this->setNextAlarm(_alarmQueue.first());
-    else
-        this->setNextAlarm(nullptr);
 }
 
 Alarm *AlarmService::newAlarm()
@@ -234,6 +231,11 @@ void AlarmService::setNextAlarm(Alarm *newNextAlarm)
     qCInfo(self) << "new next alarm:" << newNextAlarm;
     _nextAlarm = newNextAlarm;
     emit nextAlarmChanged();
+}
+
+void AlarmService::updateNextAlarm()
+{
+    this->setNextAlarm(_alarmQueue.empty() ? nullptr : _alarmQueue.first());
 }
 
 SortFilterAlarmModel::SortFilterAlarmModel() {}

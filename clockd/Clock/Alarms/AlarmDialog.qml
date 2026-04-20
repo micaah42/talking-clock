@@ -12,7 +12,7 @@ Popup {
     Material.roundedScale: Material.SmallScale
     anchors.centerIn: Overlay.overlay
     closePolicy: Popup.NoAutoClose
-    height: 0.8 * window.height
+    height: window.height - 64
     width: 0.8 * window.width
     modal: true
     dim: true
@@ -47,8 +47,9 @@ Popup {
                     spacing: 16
 
                     function getRepeat(i) {
-                        return Array.from(alarm.repeatRule)[i]
+                        return alarm.repeatRule[i]
                     }
+
                     function setRepeat(i, v) {
                         var rule = alarm.repeatRule
                         rule[i] = v
@@ -59,13 +60,13 @@ Popup {
                         id: d1
                         required property string shortName
                         required property int day
-                        spacing: -4
+                        spacing: -12
 
                         CheckBox {
                             width: 32
                             scale: 1.5
-                            onClicked: weekdays.setRepeat(d1.day, checked)
-                            checked: weekdays.getRepeat(d1.day)
+                            onClicked: weekdays.setRepeat((d1.day + 6) % 7, checked)
+                            checked: weekdays.getRepeat((d1.day + 6) % 7)
                         }
                         CLabel {
                             Layout.alignment: Qt.AlignHCenter
@@ -74,7 +75,12 @@ Popup {
                     }
                 }
             }
-
+            CTextField {
+                Layout.fillWidth: true
+                placeholderText: 'Name'
+                text: alarm.name
+                onTextEdited: alarm.name = text
+            }
             RowLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -101,20 +107,16 @@ Popup {
                     Layout.preferredWidth: parent.width / 2
                     Layout.fillHeight: true
 
-                    CTextField {
-                        Layout.fillWidth: true
-                        placeholderText: 'Name'
-                        text: alarm.name
-                        onTextEdited: alarm.name = text
-                    }
                     CComboBox {
                         Layout.fillWidth: true
-                        model: SoundService.availableSounds.map(SoundService.displayName)
-                        currentIndex: model.indexOf(alarm.sound)
-                        onAccepted: index => alarm.sound = model[index]
+                        model: SoundService.availableSounds.map(x => SoundService.displayName(x))
+                        currentIndex: SoundService.availableSounds.indexOf(alarm.sound)
+                        onActivated: index => alarm.sound = SoundService.availableSounds[index]
                         placeholderText: 'Sound'
                     }
 
+
+                    /*
                     ListView {
                         id: list
                         Layout.fillHeight: true
@@ -151,6 +153,7 @@ Popup {
                             }
                         }
                     }
+                    */
                     Item {
                         Layout.fillHeight: true
                     }
@@ -176,7 +179,7 @@ Popup {
                         }
                     }
 
-                    Button {
+                    CButton {
                         Material.background: Theme.primary
                         Layout.bottomMargin: -4
                         Layout.fillWidth: true
