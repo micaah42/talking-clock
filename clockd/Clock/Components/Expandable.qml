@@ -13,7 +13,9 @@ ColumnLayout {
 
     property alias previewContent: preview.data
     property alias preview: preview
-    spacing: 16
+
+    property alias previewLabel: previewLabel
+    spacing: 8
 
     RowLayout {
         id: mainContainer
@@ -24,6 +26,12 @@ ColumnLayout {
             id: preview
             Layout.fillWidth: true
             spacing: 8
+
+            CLabel {
+                id: previewLabel
+                Layout.fillWidth: true
+                visible: text
+            }
         }
 
         CToolButton {
@@ -31,7 +39,7 @@ ColumnLayout {
             onClicked: expanded = !expanded
             text: Icons.chevron_left
 
-            rotation: expanded ? 90 : -90
+            rotation: expanded ? -90 : 0
             Behavior on rotation {
                 PropertyAnimation {}
             }

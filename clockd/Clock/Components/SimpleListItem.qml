@@ -12,7 +12,6 @@ RowLayout {
     property alias descriptionItem: descriptionItem
     property alias titleItem: titleItem
     property alias iconItem: iconItem
-
     spacing: 24
 
     Icon {
