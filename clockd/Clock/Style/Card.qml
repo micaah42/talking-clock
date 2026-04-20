@@ -13,11 +13,11 @@ Item {
 
         // color: bright ? Theme.primary : Theme.darkPrimary
         color: bright ? Theme.primaryColor(Material.ShadeA700) : //@
-                        Qt.darker(Theme.primaryColor(Material.Shade900), 1.42)
+                        Qt.darker(Theme.primaryColor(Material.Shade900), 1.56)
 
         // opacity: backgroundOpacity
-        border.color: Qt.darker(color, 1.25)
-        border.width: 0.75
+        border.color: Qt.lighter(color, 1.25)
+        border.width: 1.5
         radius: 8
     }
 

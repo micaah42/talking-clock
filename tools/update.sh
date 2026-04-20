@@ -17,7 +17,8 @@ source $environment_file
 
 cmake ../.. \
       -DCMAKE_BUILD_TYPE=Release \
-      -DFETCHCONTENT_FULLY_DISCONNECTED=ON
+      -DFETCHCONTENT_FULLY_DISCONNECTED=ON \
+      -DCMAKE_INSTALL_PREFIX="/usr"
 
 cmake --build . \
       -j $(nproc --ignore 2) \

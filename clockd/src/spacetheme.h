@@ -4,7 +4,18 @@
 #include <QObject>
 #include <QQmlEngine>
 
+#include <listmodel.h>
+
 #include "setting.h"
+
+class QObjectListModel : public ListModel<QObject *>
+{
+    Q_OBJECT
+    QML_ELEMENT
+public:
+    explicit QObjectListModel(QObject *parent = nullptr)
+        : ListModel<QObject *>{parent} {};
+};
 
 class SpaceTheme : public QObject
 {
@@ -53,7 +64,7 @@ private:
     Setting<int> _animationSpeed;
     Setting<bool> _spaceShip;
     Setting<double> _clockSize;
-    bool _fpsVisible;
+    Setting<bool> _fpsVisible;
 };
 
 #endif // SPACETHEME_H

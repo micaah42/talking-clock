@@ -1,6 +1,7 @@
 #include "loghandling.h"
 
 #include <QDebug>
+#include <QDir>
 #include <iostream>
 #include <syslog.h>
 
@@ -12,9 +13,9 @@ QDate LogHandling::LastLogDate;
 int LogHandling::KeepLogDuration = 28;
 #endif
 
+static QDir LogDir = QDir{"/var/log/clockd"};
 void LogHandling::init()
 {
-    PathService::create("log", false);
     qInstallMessageHandler(msgHandler);
 }
 
@@ -98,12 +99,12 @@ void LogHandling::msgHandler(const QtMsgType type,
 #ifdef MANUAL_LOGFILES
 void LogHandling::createNewFile(const QDateTime &now)
 {
-    QDir logdir{"./log"};
-    if (!logdir.mkpath("."))
-        std::cerr << "failed to create logdir!";
+    if (!LogDir.exists())
+        if (LogDir.mkpath("."))
+            std::cerr << "failed to create logdir!";
 
     auto date = now.date().toString(Qt::ISODate);
-    auto filePath = logdir.absoluteFilePath(QString("%1.log").arg(date));
+    auto filePath = LogDir.absoluteFilePath(QString("%1.log").arg(date));
     LogFile.setFileName(filePath);
     if (!LogFile.open(QIODevice::Append)) {
         std::cerr << "cannot open log file: " << filePath.toStdString() << LogFile.errorString().toStdString() << std::endl;

@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.14)
 
 project(clockd LANGUAGES CXX VERSION 1.0)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -52,7 +53,10 @@ set(QML_SINGLETONS
     Clock/Style/Icons.qml
     Clock/Style/Theme.qml
     Clock/Style/Palettes.qml
+    Clock/Style/MaterialSounds.qml
     Clock/Lighting/LightingInit.qml
+    Clock/Settings/SideBarConfiguration.qml
+    Clock/ChatBot/TextToSpeechService.qml
 )
 
 set_source_files_properties(${QML_SINGLETONS}
@@ -60,10 +64,15 @@ set_source_files_properties(${QML_SINGLETONS}
 )
 
 qt_add_qml_module(${PROJECT_NAME}
-    DEPENDENCIES QtQuick.Controls
     QML_FILES ${QML_FILES}
     SOURCES ${SOURCES}
     URI Clock
+)
+
+include(${CMAKE_SOURCE_DIR}/cmake/BuildMetaData.cmake)
+generate_build_metadata(${PROJECT_NAME}
+    "${CMAKE_SOURCE_DIR}/cmake/version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/version.h"
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/src)
@@ -78,9 +87,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     networkmanager-qmlplugin
     qperformanceplugin
     qlightingplugin
+    qchatbotplugin
     qopenremote
-    ws2811
+
     TinyOrm
+    ws2811
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -4,10 +4,10 @@ SpaceTheme::SpaceTheme(QObject *parent)
     : QObject{parent}
     , _clockSize{"SpaceBackground/ClockSize", 1.4}
     , _spaceShip{"SpaceBackground/SpaceShip", false}
-    , _animatedStars{"SpaceBackground/AnimatedStars", 20}
-    , _stars{"SpaceBackground/Stars", 75}
+    , _animatedStars{"SpaceBackground/AnimatedStars", 3}
+    , _stars{"SpaceBackground/Stars", 6}
     , _animationSpeed{"SpaceBackground/AnimationSpeed", 5000}
-    , _fpsVisible{false}
+    , _fpsVisible{"SpaceBackground/AnimationSpeed", false}
 {}
 
 int SpaceTheme::animatedStars() const

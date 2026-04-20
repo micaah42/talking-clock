@@ -14,6 +14,7 @@
 
 #include "loghandling.h"
 #include "pathservice.h"
+#include "weatherservice.h"
 
 void printApplicationStart();
 
@@ -28,7 +29,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("org");
     QCoreApplication::setApplicationVersion("0.1");
     LogHandling::init();
-    PathService::init();
 
     printApplicationStart();
 
@@ -49,6 +49,8 @@ int main(int argc, char *argv[])
         {"check_database_exists", true},
         {"prefix", ""},
     });
+
+    WeatherService weather;
 
     QQmlApplicationEngine engine;
     engine.addImportPath(":/");

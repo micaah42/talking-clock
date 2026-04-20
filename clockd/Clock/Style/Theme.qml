@@ -25,11 +25,12 @@ QtObject {
         return Qt.rgba(color.r, color.g, color.b, alpha)
     }
 
-    readonly property color primaryDark: primaryColor(Material.Shade600)
+    readonly property color primaryDark: primaryColor(Material.Shade800)
     readonly property color primary: primaryColor(Material.ShadeA700)
 
     readonly property color accentDark: accentColor(Material.Shade600)
     readonly property color accent: accentColor(Material.ShadeA700)
+    readonly property color foreground: '#ffffff'
     readonly property color background: '#000000'
 
     readonly property real o11: 0.11
@@ -37,6 +38,7 @@ QtObject {
     readonly property real o42: 0.42
     readonly property real o56: 0.56
     readonly property real o72: 0.72
+    readonly property real o84: 0.72
 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -55,6 +57,7 @@ QtObject {
        Controls
     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     readonly property real controlWidth: 320
+    readonly property real popupWidth: 480
 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -108,5 +111,17 @@ QtObject {
 
         const days = hours / 24
         return `${days.toFixed(1)} ${daysString}`
+    }
+
+    function timeString(date, format) {
+        return date.toLocaleTimeString(Qt.locale(), format || Locale.ShortFormat)
+    }
+    function dateString(date, format) {
+        return date.toLocaleDateString(Qt.locale(), format || Locale.ShortFormat)
+    }
+
+    function roundWithPrecision(x, precision) {
+        const f = Math.pow(10, precision || 1)
+        return (Math.round(f * x) / f).toLocaleString()
     }
 }
