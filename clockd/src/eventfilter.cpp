@@ -9,7 +9,7 @@
 #include <QStandardPaths>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "event", QtInfoMsg)
+Q_LOGGING_CATEGORY(self, "event")
 }
 
 EventFilter::EventFilter(QObject *parent)
@@ -33,14 +33,20 @@ bool EventFilter::eventFilter(QObject *obj, QEvent *ev)
     case QEvent::TouchEnd:
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
-        qCDebug(self) << "user event:" << ev->type();
+        qCDebug(self) << "user event:" << obj << ev->type();
         _inactivityTimer.start();
+
+        if (obj->inherits("QQuickAbstractButton") || obj->inherits("QQuickMouseArea")) {
+            emit buttonClicked();
+        }
 
     case QEvent::KeyRelease: {
         auto keyEvent = dynamic_cast<QKeyEvent *>(ev);
         if (keyEvent && keyEvent->key() == Qt::Key_F12) {
             this->makeScreenshot();
-            return true;
+        }
+        if (keyEvent && keyEvent->key() == Qt::Key_F11) {
+            this->makeScreenshot();
         }
     }
 
@@ -71,4 +77,9 @@ void EventFilter::makeScreenshot()
     image.save(fileName, "PNG");
 
     qCInfo(self) << "saved screenshot to" << fileName;
+}
+
+QGuiApplication *EventFilter::application() const
+{
+    return qobject_cast<QGuiApplication *>(QGuiApplication::instance());
 }
