@@ -4,36 +4,45 @@ import QtQuick.Controls
 import Clock
 
 CTextField {
-    id: ctrl
+    id: root
     property alias model: input.model
     property alias currentIndex: input.currentIndex
     signal activated(var index)
 
     onReleased: input.popup.open()
     onFocusChanged: focus = false
+    text: input.displayText
     readOnly: true
 
     ComboBox {
         id: input
         visible: false
 
-        anchors.fill: parent
+        anchors.fill: root
+        displayText: (model[currentIndex] || '').toString()
         background: Item {}
-        displayText: ""
 
         font.family: FontService.family
-        popup.y: parent.height + 2
-        popup.padding: 4
+        popup.y: root.height + 8
+        popup.padding: 8
 
-        popup.background: Rectangle {
-            border.color: Material.frameColor
-            color: Material.dialogColor
-            radius: 3
+        popup.background: CFrame {
+            backgroundColor: Material.dialogColor
+            enabled: false
         }
 
-        onActivated: {
-            ctrl.text = model[currentIndex]
-            ctrl.activated(currentIndex)
+        delegate: ItemDelegate {
+            bottomPadding: 4
+            topPadding: 4
+
+            width: input.popup.availableWidth
+            font.pixelSize: Theme.fontSizeMedium
+            font.family: FontService.family
+            text: modelData
+        }
+
+        onActivated: function (index) {
+            root.activated(index)
         }
     }
 }

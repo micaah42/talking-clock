@@ -47,7 +47,7 @@ Popup {
                 }
             }
 
-            Button {
+            CButton {
                 Layout.fillWidth: true
                 Material.background: Theme.primary
                 text: "Accept"

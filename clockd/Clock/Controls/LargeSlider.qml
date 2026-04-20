@@ -1,4 +1,4 @@
-import QtQuick 
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
 
@@ -15,7 +15,7 @@ Slider {
 
     snapMode: Slider.SnapAlways
     implicitHeight: 40
-    stepSize: 0.005
+    stepSize: 0.001
 
     background: Rectangle {
         id: background

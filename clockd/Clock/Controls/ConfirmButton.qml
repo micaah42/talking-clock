@@ -4,7 +4,7 @@ import QtQuick.Controls.Material
 
 import "../Controls"
 
-Button {
+CButton {
     id: root
 
     property alias dialogTitle: dialog.title
