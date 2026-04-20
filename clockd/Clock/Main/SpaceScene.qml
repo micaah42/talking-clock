@@ -20,6 +20,11 @@ Item {
     onHeightChanged: rocketAnimation.restart()
     onWidthChanged: rocketAnimation.restart()
 
+    function startRocket() {
+        if (!rocketAnimation.running)
+            rocketAnimation.start()
+    }
+
     Repeater {
         id: animatedStars
         model: SpaceTheme.animatedStars
@@ -45,25 +50,32 @@ Item {
                 }
             }
 
-            property real maxOpacity: Math.random() * Theme.o24 + Theme.o72
+            property real maxOpacity: 1
             property real minOpacity: Theme.o24
 
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
 
                 OpacityAnimator {
-                    easing.type: Easing.OutBounce
-                    duration: (index + 5) * SpaceTheme.animationSpeed
+                    easing.type: Easing.InOutBounce
+                    duration: (d.i * 500) + SpaceTheme.animationSpeed
                     from: d.minOpacity
                     to: d.maxOpacity
                 }
                 OpacityAnimator {
-                    easing.type: Easing.InBounce
-                    duration: (index + 8) * SpaceTheme.animationSpeed
+                    easing.type: Easing.InOutBounce
+                    duration: (d.i * 500) + SpaceTheme.animationSpeed
                     from: d.maxOpacity
                     to: d.minOpacity
                 }
             }
+        }
+    }
+
+    Connections {
+        target: TimeService
+        function onNow15MinutesChanged() {
+            rocketAnimation.restart()
         }
     }
 
@@ -73,8 +85,6 @@ Item {
 
         SequentialAnimation {
             id: rocketAnimation
-            loops: Animation.Infinite
-            running: true
 
             PathAnimation {
                 target: rocket
@@ -154,10 +164,6 @@ Item {
                         y: container.height + 64
                     }
                 }
-            }
-
-            PauseAnimation {
-                duration: 15 * 60000
             }
         }
         Item {

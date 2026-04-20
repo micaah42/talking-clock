@@ -5,9 +5,10 @@ import QtQuick.Controls
 import QtQuick.Controls.Material
 
 import Clock
+
 import "../Style"
 
-Window {
+ApplicationWindow {
     id: window
 
     onWidthChanged: console.warn(`window.width=${width}`)

@@ -6,14 +6,18 @@ import Clock
 import "../Style"
 import "../Controls"
 
-Card {
-    id: pageLoader
-
+Item {
     property var currentPage
     signal closed
 
+    Card {
+        id: pageLoader
+        anchors.fill: parent
+    }
+
     MouseArea {
         anchors.fill: parent
+        anchors.margins: -16
     }
 
     ColumnLayout {
@@ -22,15 +26,24 @@ Card {
         spacing: 16
 
         Card {
-            Layout.preferredHeight: 56
+            Layout.preferredHeight: 48
             Layout.fillWidth: true
             bright: true
 
-            CToolButton {
-                anchors.verticalCenter: parent.verticalCenter
-                text: Icons.chevron_backward
-                size: CToolButton.Large
+            CButton {
+                height: parent.height
+                width: parent.width / 8
                 onClicked: closed()
+                bottomInset: 0
+                topInset: 0
+                flat: true
+            }
+
+            Icon {
+                anchors.verticalCenter: parent.verticalCenter
+                x: 16
+                text: Icons.chevron_backward
+                font.pixelSize: Theme.fontSizeLarge
             }
 
             CLabel {
@@ -44,7 +57,6 @@ Card {
         FeedbackLoader {
             Layout.fillHeight: true
             Layout.fillWidth: true
-
             sourceComponent: currentPage?.comp || null
         }
     }

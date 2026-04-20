@@ -1,5 +1,7 @@
-import QtQuick 2.15
+import QtQuick
+import QtQuick.Window
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import Clock
 
@@ -28,23 +30,68 @@ Item {
             Repeater {
                 model: ActionDayService.days
 
-                delegate: SimpleListItem {
+                delegate: ItemDelegate {
                     Layout.fillWidth: true
-                    property ActionDay actionDay: modelData
-                    icon: actionDay.icon
-                    title: actionDay.name
-                    description: actionDay.desc
+                    Layout.rightMargin: -16
+                    Layout.leftMargin: -16
+
+                    contentItem: SimpleListItem {
+                        id: delegate
+                        property ActionDay actionDay: modelData
+                        icon: Icons[actionDay.icon] || Icons.calendar_month
+                        title: actionDay.name
+                        description: actionDay.desc
+                        width: parent.width
+                    }
+
+                    onClicked: {
+                        dialog.actionDay = delegate.actionDay
+                        dialog.open()
+                    }
                 }
             }
         }
+    }
 
-        Icon {
-            anchors.bottom: column.bottom
-            anchors.right: parent.right
-            anchors.margins: -implicitHeight / 4
-            font.pixelSize: parent.width
-            text: Icons.calendar_month
-            opacity: Theme.o11
+    Dialog {
+        id: dialog
+
+        property LinkPreview linkPreview
+        property ActionDay actionDay
+
+        title: actionDay?.name || ''
+        onClosed: actionDay = null
+
+        parent: Overlay.overlay
+        x: Math.round((parent.width - width) / 2)
+        y: Math.round((parent.height - height) / 2)
+        modal: true
+        z: 1
+
+        onAboutToShow: {
+            dialog.linkPreview = LinkPreviewService.getLinkPreview(dialog.actionDay.link)
+        }
+
+        contentItem: FeedbackLoader {
+            active: dialog.linkPreview && dialog.linkPreview.status === LinkPreview.Success
+            implicitHeight: item?.implicitHeight || 0
+            width: parent.width
+
+            sourceComponent: ColumnLayout {
+                id: content
+
+                Image {
+                    Layout.preferredWidth: content.width
+                    Layout.preferredHeight: (sourceSize.height * width) / sourceSize.width
+                    source: dialog.linkPreview.ogImage
+                }
+
+                CLabel {
+                    Layout.fillWidth: true
+                    text: dialog.linkPreview.ogDescription
+                    wrapMode: Text.Wrap
+                }
+            }
         }
     }
 }

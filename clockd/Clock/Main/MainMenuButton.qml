@@ -20,10 +20,9 @@ Button {
     Material.roundedScale: Material.SmallScale
     Material.background: Theme.primaryDark
     implicitWidth: 0
-    text: icon
 
     font.family: Icons.fontFamily
-    font.pixelSize: 88
+    font.pixelSize: 72
     bottomInset: 0
     topInset: 0
 }

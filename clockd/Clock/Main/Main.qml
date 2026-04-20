@@ -8,6 +8,7 @@ import QtMultimedia
 
 import Clock
 import NetworkManagerQml
+import QPerformanceQml
 
 import "../Alarms"
 import "../Controls"
@@ -17,157 +18,131 @@ import "../Style"
 import "."
 
 Item {
-    property real sidebarWidth: width / 2
-    property real drawerHeight: 148
+    readonly property real sidebarWidth: width / 2
+    readonly property real drawerHeight: 128
 
     Component.onCompleted: {
-        EventFilter.installToObject(window)
+        EventFilter.installToObject(EventFilter.application)
         LightingInit.init()
+        TimeService.now
+    }
+
+    Connections {
+        target: EventFilter
+        function onButtonClicked() {
+            MaterialSounds.playUiTapVariant()
+        }
     }
 
     SpaceScene {
+        id: spaceScene
         anchors.fill: parent
-    }
-
-    Clock {
-        anchors.bottom: drawer.top
-        anchors.left: sideBar.right
-        anchors.right: parent.right
-        anchors.top: parent.top
-
-        scale: sideBar.open ? 0.69 : 1
-        transformOrigin: Item.Center
-        Behavior on scale {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
-            }
-        }
     }
 
     MouseArea {
         anchors.fill: parent
-        onClicked: drawer.open = !drawer.open
+        enabled: !sideBarItem.hasActiveAlarms
+        onClicked: menuDrawer.open = !menuDrawer.open
+        onReleased: clickCounter++
     }
 
-    Item {
-        id: drawer
+    EdgeGlow {
+        anchors.fill: parent
+        opacity: 0
 
-        property bool open: false
-        height: drawerHeight
-        width: parent.width
+        SequentialAnimation on opacity {
+            running: sideBarItem.hasActiveAlarms
+            loops: Animation.Infinite
+            alwaysRunToEnd: true
 
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: open ? 0 : -height
-
-        Behavior on anchors.bottomMargin {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
+            OpacityAnimator {
+                duration: 800
+                from: 0
+                to: 1
             }
-        }
-
-        MainMenu {
-            id: mainMenu
-            onCurrentPageChanged: drawer.open = false
-            anchors.fill: parent
-        }
-    }
-
-    CFrame {
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 16
-        width: parent.width / 2 - 2 * anchors.margins
-
-        opacity: NetworkManagerQml.connectivity === 4 ? connChangedTimer.running : 1
-
-        Behavior on opacity {
-            OpacityAnimator {}
-        }
-
-        contentItem: SimpleListItem {
-            id: connectivity
-            descriptionItem.wrapMode: Text.Wrap
-
-            property int con: {
-                switch (NetworkManagerQml.connectivity) {
-                case 0:
-                    icon = Icons.cloud_sync
-                    title = 'Unknown Connectivity'
-                    description = 'Network connectivity is unknown.'
-                    break
-                case 1:
-                    icon = Icons.cloud_alert
-                    title = 'No Connectivity'
-                    description = 'The host is not connected to any network.'
-                    break
-                case 2:
-                    icon = Icons.captive_portal
-                    title = 'Portal'
-                    description = 'The host is behind a captive portal and cannot reach the full Internet.'
-                    break
-                case 3:
-                    icon = Icons.cloud_alert
-                    title = 'Limited'
-                    description = 'The host is connected to a network, but does not appear to be able to reach the full Internet.'
-                    break
-                case 4:
-                    icon = Icons.cloud_done
-                    title = 'Full'
-                    description = 'The host is connected to a network, and appears to be able to reach the full Internet.'
-                    break
-                }
-
-                connChangedTimer.start()
-                return NetworkManagerQml.connectivity
-            }
-
-            Timer {
-                id: connChangedTimer
-                interval: 15000
+            OpacityAnimator {
+                duration: 800
+                from: 1
+                to: 0
             }
         }
     }
 
-    Item {
-        id: sideBar
-        anchors.bottom: drawer.top
-        anchors.top: parent.top
-        width: sidebarWidth
+    DrawerView {
+        id: menuDrawer
+        anchors.fill: parent
 
-        readonly property bool open: drawer.open || sideBarStack.depth > 1
-        x: open ? 0 : -width
-        Behavior on x {
-            PropertyAnimation {
-                easing.type: Easing.InOutQuad
-            }
-        }
-
-        Card {
+        buttons.data: StackView {
             anchors.fill: parent
             anchors.margins: 16
-            anchors.bottomMargin: 4
-            clip: true
 
-            StackView {
-                id: sideBarStack
-                anchors.fill: parent
-                anchors.margins: 16
-                anchors.bottomMargin: 0
-                initialItem: InfoItem {}
+            property Item selectedItem: sideBarItem.activeAlarms.length > 0 ? clearAlarms : mainMenu
+            onSelectedItemChanged: replace(null, selectedItem)
+            initialItem: Item {}
+
+            property list<Item> items: [
+                MainMenu {
+                    id: mainMenu
+                    onCurrentPageChanged: menuDrawer.open = false
+                },
+                RowLayout {
+                    id: clearAlarms
+                    spacing: 16
+
+                    CDelayButton {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        text: 'Accept'
+                        delay: 850
+
+                        onClicked: {
+                            sideBarItem.muteAlarms()
+                        }
+                        onReleased: {
+                            if (!wasActivated)
+                                return
+
+                            sideBarItem.muteAlarms()
+                            sideBarItem.activeAlarms.clear()
+
+                            wasActivated = false
+                        }
+                    }
+                    MainMenuButton {
+                        Material.background: Theme.accentDark
+                        Layout.preferredWidth: parent.width / 3
+                        Layout.fillHeight: true
+                        text: Icons.sleep
+                    }
+                }
+            ]
+        }
+        sidebar.data: SideBarItem {
+            id: sideBarItem
+            anchors.fill: parent
+            anchors.margins: 16
+
+            onAlarmAdded: {
+                mainMenu.currentPage = null
+                menuDrawer.open = true
             }
+        }
+        content.data: Clock {
+            anchors.fill: parent
         }
     }
 
     MainScreenNotifications {
-        opacity: drawer.open || sideBar.open || mainMenu.currentPage !== null ? 0 : 1
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 16
+
+        opacity: mainMenu.currentPage !== null ? 0 : 1
+        width: parent.width / 2 - 2 * anchors.margins
 
         Behavior on opacity {
             PropertyAnimation {}
         }
-
-        width: parent.width / 3
-        x: 16
-        y: 16
     }
 
     PageLoader {
@@ -187,44 +162,39 @@ Item {
         }
     }
 
-    Component {
-        id: alarmNotification
-        AlarmNotification {}
-    }
-
-    Connections {
-        target: AlarmService
-        function onAlarmTriggered(alarm) {
-            const properties = {
-                "alarm": alarm
-            }
-
-            sideBarStack.push(alarmNotification, properties)
-            mainMenu.currentPage = null
-            drawer.open = false
-        }
-    }
-
-    Loader {
-        id: keyboard
+    Keyboard {
         anchors.fill: parent
-        source: 'qrc:/Clock/Controls/Keyboard.qml'
-        z: 1
     }
 
     Connections {
         target: EventFilter
         function onUserInactive() {
             mainMenu.currentPage = null
-            drawer.open = false
+
+            if (!sideBarItem.hasActiveAlarms)
+                menuDrawer.open = false
         }
     }
 
-    FPSOverlay {
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: 16
-        width: 300
-        height: 80
+    PerformancePopup {
+        dialog.visible: SpaceTheme.fpsVisible
+        Component.onCompleted: {
+            Style.fontFamily = FontService.family
+        }
+    }
+
+    property int clickCounter: 0
+    onClickCounterChanged: {
+        console.log(clickCounter)
+        clickResetTimer.restart()
+
+        if (clickCounter === 8)
+            spaceScene.startRocket()
+    }
+
+    Timer {
+        id: clickResetTimer
+        onTriggered: clickCounter = 0
+        interval: 1000
     }
 }

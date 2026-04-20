@@ -21,7 +21,6 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: 16
         spacing: 16
 
         MainMenuButton {
