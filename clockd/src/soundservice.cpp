@@ -3,17 +3,20 @@
 #include <QDirIterator>
 #include <QLoggingCategory>
 
+#include "pathservice.h"
+
 namespace {
 Q_LOGGING_CATEGORY(self, "sounds")
 }
 
 SoundService::SoundService(QObject *parent)
     : QObject(parent)
-    , _soundsFolder{"./usr/share/clockd/sounds"}
+    , _soundsFolder{PathService::shareFilePath("sounds/ringtones")}
     , _volume{"Sounds/Volume", 1.}
 {
-    _clickEffect.setSource(QUrl{"qrc:/sounds/click.wav"});
     this->refresh();
+
+    qCInfo(self) << this << _soundsFolder.absolutePath();
 }
 
 QStringList SoundService::availableSounds()
@@ -24,11 +27,6 @@ QStringList SoundService::availableSounds()
 QString SoundService::displayName(const QString &soundPath)
 {
     return QFileInfo{soundPath}.baseName();
-}
-
-void SoundService::playClickEffect()
-{
-    _clickEffect.play();
 }
 
 void SoundService::refresh()

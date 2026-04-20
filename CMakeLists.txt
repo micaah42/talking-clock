@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(talking-clock VERSION 0.5)
 
 add_subdirectory(clockd/)
+add_subdirectory(qchatbot/)
 add_subdirectory(qlighting/)
 add_subdirectory(qopenremote/)
 add_subdirectory(qperformance/)

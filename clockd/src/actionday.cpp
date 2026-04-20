@@ -14,7 +14,7 @@ using namespace Orm;
 
 ActionDayService::ActionDayService(QObject *parent)
     : QObject{parent}
-    , _file{QString("%1/action-days.csv").arg(PathService::AppHome)}
+    , _file{PathService::configFilePath("action-days.csv")}
 {
     connect(&_timer, &QTimer::timeout, this, &ActionDayService::onTimeout);
     _timer.setTimerType(Qt::CoarseTimer);

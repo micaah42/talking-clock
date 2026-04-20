@@ -28,7 +28,6 @@ public:
 
 public slots:
     QString displayName(const QString &soundPath);
-    void playClickEffect();
     void refresh();
 
 signals:
@@ -39,7 +38,6 @@ private:
     QDir _soundsFolder;
     QStringList _sounds;
     Setting<double> _volume;
-    QSoundEffect _clickEffect;
 };
 
 #endif // SOUNDSERVICE_H
