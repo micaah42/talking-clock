@@ -56,8 +56,8 @@ Section {
 
     CSwitch {
         labelText: 'FPS Counter Visible'
-        onCheckedChanged: SpaceTheme.fpsVisible = checked
-        checked: SpaceTheme.fpsVisible
+        onCheckedChanged: PerformanceConfiguration.visible = checked
+        checked: PerformanceConfiguration.visible
     }
     CSwitch {
         labelText: 'Space Ship'

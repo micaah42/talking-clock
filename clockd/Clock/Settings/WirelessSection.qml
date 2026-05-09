@@ -200,7 +200,7 @@ Section {
 
             Icon {
                 Layout.alignment: Qt.AlignHCenter
-                font.pixelSize: Theme.fontSizeXXLarge
+                font.pixelSize: Theme.fontSizeXXXLarge
                 text: Icons.wifi_off
             }
             CLabel {

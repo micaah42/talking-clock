@@ -54,6 +54,5 @@ Slider {
         id: label
         anchors.centerIn: parent
         font.pixelSize: 24
-        topPadding: 4
     }
 }

@@ -15,7 +15,7 @@ Item {
 
     Item {
         id: sidebarContainer
-        height: root.height - drawerHeight
+        height: root.height
         width: sidebarWidth
 
         x: open ? 0 : -width
@@ -29,18 +29,19 @@ Item {
             id: sidebar
             anchors.fill: parent
             anchors.margins: 16
-            anchors.bottomMargin: -4
+            anchors.rightMargin: 0
             clip: true
         }
     }
 
     Item {
         id: buttons
-        height: drawerHeight
-        width: root.width
+        height: width / 3
+        width: root.width - sidebarWidth
 
         anchors.bottom: root.bottom
         anchors.bottomMargin: root.open ? 0 : -height
+        anchors.right: parent.right
 
         Behavior on anchors.bottomMargin {
             PropertyAnimation {

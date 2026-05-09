@@ -119,29 +119,12 @@ ColumnLayout {
         target: AlarmService
 
         function onAlarmTriggered(_alarm) {
-            console.log('shoopw', _alarm)
-            timer.alarm = _alarm
-            timer.start()
-        }
-    }
-
-    Timer {
-        id: timer
-        property Alarm alarm
-
-        interval: 10 * 1000
-        onTriggered: {
-            console.log('shoopw22', timer.alarm)
-            if (!timer.alarm)
-                return
-
-            const prompt = promptBuilder.create([], [timer.alarm], ActionDayService.days, PromptBuilderSettings.mood)
+            const prompt = promptBuilder.create([], [_alarm], ActionDayService.days, PromptBuilderSettings.mood)
             addPrompt(prompt)
         }
     }
 
     Connections {
-
         target: TimeService
 
         function onNowHoursChanged() {

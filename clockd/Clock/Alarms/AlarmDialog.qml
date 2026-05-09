@@ -86,18 +86,18 @@ Popup {
                 Layout.fillWidth: true
                 spacing: 8
 
-                TimeField {
+                TimeEdit {
                     id: timeField
                     Layout.preferredWidth: parent.width / 2
                     Layout.fillHeight: true
                     onTimeChanged: alarm.time = time
                     mode: {
                         if (alarm.time.getSeconds() !== 0)
-                            mode = TimeField.S1
+                            mode = TimeEdit.S1
                         else if (alarm.time.getMinutes() % 5 !== 0)
-                            mode = TimeField.M1
+                            mode = TimeEdit.M1
                         else
-                            mode = TimeField.M5
+                            mode = TimeEdit.M5
                     }
 
                     time: alarm.time
@@ -174,6 +174,7 @@ Popup {
                         onReleased: {
                             if (wasActivated) {
                                 AlarmService.removeAlarm(alarm)
+                                alarm.destroy(1000)
                                 close()
                             }
                         }

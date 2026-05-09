@@ -21,8 +21,8 @@ Button {
     Material.background: Theme.primaryDark
     implicitWidth: 0
 
+    font.pixelSize: Theme.fontSizeXXXLarge
     font.family: Icons.fontFamily
-    font.pixelSize: 72
     bottomInset: 0
     topInset: 0
 }

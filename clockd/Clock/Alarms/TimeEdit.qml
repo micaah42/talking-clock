@@ -18,11 +18,11 @@ CFrame {
         S1
     }
 
-    property int mode: TimeField.Mode.M5
+    property int mode: TimeEdit.Mode.M5
     property int visibleItems: 9
-    readonly property int secondStepSize: mode === TimeField.S1 ? 1 : 60
-    readonly property int minuteStepSize: mode === TimeField.M5 ? 5 : 1
-    readonly property bool seconds: mode === TimeField.S1
+    readonly property int secondStepSize: mode === TimeEdit.S1 ? 1 : 60
+    readonly property int minuteStepSize: mode === TimeEdit.M5 ? 5 : 1
+    readonly property bool seconds: mode === TimeEdit.S1
 
     property date time
 
@@ -132,35 +132,35 @@ CFrame {
             Layout.alignment: Qt.AlignTop
             CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: mode === TimeField.M5 ? 1 : Theme.o56
+                opacity: mode === TimeEdit.M5 ? 1 : Theme.o56
                 font.pixelSize: 24
                 text: '5m'
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: mode = TimeField.M5
+                    onClicked: mode = TimeEdit.M5
                 }
             }
             CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: mode === TimeField.M1 ? 1 : Theme.o56
+                opacity: mode === TimeEdit.M1 ? 1 : Theme.o56
                 font.pixelSize: 24
                 text: '1m'
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: mode = TimeField.M1
+                    onClicked: mode = TimeEdit.M1
                 }
             }
             CLabel {
                 Layout.alignment: Qt.AlignRight
-                opacity: mode === TimeField.S1 ? 1 : Theme.o56
+                opacity: mode === TimeEdit.S1 ? 1 : Theme.o56
                 font.pixelSize: 24
                 text: '1s'
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: mode = TimeField.S1
+                    onClicked: mode = TimeEdit.S1
                 }
             }
         }

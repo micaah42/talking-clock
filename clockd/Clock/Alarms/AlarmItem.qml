@@ -80,15 +80,19 @@ ItemDelegate {
                         height: row.height
                         highlighted: true
 
+                        visible: wasHeld || width
+                        font.family: Icons.fontFamily
+                        text: Icons._delete
+
                         width: wasHeld ? weekdays.width : 0
                         Behavior on width {
                             PropertyAnimation {}
                         }
 
-                        onClicked: AlarmService.removeAlarm(alarm)
-                        font.family: Icons.fontFamily
-                        text: Icons._delete
-                        visible: wasHeld || width
+                        onClicked: {
+                            AlarmService.removeAlarm(alarm)
+                            alarm.destroy(1000)
+                        }
                     }
                 }
             }

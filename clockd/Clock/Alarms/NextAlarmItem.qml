@@ -81,7 +81,7 @@ ColumnLayout {
                 labelText: 'No Alarms scheduled : )'
                 valueText: 'Sleep tight!'
             }
-            SleepyBed {
+            SleepyBedItem {
                 Layout.alignment: Qt.AlignRight
             }
         }
@@ -91,6 +91,10 @@ ColumnLayout {
         id: nextAlarmLoader
         Layout.fillWidth: true
         sourceComponent: alarm ? nextAlarmComponent : noNextAlarmComponent
+    }
+
+    Item {
+        Layout.fillHeight: true
     }
 
     AlarmDialog {

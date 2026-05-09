@@ -51,6 +51,7 @@ QtObject {
     readonly property real fontSizeLarge: 26
     readonly property real fontSizeXLarge: 36
     readonly property real fontSizeXXLarge: 48
+    readonly property real fontSizeXXXLarge: 60
 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

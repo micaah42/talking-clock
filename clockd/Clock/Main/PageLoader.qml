@@ -32,7 +32,6 @@ Item {
 
             CButton {
                 height: parent.height
-                width: parent.width / 8
                 onClicked: closed()
                 bottomInset: 0
                 topInset: 0

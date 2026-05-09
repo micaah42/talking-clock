@@ -17,7 +17,7 @@ Item {
             Layout.margins: 8
             clip: true
 
-            NextAlarm {
+            NextAlarmItem {
                 alarm: AlarmService.nextAlarm
                 width: parent.width
             }

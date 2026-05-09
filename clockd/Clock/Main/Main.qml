@@ -102,9 +102,12 @@ Item {
                             if (!wasActivated)
                                 return
 
-                            sideBarItem.muteAlarms()
-                            sideBarItem.activeAlarms.clear()
+                            for (let alarm of ActiveAlarmListModel.asList) {
+                                if (alarm.singleShot)
+                                    alarm.destroy(1000)
+                            }
 
+                            ActiveAlarmListModel.clear()
                             wasActivated = false
                         }
                     }
@@ -112,7 +115,13 @@ Item {
                         Material.background: Theme.accentDark
                         Layout.preferredWidth: parent.width / 3
                         Layout.fillHeight: true
-                        text: Icons.sleep
+                        contentItem: SleepyBedItem {}
+                        onClicked: {
+                            for (let alarm of ActiveAlarmListModel.asList) {
+                                alarm.snooze(5)
+                            }
+                            ActiveAlarmListModel.clear()
+                        }
                     }
                 }
             ]
@@ -121,6 +130,7 @@ Item {
             id: sideBarItem
             anchors.fill: parent
             anchors.margins: 16
+            anchors.topMargin: 8
 
             onAlarmAdded: {
                 mainMenu.currentPage = null
@@ -177,9 +187,21 @@ Item {
     }
 
     PerformancePopup {
-        dialog.visible: SpaceTheme.fpsVisible
+        id: popup
+        dialog.onAboutToShow: {
+            x = PerformanceConfiguration.x
+            y = PerformanceConfiguration.y
+        }
+
+        onDragStopped: {
+            PerformanceConfiguration.x = x
+            PerformanceConfiguration.y = y
+            console.log(x, y)
+        }
+
         Component.onCompleted: {
             Style.fontFamily = FontService.family
+            popup.dialog.visible = Qt.binding(() => PerformanceConfiguration.visible)
         }
     }
 
@@ -196,5 +218,10 @@ Item {
         id: clickResetTimer
         onTriggered: clickCounter = 0
         interval: 1000
+    }
+
+    Recorder {
+        id: recorder
+        monitor: FPSMonitor
     }
 }

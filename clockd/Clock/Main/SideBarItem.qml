@@ -1,121 +1,157 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Controls.Material
 
 import Clock
+
 import "../Style"
-import "../Controls"
 import "../Alarms"
+import "../Controls"
 
-Flickable {
-    readonly property AlarmListModel activeAlarms: AlarmListModel {}
+ColumnLayout {
+    id: root
+    readonly property AlarmListModel activeAlarms: ActiveAlarmListModel
     readonly property bool hasActiveAlarms: activeAlarms.length > 0
-    contentHeight: column.implicitHeight + 16
+
     signal alarmAdded(var alarm)
+    spacing: 8
 
-    Component.onCompleted: console.log('@', SideBarConfiguration, SideBarConfiguration.availableSideBarSections)
     function muteAlarms() {
-        for (var i = 0; i < repeater.count; i++) {
-            const item = repeater.itemAt(i)
-            if (item && item.muteAlarm)
-                item.muteAlarm()
-        }
+        muteAlarmsRequested()
     }
 
-    ColumnLayout {
-        id: column
-        width: parent.width
-        spacing: 16
+    signal muteAlarmsRequested
 
-        CFrame {
-            Layout.fillWidth: true
-            backgroundColor: Theme.accentDark
-            visible: activeAlarms.length > 0
+    component SideBarPage: QtObject {
+        property Component page
+        property string title
+        property string name
+        property string icon
+    }
 
-            contentItem: ColumnLayout {
-                width: parent.width
-                spacing: 16
+    readonly property list<SideBarPage> pages: [
+        SideBarPage {
+            title: "Weather"
+            icon: WeatherService.currentSymbol
+            page: WeatherItem {}
+        },
+        SideBarPage {
+            title: "Action Days"
+            icon: Icons.calendar_month
+            page: ActionDayItem {}
+        },
+        SideBarPage {
+            title: "Upcoming Alarms"
+            icon: Icons.alarm
 
-                CLabel {
-                    Layout.bottomMargin: 4
-                    size: CLabel.XLarge
-                    text: `Active Alarms:`
-                }
-
-                Repeater {
-                    id: repeater
-                    model: activeAlarms
-                    delegate: AlarmNotification {
-                        Layout.fillWidth: true
-                        alarm: modelData
-                    }
-                }
-            }
-            background.data: BackgroundItem {
-                text: Icons.notifications_active
-            }
-        }
-
-        CFrame {
-            Layout.fillWidth: true
-            visible: chatbotItem.ollamaService.isAvailable
-            clip: true
-
-            contentItem: ChatbotItem {
-                id: chatbotItem
-                width: parent.width
-            }
-            background.data: BackgroundItem {
-                text: Icons.robot_2
-            }
-        }
-
-        CFrame {
-            Layout.fillWidth: true
-            clip: true
-
-            contentItem: WeatherItem {
-                id: weatherItem
-                width: parent.width
-            }
-            background.data: BackgroundItem {
-                text: weatherItem.currentSymbol
-            }
-        }
-
-        CFrame {
-            Layout.fillWidth: true
-            clip: true
-            contentItem: ActionDayItem {
-                implicitHeight: contentHeight
-                width: parent.width
-            }
-
-            background.data: BackgroundItem {
-                text: Icons.calendar_month
-            }
-        }
-
-        CFrame {
-            Layout.fillWidth: true
-            clip: true
-            contentItem: NextAlarm {
+            page: NextAlarmItem {
                 alarm: AlarmService.nextAlarm
-                width: parent.width
             }
+        },
+        SideBarPage {
+            title: "Chatbot"
+            icon: Icons.robot_2
+            page: Flickable {
+                contentHeight: item.implicitHeight
+                ChatbotItem {
+                    id: item
+                    width: parent.width
+                }
+            }
+        }
+    ]
 
-            background.data: BackgroundItem {
-                text: Icons.alarm
+    SideBarPage {
+        id: activeAlarmsPage
+        title: "Active Alarms!"
+        icon: Icons.alarm
+        page: ActiveAlarmsItem {
+            id: activeAlarmsItem
+
+            Connections {
+                target: root
+                function onMuteAlarmsRequested() {
+                    activeAlarmsItem.muteAlarms()
+                }
             }
         }
     }
 
-    component BackgroundItem: Icon {
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.margins: -implicitHeight / 4
-        font.pixelSize: parent.width
-        opacity: Theme.o11
+    RowLayout {
+        TabBar {
+            id: tabBar
+            Layout.leftMargin: 8
+            Material.background: 'transparent'
+            Component.onCompleted: currentIndex = 2
+
+            Repeater {
+                id: tabButtonRepeater
+                model: pages
+                delegate: TabButton {
+                    id: d
+                    Material.background: 'transparent'
+                    implicitWidth: height
+                    font.pixelSize: Theme.fontSizeXLarge
+                    font.family: Icons.fontFamily
+                    text: modelData.icon
+                }
+            }
+        }
+
+        Item {
+            Layout.fillWidth: true
+        }
+
+        Icon {
+            visible: root.hasActiveAlarms
+            Layout.preferredWidth: height
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeXLarge
+            text: Icons.priority_high
+
+            background: Rectangle {
+                color: Theme.accent
+                radius: height / 2
+            }
+        }
+    }
+
+    Component {
+        id: pageLoader
+        FeedbackLoader {
+            id: loader
+
+            property string icon
+
+            Icon {
+                anchors.bottom: loader.bottom
+                anchors.right: loader.right
+                anchors.margins: -implicitHeight / 4
+                font.pixelSize: loader.width
+                opacity: Theme.o11
+                text: loader.icon
+            }
+        }
+    }
+
+    CFrame {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+
+        StackView {
+            anchors.fill: parent
+            property SideBarPage currentPage: hasActiveAlarms ? activeAlarmsPage : pages[tabBar.currentIndex]
+
+            onCurrentPageChanged: {
+                const properties = {
+                    "sourceComponent": currentPage.page,
+                    "icon": currentPage.icon
+                }
+
+                replace(currentItem, pageLoader, properties)
+            }
+        }
     }
 
     Connections {
