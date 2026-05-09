@@ -9,13 +9,12 @@
 #include "lightmode.h"
 #include "qlighting_global.h"
 
-class Lighting;
+class LightingBase;
 
 class StaticLight : public LightMode
 {
     Q_OBJECT
     QML_ELEMENT
-    QML_SINGLETON
 
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
@@ -23,7 +22,6 @@ public:
     explicit StaticLight();
 
     virtual void render(double delta, QList<Pixel *> &pixels) override;
-    virtual QString name() const override;
     virtual Type type() const override;
 
     QColor color() const;

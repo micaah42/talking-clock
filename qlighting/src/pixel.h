@@ -16,7 +16,7 @@ class Pixel : public QObject
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged FINAL)
 
 public:
-    explicit Pixel(ws2811_led_t &ws2811_led, QObject *parent = nullptr);
+    explicit Pixel(QObject *parent = nullptr);
 
     int white() const;
     // void setWhite(int v);
@@ -30,7 +30,7 @@ public:
     int red() const;
     // void setRed(int v);
 
-    const ws2811_led_t &ws2811_led() const;
+    // const ws2811_led_t &ws2811_led() const;
 
     QColor color() const;
     void setColor(const QColor &newColor);
@@ -43,9 +43,11 @@ protected:
     void _setGreen(int v);
     void _setBlue(int v);
     void _setRed(int v);
+    bool _dirty = false;
+    friend class LightingWs2811;
 
 private:
-    ws2811_led_t &_ws2811_led;
+    // ws2811_led_t &_ws2811_led;
     QColor _color;
 };
 

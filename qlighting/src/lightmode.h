@@ -8,7 +8,7 @@
 
 #include "listmodel.h"
 
-class Lighting;
+class LightingBase;
 class Pixel;
 
 class LightMode : public QObject
@@ -17,7 +17,7 @@ class LightMode : public QObject
     QML_ELEMENT
     QML_UNCREATABLE("Abstract")
 
-    Q_PROPERTY(QString name READ name CONSTANT FINAL)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged FINAL)
     Q_PROPERTY(Type type READ type CONSTANT FINAL)
 
 public:
@@ -39,12 +39,15 @@ public:
     virtual void render(double delta, QList<Pixel *> &pixels) = 0;
     void update();
 
-    virtual QString name() const = 0;
     virtual Type type() const = 0;
     virtual void reset() {};
 
+    QString name() const;
+    void setName(const QString &newName);
+
 signals:
     void updateReqested(QPrivateSignal);
+    void nameChanged();
 
 private:
     bool _active;

@@ -68,3 +68,17 @@ void AnimatedLightMode::setSpeed(double newSpeed)
     _speed = newSpeed;
     emit speedChanged();
 }
+
+void LightMode::setName(const QString &newName)
+{
+    if (_name == newName)
+        return;
+
+    _name = newName;
+    emit nameChanged();
+}
+
+QString LightMode::name() const
+{
+    return _name;
+}

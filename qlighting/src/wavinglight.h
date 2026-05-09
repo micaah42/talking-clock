@@ -13,7 +13,6 @@ class WavingLight : public AnimatedLightMode
 {
     Q_OBJECT
     QML_ELEMENT
-    QML_SINGLETON
 
     Q_PROPERTY(int length READ length WRITE setLength NOTIFY lengthChanged FINAL)
     Q_PROPERTY(QColor a READ a WRITE setA NOTIFY aChanged FINAL)
@@ -22,7 +21,6 @@ class WavingLight : public AnimatedLightMode
 public:
     explicit WavingLight();
 
-    virtual QString name() const override;
     virtual Type type() const override;
 
     int length() const;

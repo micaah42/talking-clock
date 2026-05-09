@@ -12,11 +12,6 @@ void StaticLight::render(double delta, QList<Pixel *> &pixels)
         pixel->setColor(_color);
 }
 
-QString StaticLight::name() const
-{
-    return "Static";
-}
-
 LightMode::Type StaticLight::type() const
 {
     return TypeStatic;

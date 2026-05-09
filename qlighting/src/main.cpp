@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
     parser.parse(app.arguments());
 
     StaticLight staticLight;
-    Lighting lighting{parser.value("leds").toInt()};
+    LightingWs2811 lighting;
+    lighting.setLeds(parser.value("leds").toInt());
     lighting.setMode(&staticLight);
 
     bool ok;

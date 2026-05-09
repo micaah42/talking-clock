@@ -14,22 +14,22 @@
 
 struct ws2811_t;
 
-class QLIGHTING_EXPORT Lighting : public QObject
+class QLIGHTING_EXPORT LightingBase : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
-    QML_SINGLETON
 
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged FINAL)
     Q_PROPERTY(double brightness READ brightness WRITE setBrightness NOTIFY brightnessChanged FINAL)
     Q_PROPERTY(LightMode *mode READ mode WRITE setMode NOTIFY modeChanged FINAL)
-    Q_PROPERTY(int modeIndex READ modeIndex WRITE setModeIndex NOTIFY modeIndexChanged FINAL)
-
     Q_PROPERTY(int interval READ interval WRITE setInterval NOTIFY intervalChanged FINAL)
 
+    Q_PROPERTY(int gpioPin READ gpioPin WRITE setGpioPin NOTIFY gpioPinChanged FINAL)
+    Q_PROPERTY(int leds READ leds WRITE setLeds NOTIFY ledsChanged FINAL)
+
 public:
-    explicit Lighting(int ledCount = 300, QObject *parent = nullptr);
-    ~Lighting();
+    explicit LightingBase(QObject *parent = nullptr);
+    ~LightingBase();
 
     LightMode *mode() const;
     void setMode(LightMode *newMode);
@@ -41,15 +41,16 @@ public:
     void setEnabled(bool newEnabled);
 
     const QList<Pixel *> &pixels() const;
-    void renderPixels();
+    virtual void renderPixels();
 
     void setInterval(int newInterval);
     int interval() const;
 
-    int modeIndex() const;
-    void setModeIndex(int newModeIndex);
+    int leds() const;
+    void setLeds(int newLeds);
 
-public slots:
+    int gpioPin() const;
+    void setGpioPin(int newGpioPin);
 
 signals:
     void modeChanged();
@@ -57,22 +58,54 @@ signals:
     void enabledChanged();
     void intervalChanged();
     void rendered();
-    void modeIndexChanged();
+
+    void ledsChanged();
+    void gpioPinChanged();
 
 protected:
+    void setPixels(const QList<Pixel *> &newPixels);
     void onTimeout();
 
 private:
-    std::unique_ptr<ws2811_t> _ws2811;
-    Setting<double> _brightness;
-    Setting<bool> _enabled;
+    double _brightness;
+    bool _enabled;
     QList<Pixel *> _pixels;
 
     QTimer _timer;
     QElapsedTimer _elapsedTimer;
 
     LightMode *_mode;
-    Setting<int> _modeIndex;
+    int _leds;
+    int _gpioPin;
+};
+
+class QLIGHTING_EXPORT LightingWs2811 : public LightingBase
+{
+    Q_OBJECT
+    QML_ELEMENT
+
+public:
+    explicit LightingWs2811(QObject *parent = nullptr);
+    ~LightingWs2811();
+
+    virtual void renderPixels() override;
+
+public slots:
+    bool initialize();
+
+private:
+    uint8_t renderBrightness();
+    std::unique_ptr<ws2811_t> _ws2811;
+};
+
+class QLIGHTING_EXPORT Lighting : public LightingWs2811
+{
+    Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+
+public:
+    explicit Lighting(QObject *parent = nullptr);
 };
 
 #endif // LIGHTING_H

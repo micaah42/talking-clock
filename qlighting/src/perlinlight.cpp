@@ -66,14 +66,9 @@ float perlin_noise_1d_sum(float x)
 
 PerlinLight::PerlinLight(QObject *parent)
     : AnimatedLightMode{}
+    , _gradient{nullptr}
     , _stretch{0.025}
 {
-    _gradient.setColorAt(0.2, Qt::red);
-    _gradient.setColorAt(0.5, Qt::yellow);
-    _gradient.setColorAt(0.8, Qt::blue);
-    _gradient.updateGradientStops();
-    _gradient.updateColors();
-
     this->setSpeed(0.5);
 }
 
@@ -81,19 +76,17 @@ void PerlinLight::animatedRender(QList<Pixel *> &pixels)
 {
     qCDebug(self) << "rendering...";
 
+    if (!_gradient)
+        return;
+
     for (int i = 0; i < pixels.size(); i++) {
         double y = 0;
         y += perlin_noise_1d(this->t() + pixels.size() - i * _stretch);
         y += perlin_noise_1d(this->t() + i * _stretch);
         y /= 2.;
 
-        pixels[i]->setColor(_gradient.colorAt(y));
+        pixels[i]->setColor(_gradient->colorAt(y));
     }
-}
-
-QString PerlinLight::name() const
-{
-    return "Perlin";
 }
 
 LightMode::Type PerlinLight::type() const
@@ -117,5 +110,13 @@ void PerlinLight::setStretch(double newStretch)
 
 LightingGradient *PerlinLight::gradient()
 {
-    return &_gradient;
+    return _gradient;
+}
+
+void PerlinLight::setGradient(LightingGradient *newGradient)
+{
+    if (_gradient == newGradient)
+        return;
+    _gradient = newGradient;
+    emit gradientChanged();
 }

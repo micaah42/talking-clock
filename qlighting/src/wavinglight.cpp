@@ -75,7 +75,3 @@ void WavingLight::animatedRender(QList<Pixel *> &_pixels)
     }
 }
 
-QString WavingLight::name() const
-{
-    return "Waving";
-};

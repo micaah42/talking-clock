@@ -31,8 +31,8 @@ set(SOURCES
     src/lightingdisplay.cpp
     src/lightingdisplay.h
 
-    src/monorotation.cpp
-    src/monorotation.h
+    src/monorotationlight.cpp
+    src/monorotationlight.h
 
     src/systemlight.cpp
     src/systemlight.h

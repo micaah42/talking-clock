@@ -10,36 +10,38 @@ Q_LOGGING_CATEGORY(self, "lightingdisplay", QtInfoMsg)
 }
 
 LightingDisplay::LightingDisplay()
-    : m_lighting{nullptr}
+    : _lighting{nullptr}
     , _spacing{0}
     , _radius{0}
 {}
 
-Lighting *LightingDisplay::lighting() const
+LightingBase *LightingDisplay::lighting() const
 {
-    return m_lighting;
+    return _lighting;
 }
 
-void LightingDisplay::setLighting(Lighting *newLighting)
+void LightingDisplay::setLighting(LightingBase *newLighting)
 {
-    if (m_lighting == newLighting)
+    if (_lighting == newLighting)
         return;
 
-    if (m_lighting)
-        disconnect(m_lighting, &Lighting::rendered, this, &LightingDisplay::triggerUpdate);
+    if (_lighting)
+        disconnect(_lighting, &LightingBase::rendered, this, &LightingDisplay::triggerUpdate);
 
-    m_lighting = newLighting;
+    _lighting = newLighting;
     emit lightingChanged();
 
-    if (m_lighting)
-        connect(m_lighting, &Lighting::rendered, this, &LightingDisplay::triggerUpdate);
+    if (_lighting) {
+        connect(_lighting, &LightingBase::rendered, this, &LightingDisplay::triggerUpdate);
+        this->update();
+    }
 }
 
 void LightingDisplay::paint(QPainter *painter)
 {
     qCDebug(self) << "drawing pixels...";
 
-    auto &pixels = m_lighting->pixels();
+    auto &pixels = _lighting->pixels();
 
     const double pixelSize = pixels.size();
     double pixelWidth = (this->width() - (pixelSize - 1) * _spacing) / pixelSize;

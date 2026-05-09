@@ -1,8 +1,7 @@
 #include "pixel.h"
 
-Pixel::Pixel(ws2811_led_t &ws2811_led, QObject *parent)
+Pixel::Pixel(QObject *parent)
     : QObject{parent}
-    , _ws2811_led{ws2811_led}
 {}
 
 #if 0
@@ -33,7 +32,6 @@ void Pixel::setBlue(int v)
     _color.setBlue(v);
     emit colorChanged();
 }
-#endif
 
 void Pixel::_setWhite(int v)
 {
@@ -58,11 +56,7 @@ void Pixel::_setBlue(int v)
     _ws2811_led = _ws2811_led & 0xFFFFFF00;
     _ws2811_led = _ws2811_led | v;
 }
-
-const ws2811_led_t &Pixel::ws2811_led() const
-{
-    return _ws2811_led;
-}
+#endif
 
 QColor Pixel::color() const
 {
@@ -74,17 +68,19 @@ void Pixel::setColor(const QColor &newColor)
     if (_color == newColor)
         return;
 
-    auto r = newColor.red();
-    auto g = newColor.green();
-    auto b = newColor.blue();
-    auto min = std::min({r, g, b});
-    auto f = 255. / (255. - min + 1.);
+    // auto r = newColor.red();
+    // auto g = newColor.green();
+    // auto b = newColor.blue();
+    // auto min = std::min({r, g, b});
+    // auto f = 255. / (255. - min + 1.);
+    // double f = 1.;
 
-    this->_setGreen(f * (g - min));
-    this->_setBlue(f * (b - min));
-    this->_setRed(f * (r - min));
-    this->_setWhite(min);
+    // this->_setGreen(f * (g - min));
+    // this->_setBlue(f * (b - min));
+    // this->_setRed(f * (r - min));
+    // this->_setWhite(min);
 
+    _dirty = true;
     _color = newColor;
     emit colorChanged();
 }

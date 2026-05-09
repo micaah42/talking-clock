@@ -11,16 +11,11 @@ import "../Controls"
 import "../Lighting"
 
 ColumnLayout {
-    readonly property var modeScreens: [//@
-        [staticLightComponent, StaticLight], //@
-        [wavingLightComponent, WavingLight], //@
-        [monoRotationLightComponent, MonoRotationLight], //@
-        [perlinLightComponent, PerlinLight] //@
-    ]
+    spacing: 8
 
     RowLayout {
-        Layout.minimumHeight: 56
-        Layout.maximumHeight: 56
+        Layout.minimumHeight: 48
+        Layout.maximumHeight: 48
         spacing: 8
 
         CButton {
@@ -55,30 +50,31 @@ ColumnLayout {
         }
     }
 
-    RowLayout {
-        id: buttonsRow
-        enabled: Lighting.enabled
+    // RowLayout {
+    //     id: buttonsRow
+    //     enabled: Lighting.enabled
 
-        Repeater {
-            model: LightingInit.modes
-            delegate: CButton {
-                property LightMode lightMode: modelData
-                Layout.fillWidth: true
-                implicitWidth: 0
+    //     Repeater {
+    //         model: LightingInit.modes
+    //         delegate: CButton {
+    //             property LightMode lightMode: modelData
+    //             Layout.fillWidth: true
+    //             implicitWidth: 0
 
-                onClicked: LightingInit.mode = lightMode
-                checked: lightMode === LightingInit.mode
-                highlighted: checked
-                text: lightMode.name
-            }
-        }
-    }
-
+    //             onClicked: LightingInit.mode = lightMode
+    //             checked: lightMode === LightingInit.mode
+    //             highlighted: checked
+    //             text: lightMode.name
+    //         }
+    //     }
+    // }
     Rectangle {
-        Layout.preferredHeight: 32
+        Layout.preferredHeight: 24
         Layout.fillWidth: true
-        color: 'black'
-        radius: 7
+        border.color: Material.foreground
+        color: Material.background
+        radius: 12
+        clip: true
 
         Item {
             id: sourceItem
@@ -86,11 +82,11 @@ ColumnLayout {
 
             LightingDisplay {
                 anchors.centerIn: parent
-                width: parent.width - 16
+                width: sourceItem.width - 16
                 lighting: Lighting
-                radius: 0.5
-                spacing: 1
-                height: 2
+                spacing: 0
+                height: 4
+                radius: 1
             }
         }
 
@@ -98,9 +94,9 @@ ColumnLayout {
             source: sourceItem
             anchors.fill: sourceItem
             blurEnabled: true
-            blurMultiplier: 8
-            blurMax: 64
-            blur: 1.0
+            blurMultiplier: 32
+            blurMax: 16
+            blur: 4.
         }
     }
 
@@ -112,6 +108,113 @@ ColumnLayout {
             anchors.fill: parent
             topPadding: 24
 
+            GridLayout {
+                anchors.fill: parent
+                columnSpacing: 16
+                rowSpacing: 16
+                columns: 4
+
+                CButton {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    implicitWidth: 0
+                    font.family: Icons.fontFamily
+                    text: Icons.chevron_left
+                    flat: true
+                }
+                Item {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+
+                    CLabel {
+                        anchors.centerIn: parent
+                        size: CLabel.Large
+                        text: 'Hey'
+                    }
+                }
+                CButton {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    implicitWidth: 0
+                    font.family: Icons.fontFamily
+                    text: Icons.chevron_right
+                    flat: true
+                }
+
+                Repeater {
+                    model: LightingInit.modes
+                    delegate: CButton {
+                        id: d
+                        property LightMode mode: modelData
+                        property bool wasHeld: false
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        implicitWidth: 0
+                        text: mode.name
+                        bottomInset: 0
+                        topInset: 0
+
+                        onPressAndHold: {
+                            wasHeld = true
+                            tt.open()
+                        }
+                        onCanceled: wasHeld = false
+                        onClicked: {
+                            if (wasHeld) {
+                                wasHeld = false
+                                return
+                            }
+                            LightingInit.mode = mode
+                        }
+
+                        ToolTip {
+                            id: tt
+                            width: 256
+
+                            contentItem: GridLayout {
+                                columns: 2
+
+                                LightingDisplay {
+                                    Layout.fillWidth: true
+                                    Layout.columnSpan: 2
+                                    implicitHeight: 16
+                                    lighting: LightingBase {
+                                        enabled: true
+                                        mode: d.mode
+                                    }
+                                }
+
+                                Repeater {
+                                    function isSimpleType(value) {
+                                        const type = typeof value
+                                        if (type === 'string')
+                                            return true
+                                        if (type === 'number')
+                                            return true
+
+                                        return false
+                                    }
+
+                                    model: {
+                                        var entries = Object.entries(d.mode)
+                                        entries = entries.filter(x => x[0] !== 'objectName')
+                                        entries = entries.filter(x => isSimpleType(x[1]))
+                                        return entries.reduce((acc, x) => acc.concat(x), [])
+                                    }
+                                    delegate: CLabel {
+                                        Layout.fillWidth: true
+                                        text: modelData
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            /*
             StackView {
                 id: stackView
                 anchors.fill: parent
@@ -136,6 +239,7 @@ ColumnLayout {
                 onCompChanged: replace(null, comp)
                 initialItem: Item {}
             }
+            */
         }
     }
 
@@ -174,6 +278,8 @@ ColumnLayout {
                 property LightingGradient gradient: LightingGradient {
                     preset: index || 0
                 }
+
+                onClicked: MonoRotationLight.gradient = gradient
                 text: gradient.presetName(modelData)
 
                 Rectangle {
