@@ -16,6 +16,11 @@ if(TC_SYSTEMD)
     add_subdirectory(systemd/)
 endif()
 
+include(CTest)
+if (BUILD_TESTING)
+    add_subdirectory(tests/)
+endif()
+
 set(CPACK_SOURCE_IGNORE_FILES  \\.git/ build/ ".*~$")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY NO)
 set(CPACK_VERBATIM_VARIABLES YES)
