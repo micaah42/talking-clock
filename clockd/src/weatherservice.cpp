@@ -1,6 +1,5 @@
 #include "weatherservice.h"
 
-// #include <QGeoPositionInfoSource>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -8,6 +7,10 @@
 #include <QUrlQuery>
 
 #include <QLoggingCategory>
+#include <algorithm>
+#include <limits>
+
+#include "weatherreportsample.h"
 
 namespace {
 Q_LOGGING_CATEGORY(self, "weather")
@@ -99,6 +102,121 @@ static const QHash<QString, QString> YR2MaterialSymbol{
     {"heavysnow", "snowing"},
 };
 
+QString WeatherService::yr2gm(const QString &yr)
+{
+    auto it = YR2MaterialSymbol.find(yr);
+
+    if (it != YR2MaterialSymbol.end()) {
+        return *it;
+    }
+
+    qCCritical(self) << "no symbol found for" << yr;
+    return "";
+}
+
+QVariantMap WeatherService::summarizeWeatherSamples(const QList<WeatherReportSample *> &samples)
+{
+    QVariantMap summary;
+    summary["sampleCount"] = samples.count();
+
+    if (samples.isEmpty()) {
+        return summary;
+    }
+
+    QHash<QString, int> symbolCounts;
+    QString mostCommonSymbol;
+    int mostCommonSymbolCount = 0;
+
+    double minTemperature = std::numeric_limits<double>::infinity();
+    double maxTemperature = -std::numeric_limits<double>::infinity();
+    double minPressure = std::numeric_limits<double>::infinity();
+    double maxPressure = -std::numeric_limits<double>::infinity();
+    double minHumidity = std::numeric_limits<double>::infinity();
+    double maxHumidity = -std::numeric_limits<double>::infinity();
+    double minWindSpeed = std::numeric_limits<double>::infinity();
+    double maxWindSpeed = -std::numeric_limits<double>::infinity();
+    double minCloudAreaFraction = std::numeric_limits<double>::infinity();
+    double maxCloudAreaFraction = -std::numeric_limits<double>::infinity();
+    double totalFuturePrecipitationAmount = 0.0;
+
+    const auto countSymbolAndPrecipitation = [&](WeatherReportNextHours *next) {
+        if (!next) {
+            return;
+        }
+
+        const QString symbol = next->symbolCode();
+        if (!symbol.isEmpty()) {
+            const int count = ++symbolCounts[symbol];
+            if (count > mostCommonSymbolCount) {
+                mostCommonSymbolCount = count;
+                mostCommonSymbol = symbol;
+            }
+        }
+
+        totalFuturePrecipitationAmount += next->precipitationAmount();
+    };
+
+    for (auto sample : samples) {
+        if (!sample) {
+            continue;
+        }
+
+        const double temperature = sample->airTemperature();
+        minTemperature = std::min(minTemperature, temperature);
+        maxTemperature = std::max(maxTemperature, temperature);
+
+        const double pressure = sample->airPressureAtSeaLevel();
+        minPressure = std::min(minPressure, pressure);
+        maxPressure = std::max(maxPressure, pressure);
+
+        const double humidity = sample->relativeHumidity();
+        minHumidity = std::min(minHumidity, humidity);
+        maxHumidity = std::max(maxHumidity, humidity);
+
+        const double windSpeed = sample->windSpeed();
+        minWindSpeed = std::min(minWindSpeed, windSpeed);
+        maxWindSpeed = std::max(maxWindSpeed, windSpeed);
+
+        const double cloudAreaFraction = sample->cloudAreaFraction();
+        minCloudAreaFraction = std::min(minCloudAreaFraction, cloudAreaFraction);
+        maxCloudAreaFraction = std::max(maxCloudAreaFraction, cloudAreaFraction);
+
+        countSymbolAndPrecipitation(sample->next1Hours());
+        countSymbolAndPrecipitation(sample->next6Hours());
+        countSymbolAndPrecipitation(sample->next12Hours());
+    }
+
+    summary["commonSymbol"] = mostCommonSymbol;
+    summary["commonSymbolCount"] = mostCommonSymbolCount;
+    summary["minTemperature"] = minTemperature;
+    summary["maxTemperature"] = maxTemperature;
+    summary["minPressure"] = minPressure;
+    summary["maxPressure"] = maxPressure;
+    summary["minHumidity"] = minHumidity;
+    summary["maxHumidity"] = maxHumidity;
+    summary["minWindSpeed"] = minWindSpeed;
+    summary["maxWindSpeed"] = maxWindSpeed;
+    summary["minCloudAreaFraction"] = minCloudAreaFraction;
+    summary["maxCloudAreaFraction"] = maxCloudAreaFraction;
+    summary["totalFuturePrecipitationAmount"] = totalFuturePrecipitationAmount;
+
+    return summary;
+}
+
+WeatherReportNextHours *WeatherService::parseNextHours(const QJsonObject &nextHoursObject, QObject *parent)
+{
+    if (nextHoursObject.isEmpty()) {
+        return nullptr;
+    }
+
+    auto nextHours = new WeatherReportNextHours{parent};
+    auto summary = nextHoursObject["summary"].toObject();
+    nextHours->setSymbolCode(yr2gm(summary["symbol_code"].toString()));
+    auto details = nextHoursObject["details"].toObject();
+    nextHours->setPrecipitationAmount(details["precipitation_amount"].toDouble());
+    return nextHours;
+};
+
 void WeatherService::fetchWeatherData()
 {
     if (_status == Fetching) {
@@ -130,6 +248,88 @@ void WeatherService::fetchWeatherData()
 
         auto obj = QJsonDocument::fromJson(reply->readAll()).object();
 
+        const auto timeseries = obj["properties"].toObject()["timeseries"].toArray();
+        QList<WeatherReportSample *> samples;
+        QMap<QDateTime, WeatherReportSample *> sampleMap;
+        QList<WeatherReportSample *> todaySamples;
+        QList<WeatherReportSample *> tomorrowSamples;
+        samples.reserve(timeseries.size());
+
+        for (auto const element : timeseries) {
+            auto dataPoint = element.toObject();
+            auto data = dataPoint["data"].toObject();
+            auto instant = data["instant"].toObject();
+            auto instantDetails = instant["details"].toObject();
+
+            auto newWeatherReportSample = new WeatherReportSample{this};
+
+            newWeatherReportSample->setAirPressureAtSeaLevel(instantDetails["air_pressure_at_sea_level"].toDouble());
+            newWeatherReportSample->setAirTemperature(instantDetails["air_temperature"].toDouble());
+            newWeatherReportSample->setCloudAreaFraction(instantDetails["cloud_area_fraction"].toDouble());
+            newWeatherReportSample->setRelativeHumidity(instantDetails["relative_humidity"].toDouble());
+            newWeatherReportSample->setWindFromDirection(instantDetails["wind_from_direction"].toDouble());
+            newWeatherReportSample->setWindSpeed(instantDetails["wind_speed"].toDouble());
+
+            auto timeString = dataPoint["time"].toString();
+            newWeatherReportSample->setTimeString(timeString);
+            newWeatherReportSample->setTime(QDateTime::fromString(timeString, "yyyy-MM-ddThh:mm:ssZ"));
+
+            auto next1Hours = parseNextHours(data["next_1_hours"].toObject(), this);
+            if (next1Hours) {
+                newWeatherReportSample->setNext1Hours(next1Hours);
+            }
+            auto next6Hours = parseNextHours(data["next_6_hours"].toObject(), this);
+            if (next6Hours) {
+                newWeatherReportSample->setNext6Hours(next6Hours);
+            }
+            auto next12Hours = parseNextHours(data["next_12_hours"].toObject(), this);
+            if (next12Hours) {
+                newWeatherReportSample->setNext12Hours(next12Hours);
+            }
+
+            sampleMap.insert(newWeatherReportSample->time(), newWeatherReportSample);
+            samples.append(newWeatherReportSample);
+        }
+
+        std::sort(samples.begin(), samples.end(), [](WeatherReportSample *a, WeatherReportSample *b) {
+            return a->time() < b->time();
+        });
+
+        const auto currentDate = QDate::currentDate();
+        const auto tomorrowDate = currentDate.addDays(1);
+        for (auto sample : samples) {
+            if (sample->time().date() == currentDate)
+                todaySamples.append(sample);
+            else if (sample->time().date() == tomorrowDate)
+                tomorrowSamples.append(sample);
+        }
+
+        auto now = QDateTime::currentDateTime();
+        QDateTime currentTime{now.date(), {now.time().hour(), 0}};
+        QDateTime tomorrowTime{tomorrowDate, {8, 0}};
+
+        auto currentIt = sampleMap.find(currentTime);
+        if (currentIt != sampleMap.end())
+            this->setCurrent(*currentIt);
+        else {
+            qCWarning(self) << "no report timestamp found for" << currentTime;
+            this->setCurrent(nullptr);
+        }
+
+        auto tomorrowIt = sampleMap.find(tomorrowTime);
+        if (tomorrowIt != sampleMap.end())
+            this->setTomorrow(*tomorrowIt);
+        else {
+            qCWarning(self) << "no report timestamp found for" << tomorrowTime;
+            this->setTomorrow(nullptr);
+        }
+
+        this->setSamples(samples);
+        this->setTodaySamples(todaySamples);
+        this->setTomorrowSamples(tomorrowSamples);
+
+        // old
+
         auto data0 =          //@
             obj["properties"] //@
                 .toObject()["timeseries"]
@@ -147,14 +347,7 @@ void WeatherService::fetchWeatherData()
                 .toObject()["symbol_code"]
                 .toString();
 
-        auto it = YR2MaterialSymbol.find(currentCode);
-
-        if (it != YR2MaterialSymbol.end()) {
-            this->setCurrentSymbol(*it);
-        } else {
-            qCCritical(self) << "no symbol found for" << currentCode;
-            this->setCurrentSymbol("");
-        }
+        this->setCurrentSymbol(yr2gm(currentCode));
 
         // precipitation amount
 
@@ -389,4 +582,69 @@ void WeatherService::setPrecipitationAmount(double newPrecipitationAmount)
 
     _precipitationAmount = newPrecipitationAmount;
     emit precipitationAmountChanged();
+}
+
+WeatherReportSample *WeatherService::current() const
+{
+    return _current;
+}
+
+void WeatherService::setCurrent(WeatherReportSample *newCurrent)
+{
+    if (_current == newCurrent)
+        return;
+    _current = newCurrent;
+    emit currentChanged();
+}
+
+WeatherReportSample *WeatherService::tomorrow() const
+{
+    return _tomorrow;
+}
+
+void WeatherService::setTomorrow(WeatherReportSample *newTomorrow)
+{
+    if (_tomorrow == newTomorrow)
+        return;
+    _tomorrow = newTomorrow;
+    emit tomorrowChanged();
+}
+
+QList<WeatherReportSample *> WeatherService::samples() const
+{
+    return _samples;
+}
+
+void WeatherService::setSamples(const QList<WeatherReportSample *> &newSamples)
+{
+    if (_samples == newSamples)
+        return;
+    _samples = newSamples;
+    emit samplesChanged();
+}
+
+QList<WeatherReportSample *> WeatherService::todaySamples() const
+{
+    return _todaySamples;
+}
+
+void WeatherService::setTodaySamples(const QList<WeatherReportSample *> &newTodaySamples)
+{
+    if (_todaySamples == newTodaySamples)
+        return;
+    _todaySamples = newTodaySamples;
+    emit todaySamplesChanged();
+}
+
+QList<WeatherReportSample *> WeatherService::tomorrowSamples() const
+{
+    return _tomorrowSamples;
+}
+
+void WeatherService::setTomorrowSamples(const QList<WeatherReportSample *> &newTomorrowSamples)
+{
+    if (_tomorrowSamples == newTomorrowSamples)
+        return;
+    _tomorrowSamples = newTomorrowSamples;
+    emit tomorrowSamplesChanged();
 }

@@ -46,6 +46,17 @@ public:
     {}
 };
 
+class ActiveAlarmListModel : public AlarmListModel
+{
+    Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+public:
+    explicit ActiveAlarmListModel(QObject *parent = nullptr)
+        : AlarmListModel(parent)
+    {}
+};
+
 class AlarmService : public QObject
 {
     Q_OBJECT

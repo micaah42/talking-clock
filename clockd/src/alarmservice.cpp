@@ -200,8 +200,6 @@ void AlarmService::removeAlarm(Alarm *alarm)
     _alarmModel.removeAll(alarm);
     _alarmQueue.remove(alarm->nextTimeout(), alarm);
     _timeoutMap.remove(alarm);
-
-    alarm->deleteLater();
 }
 
 void AlarmService::removeAllAlarms()

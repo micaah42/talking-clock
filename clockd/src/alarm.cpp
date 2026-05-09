@@ -154,6 +154,7 @@ void Alarm::findNextTimeout(QDateTime after)
 void Alarm::snooze(int minutes)
 {
     auto newTimeout = QDateTime::currentDateTime().addSecs(60 * minutes);
+    this->setActivated(true);
     this->setNextTimeout(newTimeout);
 }
 
