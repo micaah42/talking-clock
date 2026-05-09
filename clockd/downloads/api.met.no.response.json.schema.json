@@ -1,0 +1,235 @@
+{
+   "$schema" : "http://json-schema.org/schema#",
+   "properties" : {
+      "geometry" : {
+         "properties" : {
+            "coordinates" : {
+               "items" : {
+                  "type" : "number"
+               },
+               "type" : "array"
+            },
+            "type" : {
+               "type" : "string"
+            }
+         },
+         "required" : [
+            "coordinates",
+            "type"
+         ],
+         "type" : "object"
+      },
+      "properties" : {
+         "properties" : {
+            "meta" : {
+               "properties" : {
+                  "units" : {
+                     "properties" : {
+                        "air_pressure_at_sea_level" : {
+                           "type" : "string"
+                        },
+                        "air_temperature" : {
+                           "type" : "string"
+                        },
+                        "cloud_area_fraction" : {
+                           "type" : "string"
+                        },
+                        "precipitation_amount" : {
+                           "type" : "string"
+                        },
+                        "relative_humidity" : {
+                           "type" : "string"
+                        },
+                        "wind_from_direction" : {
+                           "type" : "string"
+                        },
+                        "wind_speed" : {
+                           "type" : "string"
+                        }
+                     },
+                     "required" : [
+                        "air_pressure_at_sea_level",
+                        "air_temperature",
+                        "cloud_area_fraction",
+                        "precipitation_amount",
+                        "relative_humidity",
+                        "wind_from_direction",
+                        "wind_speed"
+                     ],
+                     "type" : "object"
+                  },
+                  "updated_at" : {
+                     "type" : "string"
+                  }
+               },
+               "required" : [
+                  "units",
+                  "updated_at"
+               ],
+               "type" : "object"
+            },
+            "timeseries" : {
+               "items" : {
+                  "properties" : {
+                     "data" : {
+                        "properties" : {
+                           "instant" : {
+                              "properties" : {
+                                 "details" : {
+                                    "properties" : {
+                                       "air_pressure_at_sea_level" : {
+                                          "type" : "number"
+                                       },
+                                       "air_temperature" : {
+                                          "type" : "number"
+                                       },
+                                       "cloud_area_fraction" : {
+                                          "type" : "number"
+                                       },
+                                       "relative_humidity" : {
+                                          "type" : "number"
+                                       },
+                                       "wind_from_direction" : {
+                                          "type" : "number"
+                                       },
+                                       "wind_speed" : {
+                                          "type" : "number"
+                                       }
+                                    },
+                                    "required" : [
+                                       "air_pressure_at_sea_level",
+                                       "air_temperature",
+                                       "cloud_area_fraction",
+                                       "relative_humidity",
+                                       "wind_from_direction",
+                                       "wind_speed"
+                                    ],
+                                    "type" : "object"
+                                 }
+                              },
+                              "required" : [
+                                 "details"
+                              ],
+                              "type" : "object"
+                           },
+                           "next_12_hours" : {
+                              "properties" : {
+                                 "details" : {
+                                    "type" : "object"
+                                 },
+                                 "summary" : {
+                                    "properties" : {
+                                       "symbol_code" : {
+                                          "type" : "string"
+                                       }
+                                    },
+                                    "required" : [
+                                       "symbol_code"
+                                    ],
+                                    "type" : "object"
+                                 }
+                              },
+                              "required" : [
+                                 "details",
+                                 "summary"
+                              ],
+                              "type" : "object"
+                           },
+                           "next_1_hours" : {
+                              "properties" : {
+                                 "details" : {
+                                    "properties" : {
+                                       "precipitation_amount" : {
+                                          "type" : "integer"
+                                       }
+                                    },
+                                    "required" : [
+                                       "precipitation_amount"
+                                    ],
+                                    "type" : "object"
+                                 },
+                                 "summary" : {
+                                    "properties" : {
+                                       "symbol_code" : {
+                                          "type" : "string"
+                                       }
+                                    },
+                                    "required" : [
+                                       "symbol_code"
+                                    ],
+                                    "type" : "object"
+                                 }
+                              },
+                              "required" : [
+                                 "details",
+                                 "summary"
+                              ],
+                              "type" : "object"
+                           },
+                           "next_6_hours" : {
+                              "properties" : {
+                                 "details" : {
+                                    "properties" : {
+                                       "precipitation_amount" : {
+                                          "type" : "number"
+                                       }
+                                    },
+                                    "required" : [
+                                       "precipitation_amount"
+                                    ],
+                                    "type" : "object"
+                                 },
+                                 "summary" : {
+                                    "properties" : {
+                                       "symbol_code" : {
+                                          "type" : "string"
+                                       }
+                                    },
+                                    "required" : [
+                                       "symbol_code"
+                                    ],
+                                    "type" : "object"
+                                 }
+                              },
+                              "required" : [
+                                 "details",
+                                 "summary"
+                              ],
+                              "type" : "object"
+                           }
+                        },
+                        "required" : [
+                           "instant"
+                        ],
+                        "type" : "object"
+                     },
+                     "time" : {
+                        "type" : "string"
+                     }
+                  },
+                  "required" : [
+                     "data",
+                     "time"
+                  ],
+                  "type" : "object"
+               },
+               "type" : "array"
+            }
+         },
+         "required" : [
+            "meta",
+            "timeseries"
+         ],
+         "type" : "object"
+      },
+      "type" : {
+         "type" : "string"
+      }
+   },
+   "required" : [
+      "geometry",
+      "properties",
+      "type"
+   ],
+   "type" : "object"
+}
