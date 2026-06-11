@@ -1,17 +1,59 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls.Material
 import QtQuick.Effects
+import QtQuick.Controls.Material
+import QtQuick.Window
 
 import Clock
 import QLighting
 
 import "../Style"
 import "../Controls"
+import "../Components"
 import "../Lighting"
 
 ColumnLayout {
+    id: root
     spacing: 8
+    property Window window: Window.window
+
+    Item {
+        Layout.preferredHeight: 24
+        Layout.fillWidth: true
+        //  border.color: Material.foreground
+        //  color: Material.background
+        //  radius: 12
+        clip: true
+
+        Item {
+            id: sourceItem
+            anchors.fill: parent
+
+            // layer.enabled: true
+            LightingDisplay {
+                anchors.centerIn: parent
+                width: sourceItem.width
+                height: 24
+                spacing: 1
+                radius: 1
+
+                lighting: LightingBase {
+                    mode: Lighting.mode
+                    enabled: true
+                    leds: 48
+                }
+            }
+        }
+
+        MultiEffect {
+            source: sourceItem
+            anchors.fill: sourceItem
+            blurEnabled: true
+            blurMultiplier: 32
+            blurMax: 16
+            blur: 4.
+        }
+    }
 
     RowLayout {
         Layout.minimumHeight: 48
@@ -68,38 +110,6 @@ ColumnLayout {
     //         }
     //     }
     // }
-    Rectangle {
-        Layout.preferredHeight: 24
-        Layout.fillWidth: true
-        border.color: Material.foreground
-        color: Material.background
-        radius: 12
-        clip: true
-
-        Item {
-            id: sourceItem
-            anchors.fill: parent
-
-            LightingDisplay {
-                anchors.centerIn: parent
-                width: sourceItem.width - 16
-                lighting: Lighting
-                spacing: 0
-                height: 4
-                radius: 1
-            }
-        }
-
-        MultiEffect {
-            source: sourceItem
-            anchors.fill: sourceItem
-            blurEnabled: true
-            blurMultiplier: 32
-            blurMax: 16
-            blur: 4.
-        }
-    }
-
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -109,273 +119,116 @@ ColumnLayout {
             topPadding: 24
 
             GridLayout {
+                id: grid
+
+                readonly property int modesPerPage: (rows - 1) * columns
+                readonly property int modePages: Math.ceil(LightingInit.modes.length / modesPerPage)
+                property int index: 0
                 anchors.fill: parent
                 columnSpacing: 16
                 rowSpacing: 16
-                columns: 4
+                columns: 3
+                rows: 4
 
                 CButton {
-                    Layout.fillHeight: true
                     Layout.fillWidth: true
                     implicitWidth: 0
+                    onClicked: grid.index = (grid.index - 1 + grid.modePages) % grid.modePages
                     font.family: Icons.fontFamily
                     text: Icons.chevron_left
-                    flat: true
+                    // flat: true
                 }
                 Item {
-                    Layout.fillHeight: true
                     Layout.fillWidth: true
-                    Layout.columnSpan: 2
 
                     CLabel {
                         anchors.centerIn: parent
-                        size: CLabel.Large
-                        text: 'Hey'
+                        text: `${grid.index + 1} / ${grid.modePages}`
+                        size: CLabel.XLarge
                     }
                 }
                 CButton {
-                    Layout.fillHeight: true
                     Layout.fillWidth: true
                     implicitWidth: 0
+                    onClicked: grid.index = (grid.index + 1) % grid.modePages
                     font.family: Icons.fontFamily
                     text: Icons.chevron_right
-                    flat: true
+                    // flat: true
                 }
 
                 Repeater {
-                    model: LightingInit.modes
-                    delegate: CButton {
+                    model: {
+                        const start = grid.index * grid.modesPerPage
+                        const modes = LightingInit.modes.slice(start, start + grid.modesPerPage)
+                        const filler = Array(grid.modesPerPage - modes.length).fill(null)
+                        return modes.concat(filler)
+                    }
+
+                    delegate: Loader {
                         id: d
+
                         property LightMode mode: modelData
-                        property bool wasHeld: false
+
                         Layout.fillHeight: true
                         Layout.fillWidth: true
-                        implicitWidth: 0
-                        text: mode.name
-                        bottomInset: 0
-                        topInset: 0
+                        active: mode
 
-                        onPressAndHold: {
-                            wasHeld = true
-                            tt.open()
-                        }
-                        onCanceled: wasHeld = false
-                        onClicked: {
-                            if (wasHeld) {
-                                wasHeld = false
-                                return
+                        sourceComponent: Item {
+                            LightingDisplay {
+                                anchors.fill: parent
+                                spacing: -3
+                                radius: 3
+
+                                lighting: LightingBase {
+                                    mode: d.mode
+                                    enabled: true
+                                    leds: 32
+                                }
                             }
-                            LightingInit.mode = mode
-                        }
 
-                        ToolTip {
-                            id: tt
-                            width: 256
+                            CButton {
+                                property bool wasHeld: false
 
-                            contentItem: GridLayout {
-                                columns: 2
+                                anchors.fill: parent
+                                text: d.mode.name
+                                bottomInset: 0
+                                topInset: 0
+                                flat: true
 
-                                LightingDisplay {
-                                    Layout.fillWidth: true
-                                    Layout.columnSpan: 2
-                                    implicitHeight: 16
-                                    lighting: LightingBase {
-                                        enabled: true
-                                        mode: d.mode
-                                    }
+                                onPressAndHold: {
+                                    wasHeld = true
+                                    tt.open()
                                 }
 
-                                Repeater {
-                                    function isSimpleType(value) {
-                                        const type = typeof value
-                                        if (type === 'string')
-                                            return true
-                                        if (type === 'number')
-                                            return true
+                                onCanceled: wasHeld = false
 
-                                        return false
+                                onClicked: {
+                                    if (wasHeld) {
+                                        wasHeld = false
+                                        return
                                     }
+                                    LightingInit.mode = d.mode
+                                }
+                            }
 
-                                    model: {
-                                        var entries = Object.entries(d.mode)
-                                        entries = entries.filter(x => x[0] !== 'objectName')
-                                        entries = entries.filter(x => isSimpleType(x[1]))
-                                        return entries.reduce((acc, x) => acc.concat(x), [])
-                                    }
-                                    delegate: CLabel {
-                                        Layout.fillWidth: true
-                                        text: modelData
-                                    }
+                            Dialog {
+                                id: tt
+
+                                anchors.centerIn: parent
+                                parent: root.window?.contentItem || null
+                                height: parent.height - 64
+                                width: parent.width - 64
+                                modal: true
+
+                                title: d.mode.name
+
+                                contentItem: LightingModeEdit {
+                                    lightMode: d.mode
                                 }
                             }
                         }
                     }
                 }
-            }
-
-
-            /*
-            StackView {
-                id: stackView
-                anchors.fill: parent
-                anchors.margins: 8
-                enabled: Lighting.enabled
-                spacing: 32
-                clip: true
-
-                property Component comp: {
-                    switch (LightingInit.mode.type) {
-                    case LightMode.TypeStatic:
-                        return staticLightComponent
-                    case LightMode.TypeWaving:
-                        return wavingLightComponent
-                    case LightMode.TypeMonoRotation:
-                        return monoRotationLightComponent
-                    case LightMode.TypePerlin:
-                        return perlinLightComponent
-                    }
-                }
-
-                onCompChanged: replace(null, comp)
-                initialItem: Item {}
-            }
-            */
-        }
-    }
-
-    Dialog {
-        id: customColorPopup
-        anchors.centerIn: Overlay.overlay
-        height: 7 * window.height / 8
-        width: 7 * window.width / 8
-
-        title: 'Custom Color'
-        contentItem: ColorPicker {
-            id: customColorPicker
-            // onCurrentColorChanged: valueEdited(currentColor)
-            value: value
-        }
-    }
-
-    Component {
-        id: staticLightComponent
-        Item {
-            ColorPicker {
-                anchors.fill: parent
-                onCurrentColorChanged: StaticLight.color = currentColor
-                value: StaticLight.color
-            }
-        }
-    }
-    Component {
-        id: monoRotationLightComponent
-        ListView {
-            model: LightingGradient.NumPresets
-            delegate: ItemDelegate {
-                id: d
-                width: ListView.view.width
-
-                property LightingGradient gradient: LightingGradient {
-                    preset: index || 0
-                }
-
-                onClicked: MonoRotationLight.gradient = gradient
-                text: gradient.presetName(modelData)
-
-                Rectangle {
-                    width: parent.width
-                    height: 16
-
-                    Component {
-                        id: gradientStop
-                        GradientStop {}
-                    }
-
-                    gradient: Gradient {
-                        property LightingGradient lightingGradient: d.gradient
-                        orientation: Gradient.Horizontal
-
-                        stops: {
-                            const model = Array.from(lightingGradient.gradientStops)
-                            return model.map(stop => gradientStop.createObject(this, stop))
-                        }
-                    }
-                }
-            }
-        }
-    }
-    Component {
-        id: wavingLightComponent
-        RowLayout {
-            spacing: 16
-
-            ColorPicker {
-                onCurrentColorChanged: WavingLight.a = currentColor
-                value: WavingLight.a
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-            }
-            ColorPicker {
-                onCurrentColorChanged: WavingLight.b = currentColor
-                value: WavingLight.b
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-            }
-            ColumnLayout {
-                CSpinBox {
-                    labelText: 'Length'
-                    spinBox.onValueChanged: WavingLight.length = spinBox.value
-                    spinBox.value: WavingLight.length
-                    spinBox.stepSize: 5
-                    spinBox.from: 5
-                    spinBox.to: 250
-                }
-                CSpinBox {
-                    labelText: 'Speed'
-                    spinBox.onValueChanged: WavingLight.speed = spinBox.value / 10
-                    spinBox.value: 10 * WavingLight.speed
-                    spinBox.from: 1
-                    spinBox.to: 25
-                }
-                Item {
-                    Layout.fillHeight: true
-                }
-            }
-        }
-    }
-    Component {
-        id: perlinLightComponent
-        ColumnLayout {
-            Slider {
-                Layout.fillWidth: true
-
-                property var values: [0.1, 0.25, 0.5, 1, 1.5, 2]
-                onValueChanged: PerlinLight.speed = values[value]
-                value: Math.max(0, values.indexOf(PerlinLight.speed))
-
-                snapMode: Slider.SnapAlways
-                to: values.length - 1
-                stepSize: 1
-                from: 0
-            }
-            Slider {
-                Layout.fillWidth: true
-
-                property var values: [0.001, 0.0025, 0.005, 0.0075, 0.01, 0.025, 0.05]
-                onValueChanged: PerlinLight.stretch = values[value]
-                value: Math.max(0, values.indexOf(PerlinLight.stretch))
-
-                snapMode: Slider.SnapAlways
-                to: values.length - 1
-                stepSize: 1
-                from: 0
-            }
-
-            CGradientEdit {
-                Layout.preferredHeight: 80
-                Layout.fillWidth: true
-
-                lightingGradient: PerlinLight.gradient
             }
         }
     }

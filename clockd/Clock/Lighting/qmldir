@@ -1,2 +1,8 @@
 module Clock.Lighting
 LightingPage 1.0 LightingPage.qml
+StaticLightEdit 1.0 StaticLightEdit.qml
+WavingLightEdit 1.0 WavingLightEdit.qml
+MonoRotationLightEdit 1.0 MonoRotationLightEdit.qml
+PerlinLightEdit 1.0 PerlinLightEdit.qml
+PerlinLight2DEdit 1.0 PerlinLight2DEdit.qml
+LightingModeEdit 1.0 LightingModeEdit.qml
