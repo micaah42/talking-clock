@@ -967,6 +967,7 @@ WARN_LOGFILE           =
 
 INPUT                  = clockd \
                          qperformance \
+                         qchatbot \
                          qlighting \
                          docker \
                          tools \
