@@ -70,6 +70,12 @@ void MonoRotationLight::setWaveForm(const WaveForm &newWaveForm)
         case Sawtooth:
             _waveFormFct = [](double t) { return std::fmod(t / 10., 1.0); };
             break;
+        case Square:
+            _waveFormFct = [](double t) {
+                double x = std::fmod(t / 10., 1.0);
+                return x < 0.5 ? 0 : 1;
+            };
+            break;
         default:
             qCCritical(self) << "invalid waveform" << _waveForm;
         }

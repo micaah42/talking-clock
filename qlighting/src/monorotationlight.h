@@ -18,7 +18,7 @@ class QLIGHTING_EXPORT MonoRotationLight : public AnimatedLightMode
     Q_PROPERTY(WaveForm waveForm READ waveForm WRITE setWaveForm NOTIFY waveFormChanged FINAL)
 
 public:
-    enum WaveForm { Invalid, Sine, Sawtooth, Triangle };
+    enum WaveForm { Invalid, Sine, Sawtooth, Triangle, Square };
     Q_ENUM(WaveForm);
 
     explicit MonoRotationLight();

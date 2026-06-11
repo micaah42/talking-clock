@@ -28,6 +28,7 @@ LightingGradient::LightingGradient(QObject *parent)
 
 QColor LightingGradient::colorAt(double value)
 {
+    value = std::clamp(value, 0., 1.);
     int i = value * (double) (_resolution - 1.);
     return _colors[i];
 }

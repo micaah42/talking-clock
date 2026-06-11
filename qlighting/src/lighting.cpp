@@ -157,12 +157,14 @@ void LightingBase::setLeds(int newLeds)
 
     _leds = newLeds;
     emit ledsChanged();
+
+    this->initialize();
 }
 
 LightingWs2811::LightingWs2811(QObject *parent)
     : LightingBase{parent}
 {
-    this->initialize();
+    LightingWs2811::initialize();
 }
 
 LightingWs2811::~LightingWs2811()
@@ -224,8 +226,25 @@ void LightingWs2811::renderPixels()
     emit rendered();
 }
 
+bool LightingBase::initialize()
+{
+    auto oldPixels = this->pixels();
+
+    QList<Pixel *> pixels;
+    pixels.reserve(this->leds());
+
+    for (int i = 0; i < this->leds(); i++)
+        pixels.append(new Pixel{this});
+
+    this->setPixels(pixels);
+    qDeleteAll(oldPixels);
+
+    return true;
+}
 bool LightingWs2811::initialize()
 {
+    LightingBase::initialize();
+
     _ws2811.reset(new ws2811_t{
         .freq = WS2811_TARGET_FREQ,
         .dmanum = DMA,
@@ -244,16 +263,6 @@ bool LightingWs2811::initialize()
                .brightness = 0,
            }},
     });
-
-    auto oldPixels = this->pixels();
-    QList<Pixel *> pixels;
-    pixels.reserve(this->leds());
-
-    for (int i = 0; i < this->leds(); i++)
-        pixels.append(new Pixel{this});
-
-    this->setPixels(pixels);
-    qDeleteAll(oldPixels);
 
     auto ret = ws2811_init(_ws2811.get());
     if (ret != WS2811_SUCCESS) {

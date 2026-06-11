@@ -42,6 +42,9 @@ set(SOURCES
 
     src/perlinlight.cpp
     src/perlinlight.h
+
+    src/perlinlight2d.cpp
+    src/perlinlight2d.h
 )
 
 add_library(${PROJECT_NAME} STATIC)

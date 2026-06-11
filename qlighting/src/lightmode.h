@@ -26,6 +26,7 @@ public:
         TypeWaving,
         TypeMonoRotation,
         TypePerlin,
+        TypePerlin2D,
     };
     Q_ENUM(Type);
 

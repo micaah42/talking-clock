@@ -52,6 +52,9 @@ public:
     int gpioPin() const;
     void setGpioPin(int newGpioPin);
 
+public slots:
+    virtual bool initialize();
+
 signals:
     void modeChanged();
     void brightnessChanged();
@@ -91,7 +94,7 @@ public:
     virtual void renderPixels() override;
 
 public slots:
-    bool initialize();
+    virtual bool initialize() override;
 
 private:
     uint8_t renderBrightness();
