@@ -19,11 +19,40 @@ if(FETCHCONTENT_FULLY_DISCONNECTED)
 else()
     include(FetchContent)
 
+    # TinyORM
     FetchContent_Declare(TinyORM
         GIT_REPOSITORY https://github.com/silverqx/TinyORM.git
         GIT_TAG v0.38.1
     )
     FetchContent_MakeAvailable(TinyORM)
+
+
+    option(TC_BUILD_REMOTE_TESTING "Build remote testing server/bot and tests." OFF)
+
+    if (TC_BUILD_REMOTE_TESTING)
+        # AnyRPC for Spix
+        set(BUILD_WITH_LOG4CPLUS OFF CACHE BOOL "" FORCE)
+        set(BUILD_PROTOCOL_MESSAGEPACK OFF CACHE BOOL "" FORCE)
+        set(BUILD_PROTOCOL_JSON OFF CACHE BOOL "" FORCE)
+
+        FetchContent_Declare(AnyRPC
+            GIT_REPOSITORY https://github.com/sgieseking/anyrpc.git
+            GIT_TAG v1.0.2
+        )
+        FetchContent_MakeAvailable(AnyRPC)
+
+        # set(AnyRPC_INCLUDE_DIRS ${anyrpc_SOURCE_DIR}/include CACHE PATH "")
+        # set(AnyRPC_LIBRARIES AnyRPC CACHE PATH "")
+        # add_subdirectory(${anyrpc_SOURCE_DIR})
+
+        # Spix
+        FetchContent_Declare(spix
+            GIT_REPOSITORY https://github.com/faaxm/spix.git
+            GIT_TAG v0.14
+        )
+        FetchContent_MakeAvailable(spix)
+        find_package(Spix REQUIRED)
+    endif()
 endif()
 
 
@@ -56,7 +85,7 @@ set(QML_SINGLETONS
     Clock/Style/MaterialSounds.qml
     Clock/Lighting/LightingInit.qml
     Clock/Settings/SideBarConfiguration.qml
-    Clock/ChatBot/TextToSpeechService.qml
+    Clock/ChatBot/ChatBotInit.qml
 )
 
 set_source_files_properties(${QML_SINGLETONS}
@@ -84,12 +113,16 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Multimedia
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Sql
+
+    $<$<BOOL:${TC_BUILD_REMOTE_TESTING}>:Spix::QtQuick>
+
     networkmanager-qmlplugin
     qperformanceplugin
     qlightingplugin
     qchatbotplugin
-    qopenremote
+    qchatbot
 
+    qopenremote
     TinyOrm
     ws2811
 )

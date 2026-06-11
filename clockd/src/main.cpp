@@ -13,8 +13,6 @@
 #include <orm/db.hpp>
 
 #include "loghandling.h"
-#include "pathservice.h"
-#include "weatherservice.h"
 
 void printApplicationStart();
 
@@ -49,8 +47,6 @@ int main(int argc, char *argv[])
         {"check_database_exists", true},
         {"prefix", ""},
     });
-
-    WeatherService weather;
 
     QQmlApplicationEngine engine;
     engine.addImportPath(":/");
