@@ -41,7 +41,9 @@ ColumnLayout {
             }
         }
     }
+
     Item {
+        Layout.fillHeight: true
         Layout.fillWidth: true
     }
 }

@@ -99,7 +99,7 @@ ColumnLayout {
 
     AlarmDialog {
         id: editDialog
-        parent: root.window.contentItem
+        parent: root.window?.contentItem || null
         alarm: root.alarm
     }
 }

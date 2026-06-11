@@ -12,17 +12,6 @@ import "../Components"
 ColumnLayout {
     id: root
 
-    property LLamaCppService ollamaService: LLamaCppService
-    property PromptBuilder promptBuilder: PromptBuilder
-
-    function addPrompt(prompt) {
-        const element = {
-            "prompt": prompt
-        }
-
-        listModel.append(element)
-    }
-
     property real animationOpacity: Theme.o24
 
     readonly property bool animating: runningResponses.length
@@ -79,10 +68,7 @@ ColumnLayout {
     }
 
     Repeater {
-        model: ListModel {
-            id: listModel
-        }
-
+        model: ChatBotInit.listModel
         delegate: ChatBotResponseItem {
             id: responseItem
 
@@ -90,53 +76,19 @@ ColumnLayout {
             Component.onCompleted: runningResponses = runningResponses.concat([response])
             onDoneChanged: {
                 if (responseItem.done) {
-                    console.log(runningResponses, responseItem.response)
                     runningResponses = runningResponses.filter(x => x !== responseItem.response)
                 }
             }
 
+            onAccepted: ChatBotInit.listModel.removeAt(index, 1)
             Layout.fillWidth: true
-            response: ollamaService.generate(model.prompt, '', responseItem)
-            onAccepted: listModel.remove(index, 1)
-            prompt: model.prompt
+            response: modelData
         }
-    }
-
-    function addBasicPrompt(extraString) {
-        const alarms = AlarmService.nextAlarm ? [AlarmService.nextAlarm] : []
-        const prompt = promptBuilder.create(alarms, [], ActionDayService.days, PromptBuilderSettings.mood,
-                                            extraString || '')
-        addPrompt(prompt)
     }
 
     CButton {
-        onClicked: addBasicPrompt()
+        onClicked: ChatBotInit.addBasicPrompt()
         font.family: Icons.fontFamily
         text: Icons.chat
-    }
-
-    Connections {
-        target: AlarmService
-
-        function onAlarmTriggered(_alarm) {
-            const prompt = promptBuilder.create([], [_alarm], ActionDayService.days, PromptBuilderSettings.mood)
-            addPrompt(prompt)
-        }
-    }
-
-    Connections {
-        target: TimeService
-
-        function onNowHoursChanged() {
-            if (TimeService.now.getHours() === 12) {
-                addBasicPrompt('It\'s 12 o clock now!')
-            }
-        }
-
-        function onNowMinutesChanged() {
-            if (TimeService.now.getHours() === 21 && TimeService.now.getMintutes() === 12) {
-                addBasicPrompt('It\'s 2112 now, like in the rush song!')
-            }
-        }
     }
 }

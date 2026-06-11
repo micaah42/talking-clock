@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Material
+import QtMultimedia
 
 import Clock
 import QChatBot
@@ -23,13 +24,12 @@ ColumnLayout {
 
     spacing: 8
     onResponseChanged: {
+        text = response?.text || ''
         characterTimer.count = 0
-        text = ''
     }
 
-    onDoneChanged: {
-        if (done)
-            TextToSpeechService.say(text)
+    Component.onCompleted: {
+        text = response?.text || ''
     }
 
     Connections {
@@ -38,24 +38,37 @@ ColumnLayout {
             root.text += promptBuilder.sanitizeOutput(text)
             root.textAdded()
         }
+        function onTtsStatusChanged() {
+            if (response.ttsStatus === ChatBotResponse.Done) {
+                player.source = `file://${response.ttsOutputFile}`
+                player.play()
+            }
+        }
+    }
+
+    MediaPlayer {
+        id: player
+        audioOutput: AudioOutput {}
     }
 
     Expandable {
         Layout.fillWidth: true
         previewLabel.text: 'Prompt'
         previewLabel.opacity: Theme.o72
+        visible: PromptBuilderSettings.showPrompt
 
         CLabel {
             Layout.fillWidth: true
             size: CLabel.Small
             wrapMode: Text.Wrap
-            text: root.prompt
+            text: root.response?.prompt || ''
             opacity: Theme.o72
         }
     }
 
     CLabel {
         Layout.fillWidth: true
+        visible: PromptBuilderSettings.showPrompt
         opacity: Theme.o72
         text: 'Response'
     }

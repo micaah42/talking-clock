@@ -25,6 +25,7 @@ Item {
         EventFilter.installToObject(EventFilter.application)
         LightingInit.init()
         TimeService.now
+        ChatBotInit
     }
 
     Connections {
@@ -38,6 +39,8 @@ Item {
         id: spaceScene
         anchors.fill: parent
     }
+
+
 
     MouseArea {
         anchors.fill: parent
@@ -103,7 +106,9 @@ Item {
                                 return
 
                             for (let alarm of ActiveAlarmListModel.asList) {
-                                if (alarm.singleShot)
+                                if (alarm.singleShot && false)
+                                    // TODO: alarm should be destroyed but:
+                                    // "Error: Invalid attempt to destroy() an indestructible object"
                                     alarm.destroy(1000)
                             }
 
@@ -218,10 +223,5 @@ Item {
         id: clickResetTimer
         onTriggered: clickCounter = 0
         interval: 1000
-    }
-
-    Recorder {
-        id: recorder
-        monitor: FPSMonitor
     }
 }

@@ -45,6 +45,7 @@ ToolButton {
 
     background.data: Rectangle {
         anchors.fill: parent
+        anchors.margins: -4
         visible: !root.flat && root.enabled
         color: Theme.accent
         opacity: Theme.o72

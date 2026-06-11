@@ -12,8 +12,8 @@ Popup {
     Material.roundedScale: Material.SmallScale
     anchors.centerIn: Overlay.overlay
     closePolicy: Popup.NoAutoClose
-    height: window.height - 64
-    width: 0.8 * window.width
+    height: parent ? parent.height - 64 : 0
+    width: parent ? parent.width - 128 : 0
     modal: true
     dim: true
 
@@ -44,7 +44,7 @@ Popup {
 
                 DayOfWeekRow {
                     id: weekdays
-                    spacing: 16
+                    spacing: 24
 
                     function getRepeat(i) {
                         return alarm.repeatRule[i]
@@ -60,7 +60,7 @@ Popup {
                         id: d1
                         required property string shortName
                         required property int day
-                        spacing: -12
+                        spacing: -8
 
                         CheckBox {
                             width: 32

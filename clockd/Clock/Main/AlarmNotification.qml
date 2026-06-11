@@ -39,7 +39,7 @@ ColumnLayout {
             SequentialAnimation on volume {
                 onFinished: player.stop()
                 running: true
-                loops: 2
+                loops: 8
 
                 PropertyAnimation {
                     duration: 8 * 1000

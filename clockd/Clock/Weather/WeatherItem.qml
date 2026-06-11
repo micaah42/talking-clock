@@ -44,110 +44,13 @@ ColumnLayout {
         CToolButton {
             Layout.margins: -16
             onClicked: dialog.open()
-            text: Icons.more_vert
+            text: Icons.open_in_new
         }
     }
 
-    Dialog {
+    WeatherDetailDialog {
         id: dialog
-        anchors.centerIn: weatherDisplay.dialogParent
         parent: weatherDisplay.dialogParent
-        height: weatherDisplay.dialogParent.height - 32
-        width: weatherDisplay.dialogParent.width - 32
-
-        title: 'Weather Details'
-        standardButtons: Dialog.Ok
-
-        contentItem: ListView {
-            id: list
-
-            model: weatherService.samples
-            clip: true
-
-            headerPositioning: ListView.OverlayHeader
-            header: Item {
-                height: r.implicitHeight
-                width: list.width
-                z: 1
-
-                Rectangle {
-                    id: rec
-                    Component.onCompleted: console.log(rec, rec.width, rec.height)
-                    anchors.fill: parent
-                    color: 'black'
-                }
-
-                WeatherReportSampleItem {
-                    id: r
-                    hoverEnabled: false
-                    highlighted: true
-                    width: list.width
-
-                    time: 'Time'
-                    temperature: 'Temperature'
-                    airPressure: 'Air Pressure'
-                    relativeHumidity: 'Relative Humidity'
-                    windSpeed: 'Wind Speed'
-
-                    next1Hours.data: CLabel {
-                        anchors.centerIn: parent
-                        font.pixelSize: Theme.fontSizeSmall
-                        text: '1 Hour'
-                    }
-                    next6Hours.data: CLabel {
-                        anchors.centerIn: parent
-                        font.pixelSize: Theme.fontSizeSmall
-                        text: '6 Hours'
-                    }
-                    next12Hours.data: CLabel {
-                        anchors.centerIn: parent
-                        font.pixelSize: Theme.fontSizeSmall
-                        text: '12 Hours'
-                    }
-                }
-            }
-
-            component WeatherReportNextHoursItem: RowLayout {
-                id: d1
-                property WeatherReportNextHours nextHours
-                visible: nextHours
-                spacing: 16
-
-                Icon {
-                    text: d1.nextHours && d1.nextHours.symbolCode ? Icons[d1.nextHours.symbolCode] : ''
-                    font.pixelSize: Theme.fontSizeSmall
-                }
-                CLabel {
-                    text: d1.nextHours ? d1.nextHours.precipitationAmount : ''
-                    font.pixelSize: Theme.fontSizeSmall
-                }
-            }
-
-            delegate: WeatherReportSampleItem {
-                id: d
-                width: list.width
-                property WeatherReportSample sample: modelData
-
-                time: sample.time.toLocaleString(Qt.locale(), Locale.NarrowFormat)
-                temperature: sample.airTemperature
-                airPressure: sample.airPressureAtSeaLevel
-                relativeHumidity: sample.relativeHumidity
-                windSpeed: sample.windSpeed
-
-                next1Hours.data: WeatherReportNextHoursItem {
-                    anchors.centerIn: parent
-                    nextHours: d.sample.next1Hours
-                }
-                next6Hours.data: WeatherReportNextHoursItem {
-                    anchors.centerIn: parent
-                    nextHours: d.sample.next6Hours
-                }
-                next12Hours.data: WeatherReportNextHoursItem {
-                    anchors.centerIn: parent
-                    nextHours: d.sample.next12Hours
-                }
-            }
-        }
     }
 
     component WeatherLine: ColumnLayout {
@@ -160,16 +63,30 @@ ColumnLayout {
         property string windspeed
         property string subWindspeed
 
-        spacing: -4
+        spacing: 0
 
-        CLabel {
-            text: weatherLine.title
+        RowLayout {
+            CLabel {
+                Layout.preferredWidth: weatherLine.width / 4
+                text: weatherLine.title
+            }
+            Rectangle {
+                // Layout.alignment: Qt.AlignBottom
+                Layout.preferredHeight: 1.5
+                Layout.fillWidth: true
+                radius: height / 2
+
+                color: Theme.foreground
+                opacity: Theme.o72
+            }
         }
 
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
+
             Icon {
+                Layout.rightMargin: 8
                 font.pixelSize: Theme.fontSizeXXXLarge
                 text: weatherLine.icon
             }
@@ -186,7 +103,7 @@ ColumnLayout {
                 icon: Icons.air
             }
             WeatherValueDisplay {
-                value: weatherLine.precipitationAmount
+                value: Theme.roundWithPrecision(weatherLine.precipitationAmount)
                 icon: Icons.humidity_high
                 unit: 'mm'
             }
@@ -278,6 +195,7 @@ ColumnLayout {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             opacity: Theme.o56
+            visible: false
             spacing: 8
 
             CLabel {

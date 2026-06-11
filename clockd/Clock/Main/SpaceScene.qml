@@ -26,7 +26,7 @@ Item {
     }
 
     Repeater {
-        id: animatedStars
+        id: animatedLayer
         model: SpaceTheme.animatedStars
         delegate: Item {
             id: d
@@ -38,33 +38,36 @@ Item {
                 layer.enabled: true
 
                 Repeater {
-                    id: staticStars
-                    model: Math.floor(SpaceTheme.stars / animatedStars.count)
+                    id: images
+                    model: Math.floor(SpaceTheme.stars / animatedLayer.count)
 
                     delegate: Image {
                         id: stars
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectCrop
-                        source: `qrc:/space-theme/stars${d.i * staticStars.count + index}.svg`
+                        source: `qrc:/space-theme/stars${d.i * images.count + index}.svg`
                     }
                 }
             }
 
             property real maxOpacity: 1
-            property real minOpacity: Theme.o24
+            property real minOpacity: Theme.o42
 
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
 
                 OpacityAnimator {
                     easing.type: Easing.InOutBounce
-                    duration: (d.i * 500) + SpaceTheme.animationSpeed
+                    duration: (d.i + 1) * SpaceTheme.animationSpeed
                     from: d.minOpacity
                     to: d.maxOpacity
                 }
+                PauseAnimation {
+                    duration: d.i * 250
+                }
                 OpacityAnimator {
                     easing.type: Easing.InOutBounce
-                    duration: (d.i * 500) + SpaceTheme.animationSpeed
+                    duration: (d.i + 1) * SpaceTheme.animationSpeed
                     from: d.maxOpacity
                     to: d.minOpacity
                 }

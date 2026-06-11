@@ -8,6 +8,10 @@ import "../Style"
 import "../Controls"
 
 Item {
+    id: root
+
+    property Window window: Window.window
+
     RowLayout {
         anchors.fill: parent
 
@@ -134,6 +138,7 @@ Item {
     }
     AlarmDialog {
         id: alarmDialog
+        parent: root.window?.contentItem || null
     }
 
     Dialog {
