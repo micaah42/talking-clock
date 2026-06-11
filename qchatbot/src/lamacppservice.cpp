@@ -57,6 +57,7 @@ ChatBotResponse *LLamaCppService::generate(const QString &prompt, const QString 
     reply->setParent(parent);
 
     auto chatBotResponse = new ChatBotResponse{reply, parent};
+    chatBotResponse->setPrompt(prompt);
 
     connect(reply, &QNetworkReply::readyRead, chatBotResponse, [this, reply, chatBotResponse]() {
         while (reply->canReadLine()) {

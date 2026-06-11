@@ -68,6 +68,7 @@ ChatBotResponse *OllamaService::generate(const QString &prompt, const QString &m
     reply->setParent(parent);
 
     auto chatBotResponse = new ChatBotResponse{reply, parent};
+    chatBotResponse->setPrompt(prompt);
 
     connect(reply, &QNetworkReply::readyRead, chatBotResponse, [reply, chatBotResponse]() {
         while (reply->canReadLine()) {

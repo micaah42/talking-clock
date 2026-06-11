@@ -6,6 +6,11 @@
 
 #include "actionday.h"
 #include "alarm.h"
+#include "chatbotresponseservice.h"
+
+#include "chatbotresponse.h"
+#include "listmodel.h"
+#include "setting.h"
 
 class PromptBuilder : public QObject
 {
@@ -24,6 +29,7 @@ public:
         SlightlyUpset,
         HomicidalSpaceAI,
         Formal,
+        ExtremelyRude,
     };
 
     Q_ENUM(Mood);
@@ -36,6 +42,7 @@ public slots:
         const QList<Alarm *> &triggeredAlarms,
         const QList<ActionDay *> &actionDays,
         PromptBuilder::Mood mood,
+        const QDateTime &now = QDateTime(),
         const QString &extra = QString()
     );
 
@@ -49,6 +56,7 @@ class PromptBuilderSettings : public QObject
     QML_SINGLETON
 
     Q_PROPERTY(PromptBuilder::Mood mood READ mood WRITE setMood NOTIFY moodChanged FINAL)
+    Q_PROPERTY(bool showPrompt READ showPrompt WRITE setShowPrompt NOTIFY showPromptChanged FINAL)
 
 public:
     explicit PromptBuilderSettings(QObject *parent = nullptr);
@@ -56,11 +64,17 @@ public:
     PromptBuilder::Mood mood() const;
     void setMood(const PromptBuilder::Mood &newMood);
 
+    bool showPrompt() const;
+    void setShowPrompt(bool newShowPrompt);
+
 signals:
     void moodChanged();
 
+    void showPromptChanged();
+
 private:
-    PromptBuilder::Mood _mood;
+    Setting<PromptBuilder::Mood> _mood;
+    Setting<bool> _showPrompt;
 };
 
 #endif // CLOCKPROMPTBUILDER_H

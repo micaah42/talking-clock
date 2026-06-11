@@ -24,13 +24,15 @@ QString PromptBuilder::create(
     const QList<Alarm *> &activeAlarms,
     const QList<ActionDay *> &actionDays,
     Mood mood,
+    const QDateTime &now,
     const QString &extra
 )
 {
     qCDebug(self) << "building prompt (#alarms, #action days, mood):" << activeAlarms.size() << actionDays.size() << mood;
     QString prompt{"You are a talking clock.\n\n"};
 
-    prompt += QString{"The current time and date is: %1\n\n"}.arg(QDateTime::currentDateTime().toString());
+    auto time = now.isValid() ? now : QDateTime::currentDateTime();
+    prompt += QString{"The current time and date is: %1\n\n"}.arg(time.toString());
 
     if (!activeAlarms.empty()) {
         auto alarmsString = alarmsStringFromList(activeAlarms);
@@ -90,6 +92,8 @@ QString PromptBuilder::create(
             return "a slightly upset";
         case HomicidalSpaceAI:
             return "a homicidal space AI";
+        case ExtremelyRude:
+            return "an extremely rude and pushy";
         case Formal:
         default:
             return "a formal and professional";
@@ -111,18 +115,52 @@ QString PromptBuilder::create(
 
 QString PromptBuilder::sanitizeOutput(const QString &input)
 {
-    static const QRegularExpression nonAsciiDir(QStringLiteral("[^ -~\\n\\r\\t*#]"));
-
     QString output = input;
+
+    // Replace common non-ASCII characters with their ASCII equivalents
+    // Quotation marks
+    output.replace(QChar(0x2018), "'");  // Left single quotation mark
+    output.replace(QChar(0x2019), "'");  // Right single quotation mark
+    output.replace(QChar(0x201C), "\""); // Left double quotation mark
+    output.replace(QChar(0x201D), "\""); // Right double quotation mark
+
+    // Dashes
+    output.replace(QChar(0x2013), "-");  // En dash
+    output.replace(QChar(0x2014), "-");  // Em dash
+
+    // German umlauts and accents
+    output.replace(QChar(0x00E4), "ae"); // ä
+    output.replace(QChar(0x00F6), "oe"); // ö
+    output.replace(QChar(0x00FC), "ue"); // ü
+    output.replace(QChar(0x00DF), "ss"); // ß
+    output.replace(QChar(0x00C4), "AE"); // Ä
+    output.replace(QChar(0x00D6), "OE"); // Ö
+    output.replace(QChar(0x00DC), "UE"); // Ü
+
+    // Common accented characters
+    output.replace(QChar(0x00E9), "e");  // é
+    output.replace(QChar(0x00E8), "e");  // è
+    output.replace(QChar(0x00EA), "e");  // ê
+    output.replace(QChar(0x00E7), "c");  // ç
+    output.replace(QChar(0x00E1), "a");  // á
+    output.replace(QChar(0x00E0), "a");  // à
+    output.replace(QChar(0x00F1), "n");  // ñ
+
+    // Replace any remaining non-ASCII characters with spaces
+    static const QRegularExpression nonAsciiDir(QStringLiteral("[^ -~\\n\\r\\t*#]"));
     output.replace(nonAsciiDir, " ");
+
+    // Clean up multiple newlines and spaces
     output.replace(QRegularExpression(QStringLiteral("\\n{3,}")), "\n\n");
     output.replace(QRegularExpression(QStringLiteral("\\ {2,}")), " ");
+
     return output;
 }
 
 PromptBuilderSettings::PromptBuilderSettings(QObject *parent)
     : QObject{parent}
-    , _mood{PromptBuilder::Depressed}
+    , _mood{"Chatbot/Mood", PromptBuilder::Enthusiastic}
+    , _showPrompt{"Chatbot/ShowPrompt", false}
 {}
 
 PromptBuilder::Mood PromptBuilderSettings::mood() const
@@ -139,3 +177,24 @@ void PromptBuilderSettings::setMood(const PromptBuilder::Mood &newMood)
     _mood = newMood;
     emit moodChanged();
 }
+
+bool PromptBuilderSettings::showPrompt() const
+{
+    return _showPrompt;
+}
+
+void PromptBuilderSettings::setShowPrompt(bool newShowPrompt)
+{
+    if (_showPrompt == newShowPrompt)
+        return;
+    _showPrompt = newShowPrompt;
+    emit showPromptChanged();
+}
+
+
+
+
+
+
+
+
