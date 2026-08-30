@@ -58,6 +58,7 @@ ColumnLayout {
         property string title
         property string icon
         property string precipitationAmount
+        property string precipitationProbability
         property string temperature
         property string subTemperature
         property string windspeed
@@ -77,7 +78,7 @@ ColumnLayout {
                 radius: height / 2
 
                 color: Theme.foreground
-                opacity: Theme.o72
+                opacity: Theme.o24
             }
         }
 
@@ -88,6 +89,7 @@ ColumnLayout {
             Icon {
                 Layout.rightMargin: 8
                 font.pixelSize: Theme.fontSizeXXXLarge
+                opacity: Theme.o84
                 text: weatherLine.icon
             }
             WeatherValueDisplay {
@@ -104,6 +106,12 @@ ColumnLayout {
             }
             WeatherValueDisplay {
                 value: Theme.roundWithPrecision(weatherLine.precipitationAmount)
+                subValue: {
+                    if (weatherLine.precipitationProbability > 0)
+                        return `${Theme.roundWithPrecision(weatherLine.precipitationProbability)}%`
+                    else
+                        return ''
+                }
                 icon: Icons.humidity_high
                 unit: 'mm'
             }
@@ -119,6 +127,7 @@ ColumnLayout {
         windspeed: summary["maxWindSpeed"]
         subWindspeed: summary["minWindSpeed"]
         precipitationAmount: summary["totalFuturePrecipitationAmount"]
+        precipitationProbability: summary["maxProbabilityOfPrecipitation"]
     }
 
     WeatherLine {
@@ -126,11 +135,12 @@ ColumnLayout {
         icon: weatherService.current.next1Hours.symbolCode
         temperature: weatherService.current.airTemperature
         precipitationAmount: weatherService.current.next1Hours.precipitationAmount
+        precipitationProbability: weatherService.current.next1Hours.probabilityOfPrecipitation
         windspeed: weatherService.current.windSpeed
     }
     SummaryWeatherLine {
-        title: 'Today'
-        summary: WeatherService.summarizeWeatherSamples(weatherService.todaySamples)
+        title: 'Next 12h'
+        summary: WeatherService.summarizeWeatherSamples(weatherService.next12HoursSamples)
     }
     SummaryWeatherLine {
         title: 'Tomorrow'
@@ -157,22 +167,25 @@ ColumnLayout {
 
             text: weatherValueDisplay.icon
             font.pixelSize: Theme.fontSizeSmall
+            opacity: Theme.o72
         }
 
         ColumnLayout {
             id: label
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: -4
+            spacing: -6
 
             CLabel {
                 Layout.alignment: Qt.AlignHCenter
                 text: weatherValueDisplay.value
+                opacity: Theme.o84
                 size: CLabel.XLarge
             }
             CLabel {
                 Layout.alignment: Qt.AlignHCenter
                 text: weatherValueDisplay.subValue
                 size: CLabel.Small
+                opacity: Theme.o72
                 visible: text
             }
         }
@@ -181,8 +194,8 @@ ColumnLayout {
             anchors.margins: weatherValueDisplay.margins
             anchors.verticalCenter: label.verticalCenter
             anchors.left: label.right
-
             text: weatherValueDisplay.unit
+            opacity: Theme.o72
             size: CLabel.Small
         }
     }
@@ -250,7 +263,6 @@ ColumnLayout {
                 onCurrentIndexChanged: {
                     if (running)
                         return
-
                     statusLayout.currentIndex = currentIndex
                     start()
                 }

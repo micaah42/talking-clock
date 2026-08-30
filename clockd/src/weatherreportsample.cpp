@@ -5,6 +5,7 @@ WeatherReportNextHours::WeatherReportNextHours(QObject *parent)
     , _type(Next1Hours)
     , _symbolCode()
     , _precipitationAmount(0.0)
+    , _probabilityOfPrecipitation(0.0)
 {
 }
 
@@ -137,6 +138,19 @@ void WeatherReportNextHours::setPrecipitationAmount(double newPrecipitationAmoun
         return;
     _precipitationAmount = newPrecipitationAmount;
     emit precipitationAmountChanged();
+}
+
+double WeatherReportNextHours::probabilityOfPrecipitation() const
+{
+    return _probabilityOfPrecipitation;
+}
+
+void WeatherReportNextHours::setProbabilityOfPrecipitation(double newProbabilityOfPrecipitation)
+{
+    if (qFuzzyCompare(_probabilityOfPrecipitation, newProbabilityOfPrecipitation))
+        return;
+    _probabilityOfPrecipitation = newProbabilityOfPrecipitation;
+    emit probabilityOfPrecipitationChanged();
 }
 
 WeatherReportNextHours *WeatherReportSample::next1Hours() const

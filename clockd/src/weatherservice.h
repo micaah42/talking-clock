@@ -34,7 +34,7 @@ class WeatherService : public QObject
     /* current weather [new api] */
     Q_PROPERTY(WeatherReportSample *current READ current NOTIFY currentChanged FINAL)
     Q_PROPERTY(WeatherReportSample *tomorrow READ tomorrow NOTIFY tomorrowChanged FINAL)
-    Q_PROPERTY(QList<WeatherReportSample *> todaySamples READ todaySamples NOTIFY todaySamplesChanged FINAL)
+    Q_PROPERTY(QList<WeatherReportSample *> next12HoursSamples READ next12HoursSamples NOTIFY next12HoursSamplesChanged FINAL)
     Q_PROPERTY(QList<WeatherReportSample *> tomorrowSamples READ tomorrowSamples NOTIFY tomorrowSamplesChanged FINAL)
     Q_PROPERTY(QList<WeatherReportSample *> samples READ samples NOTIFY samplesChanged FINAL)
 
@@ -74,11 +74,12 @@ public:
 
     WeatherReportSample *current() const;
     WeatherReportSample *tomorrow() const;
-    QList<WeatherReportSample *> todaySamples() const;
+    QList<WeatherReportSample *> next12HoursSamples() const;
     QList<WeatherReportSample *> tomorrowSamples() const;
     QList<WeatherReportSample *> samples() const;
 
 public slots:
+    static QList<WeatherReportSample *> collectWeatherSamples(const QList<WeatherReportSample *> &samples, const QDate &date);
     static QVariantMap summarizeWeatherSamples(const QList<WeatherReportSample *> &samples);
     void fetchWeatherData();
     void fetchQGeoPosition();
@@ -87,7 +88,7 @@ public slots:
 protected:
     WeatherReportNextHours *parseNextHours(const QJsonObject &nextHoursObject, QObject *parent);
     void setSamples(const QList<WeatherReportSample *> &newSamples);
-    void setTodaySamples(const QList<WeatherReportSample *> &newTodaySamples);
+    void setNext12HoursSamples(const QList<WeatherReportSample *> &newNext12HoursSamples);
     void setTomorrowSamples(const QList<WeatherReportSample *> &newTomorrowSamples);
     void setTimestamp(const QDateTime &newTimestamp);
     void setStatus(const Status &newStatus);
@@ -110,7 +111,7 @@ signals:
 
     void currentChanged();
     void tomorrowChanged();
-    void todaySamplesChanged();
+    void next12HoursSamplesChanged();
     void tomorrowSamplesChanged();
 
     void samplesChanged();
@@ -144,7 +145,7 @@ private:
     double _precipitationAmount;
     WeatherReportSample *_current = nullptr;
     WeatherReportSample *_tomorrow = nullptr;
-    QList<WeatherReportSample *> _todaySamples;
+    QList<WeatherReportSample *> _next12HoursSamples;
     QList<WeatherReportSample *> _tomorrowSamples;
     QList<WeatherReportSample *> _samples;
 };

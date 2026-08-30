@@ -38,7 +38,7 @@ QtObject {
     readonly property real o42: 0.42
     readonly property real o56: 0.56
     readonly property real o72: 0.72
-    readonly property real o84: 0.72
+    readonly property real o84: 0.84
 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

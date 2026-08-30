@@ -12,101 +12,159 @@ import "../Components"
 Dialog {
     id: dialog
 
+    readonly property WeatherService weatherService: WeatherService
+    readonly property var next7Hours: weatherService.samples.slice(0, 7)
+
     anchors.centerIn: parent
-    height: parent.height - 32
-    width: parent.width - 32
+    height: parent ? parent.height - 32 : 0
+    width: parent ? parent.width - 32 : 0
 
-    title: 'Weather Details'
-    standardButtons: Dialog.Ok
+    header: RowLayout {
+        height: implicitHeight - 24
+        spacing: 0
 
-    contentItem: ListView {
-        id: list
+        Icon {
+            Layout.leftMargin: dialog.leftPadding || dialog.padding
+            Layout.rightMargin: 16
+            font.pixelSize: Theme.fontSizeXLarge
+            text: Icons.location_on
+        }
+        CLabel {
+            Layout.fillWidth: true
+            text: `Weather in ${weatherService.cityName}...`
+            size: CLabel.XLarge
+        }
+        CToolButton {
+            Layout.rightMargin: -16
+            Layout.margins: 16
+            text: Icons.settings
+        }
+        CToolButton {
+            Layout.rightMargin: (dialog.rightPadding || dialog.padding) - 16
+            Layout.margins: 16
+            onClicked: dialog.close()
+            text: Icons.close
+        }
+    }
 
-        model: WeatherService.samples
-        clip: true
+    standardButtons: Dialog.NoButton
+    closePolicy: Popup.NoAutoClose
+    modal: true
 
-        headerPositioning: ListView.OverlayHeader
-        header: Item {
-            id: headerItem
-            height: r.implicitHeight
-            width: list.width
-            z: 10
+    contentItem: ColumnLayout {
+        spacing: 8
 
-            Rectangle {
-                Component.onCompleted: console.log(this, width, height)
-                anchors.fill: headerItem
-                color: Theme.background
-            }
+        CLabel {
+            text: 'Hourly Preview'
+        }
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
 
-            WeatherReportSampleItem {
-                id: r
-                hoverEnabled: false
-                highlighted: true
-                width: list.width
+            Repeater {
+                model: dialog.next7Hours
+                delegate: Frame {
+                    Layout.fillWidth: true
+                    implicitWidth: 0
 
-                time: 'Time'
-                temperature: 'Temperature'
-                airPressure: 'Air Pressure'
-                relativeHumidity: 'Relative Humidity'
-                windSpeed: 'Wind Speed'
-
-                next1Hours.data: CLabel {
-                    anchors.centerIn: parent
-                    font.pixelSize: Theme.fontSizeSmall
-                    text: '1 Hour'
-                }
-                next6Hours.data: CLabel {
-                    anchors.centerIn: parent
-                    font.pixelSize: Theme.fontSizeSmall
-                    text: '6 Hours'
-                }
-                next12Hours.data: CLabel {
-                    anchors.centerIn: parent
-                    font.pixelSize: Theme.fontSizeSmall
-                    text: '12 Hours'
+                    contentItem: ForecastTile {
+                        time: modelData.time.toLocaleTimeString(Qt.locale(), Locale.ShortFormat)
+                        icon: modelData.next1Hours ? Icons[modelData.next1Hours.symbolCode] : ''
+                        temperature: `${Theme.roundWithPrecision(modelData.airTemperature)}°`
+                        precipitation: `${Theme.roundWithPrecision(modelData.next1Hours.precipitationAmount)} mm`
+                        // windspeed: `${Theme.roundWithPrecision(modelData.windSpeed)} m/s`
+                    }
                 }
             }
         }
 
-        component WeatherReportNextHoursItem: RowLayout {
-            id: d1
-            property WeatherReportNextHours nextHours
-            visible: nextHours
-            spacing: 16
+        CLabel {
+            text: '7-Day Forecast'
+        }
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
 
-            Icon {
-                text: d1.nextHours && d1.nextHours.symbolCode ? Icons[d1.nextHours.symbolCode] : ''
-                font.pixelSize: Theme.fontSizeSmall
-            }
-            CLabel {
-                text: d1.nextHours ? d1.nextHours.precipitationAmount : ''
-                font.pixelSize: Theme.fontSizeSmall
+            Repeater {
+                model: 7
+                delegate: Frame {
+                    Layout.fillWidth: true
+                    implicitWidth: 0
+
+                    contentItem: ForecastTile {
+                        property date day: new Date(new Date().getTime() + 24 * 60 * 60 * 1000 * index)
+                        property var summary: {
+                            const samples = weatherService.collectWeatherSamples(weatherService.samples, day)
+                            return weatherService.summarizeWeatherSamples(samples)
+                        }
+
+                        time: {
+                            const weekday = day.toLocaleDateString(Qt.locale(), 'ddd')
+                            const shortDate = day.toLocaleDateString(Qt.locale(), Locale.NarrowFormat)
+                            return `${weekday}, ${shortDate}`
+                        }
+                        icon: Icons[summary.commonSymbol]
+
+                        temperature: {
+                            const roundedMin = Theme.roundWithPrecision(summary.minTemperature)
+                            const roundedMax = Theme.roundWithPrecision(summary.maxTemperature)
+                            return `${roundedMin}°-${roundedMax}°`
+                        }
+
+                        precipitation: `${Theme.roundWithPrecision(summary.totalFuturePrecipitationAmount)} mm`
+                        // windspeed: `${Theme.roundWithPrecision(summary.maxWindSpeed)} m/s`
+                    }
+                }
             }
         }
+    }
 
-        delegate: WeatherReportSampleItem {
-            id: d
-            width: list.width
-            property WeatherReportSample sample: modelData
+    component ForecastTile: ColumnLayout {
+        id: tile
+        property string time
+        property string icon
+        property string temperature
+        property string windspeed
+        property string precipitation
+        property string details
+        spacing: 2
 
-            time: sample.time.toLocaleString(Qt.locale(), Locale.NarrowFormat)
-            temperature: sample.airTemperature
-            airPressure: sample.airPressureAtSeaLevel
-            relativeHumidity: sample.relativeHumidity
-            windSpeed: sample.windSpeed
-
-            next1Hours.data: WeatherReportNextHoursItem {
-                anchors.centerIn: parent
-                nextHours: d.sample.next1Hours
-            }
-            next6Hours.data: WeatherReportNextHoursItem {
-                anchors.centerIn: parent
-                nextHours: d.sample.next6Hours
-            }
-            next12Hours.data: WeatherReportNextHoursItem {
-                anchors.centerIn: parent
-                nextHours: d.sample.next12Hours
-            }
+        CLabel {
+            Layout.alignment: Qt.AlignHCenter
+            text: tile.time
+            size: CLabel.Small
+            opacity: Theme.o72
         }
+        Icon {
+            Layout.alignment: Qt.AlignHCenter
+            font.pixelSize: Theme.fontSizeXLarge
+            text: tile.icon
+        }
+        CLabel {
+            Layout.alignment: Qt.AlignHCenter
+            text: tile.temperature
+        }
+        // CLabel {
+        //     Layout.alignment: Qt.AlignHCenter
+        //     text: tile.windspeed
+        //     size: CLabel.Small
+        //     opacity: Theme.o72
+        //     visible: text
+        // }
+        CLabel {
+            Layout.alignment: Qt.AlignHCenter
+            text: tile.precipitation
+            size: CLabel.Small
+            color: Theme.primary
+            opacity: Theme.o72
+            visible: text
+        }
+        // CLabel {
+        //     Layout.alignment: Qt.AlignHCenter
+        //     text: tile.details
+        //     size: CLabel.Small
+        //     opacity: Theme.o56
+        //     visible: text
+        // }
     }
 }

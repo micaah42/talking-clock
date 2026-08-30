@@ -20,7 +20,7 @@ static const QHash<QString, QString> YR2MaterialSymbol{
     {"clearsky_day", "sunny"},
     {"clearsky_night", "clear_night"},
     {"clearsky_polartwilight", "wb_twilight"},
-    {"fair_day", "wb_sunny"},
+    {"fair_day", "sunny"},
     {"fair_night", "nightlight_round"},
     {"fair_polartwilight", "wb_twilight"},
     {"partlycloudy_day", "partly_cloudy_day"},
@@ -138,6 +138,7 @@ QVariantMap WeatherService::summarizeWeatherSamples(const QList<WeatherReportSam
     double minCloudAreaFraction = std::numeric_limits<double>::infinity();
     double maxCloudAreaFraction = -std::numeric_limits<double>::infinity();
     double totalFuturePrecipitationAmount = 0.0;
+    double maxProbabilityOfPrecipitation = -std::numeric_limits<double>::infinity();
 
     const auto countSymbolAndPrecipitation = [&](WeatherReportNextHours *next) {
         if (!next) {
@@ -154,6 +155,7 @@ QVariantMap WeatherService::summarizeWeatherSamples(const QList<WeatherReportSam
         }
 
         totalFuturePrecipitationAmount += next->precipitationAmount();
+        maxProbabilityOfPrecipitation = std::max(maxProbabilityOfPrecipitation, next->probabilityOfPrecipitation());
     };
 
     for (auto sample : samples) {
@@ -181,9 +183,16 @@ QVariantMap WeatherService::summarizeWeatherSamples(const QList<WeatherReportSam
         minCloudAreaFraction = std::min(minCloudAreaFraction, cloudAreaFraction);
         maxCloudAreaFraction = std::max(maxCloudAreaFraction, cloudAreaFraction);
 
-        countSymbolAndPrecipitation(sample->next1Hours());
-        countSymbolAndPrecipitation(sample->next6Hours());
-        countSymbolAndPrecipitation(sample->next12Hours());
+        // prefer the finest-grained forecast available; the coarser ones cover the same
+        // time span and would double-count precipitation/symbols if all three were used
+        // as it turns out when the 1 hour resolution stops the timestamps come in 6 hour increments, so no further processing is needed
+        if (sample->next1Hours()) {
+            countSymbolAndPrecipitation(sample->next1Hours());
+        } else if (sample->next6Hours()) {
+            countSymbolAndPrecipitation(sample->next6Hours());
+        } else if (sample->next12Hours()) {
+            countSymbolAndPrecipitation(sample->next12Hours());
+        }
     }
 
     summary["commonSymbol"] = mostCommonSymbol;
@@ -199,6 +208,7 @@ QVariantMap WeatherService::summarizeWeatherSamples(const QList<WeatherReportSam
     summary["minCloudAreaFraction"] = minCloudAreaFraction;
     summary["maxCloudAreaFraction"] = maxCloudAreaFraction;
     summary["totalFuturePrecipitationAmount"] = totalFuturePrecipitationAmount;
+    summary["maxProbabilityOfPrecipitation"] = std::isinf(maxProbabilityOfPrecipitation) ? 0.0 : maxProbabilityOfPrecipitation;
 
     return summary;
 }
@@ -214,6 +224,7 @@ WeatherReportNextHours *WeatherService::parseNextHours(const QJsonObject &nextHo
     nextHours->setSymbolCode(yr2gm(summary["symbol_code"].toString()));
     auto details = nextHoursObject["details"].toObject();
     nextHours->setPrecipitationAmount(details["precipitation_amount"].toDouble());
+    nextHours->setProbabilityOfPrecipitation(details["probability_of_precipitation"].toDouble());
     return nextHours;
 };
 
@@ -226,7 +237,8 @@ void WeatherService::fetchWeatherData()
 
     this->setStatus(Fetching);
 
-    QUrl url("https://api.met.no/weatherapi/locationforecast/2.0/compact");
+    // "complete" is needed instead of "compact" to get probability_of_precipitation
+    QUrl url("https://api.met.no/weatherapi/locationforecast/2.0/complete");
     url.setQuery({
         {"lat", QString::number(_coordinate.latitude)},
         {"lon", QString::number(_coordinate.longitude)},
@@ -251,7 +263,7 @@ void WeatherService::fetchWeatherData()
         const auto timeseries = obj["properties"].toObject()["timeseries"].toArray();
         QList<WeatherReportSample *> samples;
         QMap<QDateTime, WeatherReportSample *> sampleMap;
-        QList<WeatherReportSample *> todaySamples;
+        QList<WeatherReportSample *> next12HoursSamples;
         QList<WeatherReportSample *> tomorrowSamples;
         samples.reserve(timeseries.size());
 
@@ -272,7 +284,10 @@ void WeatherService::fetchWeatherData()
 
             auto timeString = dataPoint["time"].toString();
             newWeatherReportSample->setTimeString(timeString);
-            newWeatherReportSample->setTime(QDateTime::fromString(timeString, "yyyy-MM-ddThh:mm:ssZ"));
+
+            auto time = QDateTime::fromString(timeString, "yyyy-MM-ddThh:mm:ssZ");
+            time.setTimeZone(QTimeZone::utc());
+            newWeatherReportSample->setTime(time);
 
             auto next1Hours = parseNextHours(data["next_1_hours"].toObject(), this);
             if (next1Hours) {
@@ -297,14 +312,15 @@ void WeatherService::fetchWeatherData()
 
         const auto currentDate = QDate::currentDate();
         const auto tomorrowDate = currentDate.addDays(1);
+        auto now = QDateTime::currentDateTime();
+        auto next12HoursCutoff = now.addSecs(12 * 3600);
         for (auto sample : samples) {
-            if (sample->time().date() == currentDate)
-                todaySamples.append(sample);
-            else if (sample->time().date() == tomorrowDate)
+            if (sample->time() >= now && sample->time() <= next12HoursCutoff)
+                next12HoursSamples.append(sample);
+            if (sample->time().date() == tomorrowDate)
                 tomorrowSamples.append(sample);
         }
 
-        auto now = QDateTime::currentDateTime();
         QDateTime currentTime{now.date(), {now.time().hour(), 0}};
         QDateTime tomorrowTime{tomorrowDate, {8, 0}};
 
@@ -325,7 +341,7 @@ void WeatherService::fetchWeatherData()
         }
 
         this->setSamples(samples);
-        this->setTodaySamples(todaySamples);
+        this->setNext12HoursSamples(next12HoursSamples);
         this->setTomorrowSamples(tomorrowSamples);
 
         // old
@@ -615,6 +631,17 @@ QList<WeatherReportSample *> WeatherService::samples() const
     return _samples;
 }
 
+QList<WeatherReportSample *> WeatherService::collectWeatherSamples(const QList<WeatherReportSample *> &samples, const QDate &date)
+{
+    QList<WeatherReportSample *> collected;
+
+    for (auto const sample : samples)
+        if (sample->time().date() == date)
+            collected.append(sample);
+
+    return collected;
+}
+
 void WeatherService::setSamples(const QList<WeatherReportSample *> &newSamples)
 {
     if (_samples == newSamples)
@@ -623,17 +650,17 @@ void WeatherService::setSamples(const QList<WeatherReportSample *> &newSamples)
     emit samplesChanged();
 }
 
-QList<WeatherReportSample *> WeatherService::todaySamples() const
+QList<WeatherReportSample *> WeatherService::next12HoursSamples() const
 {
-    return _todaySamples;
+    return _next12HoursSamples;
 }
 
-void WeatherService::setTodaySamples(const QList<WeatherReportSample *> &newTodaySamples)
+void WeatherService::setNext12HoursSamples(const QList<WeatherReportSample *> &newNext12HoursSamples)
 {
-    if (_todaySamples == newTodaySamples)
+    if (_next12HoursSamples == newNext12HoursSamples)
         return;
-    _todaySamples = newTodaySamples;
-    emit todaySamplesChanged();
+    _next12HoursSamples = newNext12HoursSamples;
+    emit next12HoursSamplesChanged();
 }
 
 QList<WeatherReportSample *> WeatherService::tomorrowSamples() const

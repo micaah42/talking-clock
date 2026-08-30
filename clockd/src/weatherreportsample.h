@@ -13,6 +13,7 @@ class WeatherReportNextHours : public QObject
     Q_PROPERTY(Type type READ type WRITE setType NOTIFY typeChanged FINAL)
     Q_PROPERTY(QString symbolCode READ symbolCode WRITE setSymbolCode NOTIFY symbolCodeChanged FINAL)
     Q_PROPERTY(double precipitationAmount READ precipitationAmount WRITE setPrecipitationAmount NOTIFY precipitationAmountChanged FINAL)
+    Q_PROPERTY(double probabilityOfPrecipitation READ probabilityOfPrecipitation WRITE setProbabilityOfPrecipitation NOTIFY probabilityOfPrecipitationChanged FINAL)
 
 public:
     enum Type {
@@ -27,22 +28,26 @@ public:
     Type type() const;
     QString symbolCode() const;
     double precipitationAmount() const;
+    double probabilityOfPrecipitation() const;
 
 signals:
     void typeChanged();
     void symbolCodeChanged();
     void precipitationAmountChanged();
+    void probabilityOfPrecipitationChanged();
 
 protected:
     void setType(const Type &newType);
     void setSymbolCode(const QString &newSymbolCode);
     void setPrecipitationAmount(double newPrecipitationAmount);
+    void setProbabilityOfPrecipitation(double newProbabilityOfPrecipitation);
 
 private:
     friend class WeatherService;
     Type _type;
     QString _symbolCode;
     double _precipitationAmount;
+    double _probabilityOfPrecipitation;
 };
 
 class WeatherReportSample : public QObject
