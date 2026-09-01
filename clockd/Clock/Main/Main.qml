@@ -18,20 +18,22 @@ import "../Style"
 import "."
 
 Item {
+    id: clockMain
     readonly property real sidebarWidth: width / 2
     readonly property real drawerHeight: 128
+    objectName: "clockMain"
 
     Component.onCompleted: {
-        EventFilter.installToObject(EventFilter.application)
-        LightingInit.init()
-        TimeService.now
-        ChatBotInit
+        EventFilter.installToObject(EventFilter.application);
+        LightingInit.init();
+        TimeService.now;
+        ChatBotInit;
     }
 
     Connections {
         target: EventFilter
         function onButtonClicked() {
-            MaterialSounds.playUiTapVariant()
+            MaterialSounds.playUiTapVariant();
         }
     }
 
@@ -39,8 +41,6 @@ Item {
         id: spaceScene
         anchors.fill: parent
     }
-
-
 
     MouseArea {
         anchors.fill: parent
@@ -99,33 +99,56 @@ Item {
                         delay: 850
 
                         onClicked: {
-                            sideBarItem.muteAlarms()
+                            sideBarItem.muteAlarms();
                         }
                         onReleased: {
                             if (!wasActivated)
-                                return
-
+                                return;
                             for (let alarm of ActiveAlarmListModel.asList) {
                                 if (alarm.singleShot && false)
                                     // TODO: alarm should be destroyed but:
                                     // "Error: Invalid attempt to destroy() an indestructible object"
-                                    alarm.destroy(1000)
+                                    alarm.destroy(1000);
                             }
 
-                            ActiveAlarmListModel.clear()
-                            wasActivated = false
+                            ActiveAlarmListModel.clear();
+                            wasActivated = false;
                         }
                     }
+
                     MainMenuButton {
+                        id: snoozeButton
                         Material.background: Theme.accentDark
                         Layout.preferredWidth: parent.width / 3
                         Layout.fillHeight: true
                         contentItem: SleepyBedItem {}
                         onClicked: {
                             for (let alarm of ActiveAlarmListModel.asList) {
-                                alarm.snooze(5)
+                                alarm.snooze(5);
                             }
-                            ActiveAlarmListModel.clear()
+                            ActiveAlarmListModel.clear();
+                        }
+
+                        onPressAndHold: selectMenu.open()
+
+                        Menu {
+                            id: selectMenu
+                            parent: snoozeButton
+                            width: snoozeButton.width
+                            y: -height - 8
+
+                            Repeater {
+                                model: [30, 20, 10]
+                                delegate: CMenuItem {
+                                    text: modelData
+                                    onTriggered: {
+                                        for (let alarm of ActiveAlarmListModel.asList) {
+                                            alarm.snooze(modelData);
+                                        }
+                                        ActiveAlarmListModel.clear();
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -138,8 +161,8 @@ Item {
             anchors.topMargin: 8
 
             onAlarmAdded: {
-                mainMenu.currentPage = null
-                menuDrawer.open = true
+                mainMenu.currentPage = null;
+                menuDrawer.open = true;
             }
         }
         content.data: Clock {
@@ -184,39 +207,39 @@ Item {
     Connections {
         target: EventFilter
         function onUserInactive() {
-            mainMenu.currentPage = null
+            mainMenu.currentPage = null;
 
             if (!sideBarItem.hasActiveAlarms)
-                menuDrawer.open = false
+                menuDrawer.open = false;
         }
     }
 
     PerformancePopup {
         id: popup
         dialog.onAboutToShow: {
-            x = PerformanceConfiguration.x
-            y = PerformanceConfiguration.y
+            x = PerformanceConfiguration.x;
+            y = PerformanceConfiguration.y;
         }
 
         onDragStopped: {
-            PerformanceConfiguration.x = x
-            PerformanceConfiguration.y = y
-            console.log(x, y)
+            PerformanceConfiguration.x = x;
+            PerformanceConfiguration.y = y;
+            console.log(x, y);
         }
 
         Component.onCompleted: {
-            Style.fontFamily = FontService.family
-            popup.dialog.visible = Qt.binding(() => PerformanceConfiguration.visible)
+            Style.fontFamily = FontService.family;
+            popup.dialog.visible = Qt.binding(() => PerformanceConfiguration.visible);
         }
     }
 
     property int clickCounter: 0
     onClickCounterChanged: {
-        console.log(clickCounter)
-        clickResetTimer.restart()
+        console.log(clickCounter);
+        clickResetTimer.restart();
 
         if (clickCounter === 8)
-            spaceScene.startRocket()
+            spaceScene.startRocket();
     }
 
     Timer {

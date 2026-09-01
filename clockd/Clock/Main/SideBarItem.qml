@@ -83,7 +83,6 @@ ColumnLayout {
             id: tabBar
             Layout.leftMargin: 8
             Material.background: 'transparent'
-            Component.onCompleted: currentIndex = 2
 
             Repeater {
                 id: tabButtonRepeater
@@ -117,40 +116,58 @@ ColumnLayout {
         }
     }
 
-    Component {
-        id: pageLoader
-        FeedbackLoader {
-            id: loader
-
-            property string icon
-
-            Icon {
-                anchors.bottom: loader.bottom
-                anchors.right: loader.right
-                anchors.margins: -implicitHeight / 4
-                font.pixelSize: loader.width
-                opacity: Theme.o11
-                text: loader.icon
-            }
-        }
-    }
-
     CFrame {
+        id: frame
         Layout.fillHeight: true
         Layout.fillWidth: true
+        padding: 0
 
-        StackView {
-            anchors.fill: parent
-            property SideBarPage currentPage: hasActiveAlarms ? activeAlarmsPage : pages[tabBar.currentIndex]
+        contentItem: SwipeView {
+            id: swipeView
 
-            onCurrentPageChanged: {
-                const properties = {
-                    "sourceComponent": currentPage.page,
-                    "icon": currentPage.icon
-                }
+            visible: !hasActiveAlarms
+            currentIndex: tabBar.currentIndex
+            spacing: 32
 
-                replace(currentItem, pageLoader, properties)
+            onCurrentIndexChanged: {
+                if (tabBar.currentIndex !== currentIndex)
+                    tabBar.currentIndex = currentIndex
             }
+
+            Repeater {
+                model: pages
+                delegate: FeedbackLoader {
+                    required property SideBarPage modelData
+                    required property int index
+
+                    active: Math.abs(index - swipeView.currentIndex) <= 1
+                    sourceComponent: modelData.page
+
+                    Item {
+                        anchors.fill: parent
+                        anchors.rightMargin: -frame.rightPadding
+                        anchors.leftMargin: -frame.leftPadding
+                        anchors.margins: -frame.padding
+                        clip: true
+
+                        Icon {
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
+                            anchors.margins: -implicitHeight / 4
+                            font.pixelSize: parent.width
+                            opacity: Theme.o11
+                            text: modelData.icon
+                        }
+                    }
+                }
+            }
+        }
+
+        FeedbackLoader {
+            anchors.fill: parent
+            visible: hasActiveAlarms
+            active: hasActiveAlarms
+            sourceComponent: activeAlarmsPage.page
         }
     }
 

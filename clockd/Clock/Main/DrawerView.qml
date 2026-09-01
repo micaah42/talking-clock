@@ -15,6 +15,7 @@ Item {
 
     Item {
         id: sidebarContainer
+        objectName: 'sidebarContainer'
         height: root.height
         width: sidebarWidth
 
@@ -30,6 +31,7 @@ Item {
             anchors.fill: parent
             anchors.margins: 16
             anchors.rightMargin: 0
+
             clip: true
         }
     }
