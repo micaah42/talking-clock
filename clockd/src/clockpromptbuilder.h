@@ -6,10 +6,8 @@
 
 #include "actionday.h"
 #include "alarm.h"
-#include "chatbotresponseservice.h"
 
-#include "chatbotresponse.h"
-#include "listmodel.h"
+#include "enumutil.h"
 #include "setting.h"
 
 class PromptBuilder : public QObject
@@ -17,6 +15,8 @@ class PromptBuilder : public QObject
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
+
+    Q_PROPERTY(EnumUtilBase *moodEnum READ moodEnum CONSTANT FINAL)
 public:
     enum Mood {
         Enthusiastic,
@@ -30,11 +30,14 @@ public:
         HomicidalSpaceAI,
         Formal,
         ExtremelyRude,
+        DisappointedParent,
     };
 
     Q_ENUM(Mood);
 
     explicit PromptBuilder(QObject *parent = nullptr);
+
+    EnumUtilBase *moodEnum() const;
 
 public slots:
     static QString create(
@@ -47,6 +50,9 @@ public slots:
     );
 
     static QString sanitizeOutput(const QString &input);
+
+private:
+    EnumUtilBase *_moodEnum;
 };
 
 class PromptBuilderSettings : public QObject
@@ -57,6 +63,7 @@ class PromptBuilderSettings : public QObject
 
     Q_PROPERTY(PromptBuilder::Mood mood READ mood WRITE setMood NOTIFY moodChanged FINAL)
     Q_PROPERTY(bool showPrompt READ showPrompt WRITE setShowPrompt NOTIFY showPromptChanged FINAL)
+    Q_PROPERTY(QString model READ model WRITE setModel NOTIFY modelChanged FINAL)
 
 public:
     explicit PromptBuilderSettings(QObject *parent = nullptr);
@@ -67,14 +74,20 @@ public:
     bool showPrompt() const;
     void setShowPrompt(bool newShowPrompt);
 
+    QString model() const;
+    void setModel(const QString &newModel);
+
 signals:
     void moodChanged();
 
     void showPromptChanged();
 
+    void modelChanged();
+
 private:
     Setting<PromptBuilder::Mood> _mood;
     Setting<bool> _showPrompt;
+    QString _model;
 };
 
 #endif // CLOCKPROMPTBUILDER_H

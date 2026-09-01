@@ -9,7 +9,7 @@
 #include <QUuid>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "chatbotresponse")
+Q_LOGGING_CATEGORY(self, "chatbotresponse", QtWarningMsg)
 }
 
 ChatBotResponse::ChatBotResponse(QNetworkReply *reply, QObject *parent)
@@ -141,7 +141,8 @@ QByteArray getEnvOr(const char *variable, const char *defaultValue)
 
 void ChatBotResponse::startTtsProcess()
 {
-    static const QString LLamaTttsProgram = getEnvOr("LLAMA_TTS_PROGRAM", "/usr/bin/llama-tts");
+    // static const QString LLamaTttsProgram = getEnvOr("LLAMA_TTS_PROGRAM", "/usr/bin/llama-tts");
+    static const QString EspeakTttsProgram = getEnvOr("ESPEAK_TTS_PROGRAM", "/usr/bin/espeak");
     qCInfo(self) << this << "Starting TTS process for text:" << _text.left(50);
 
     this->setTtsStatus(TtsStatus::Processing);
@@ -161,7 +162,21 @@ void ChatBotResponse::startTtsProcess()
 
     // Build arguments for llama-tts
 
-    _ttsProcess->start(LLamaTttsProgram, {"--tts-oute-default", "-o", _ttsOutputFile, "-p", _text});
+    _ttsProcess->start(
+        EspeakTttsProgram,
+        {
+            "-a",
+            "150", // amplitude
+
+            "-s",
+            "160", // speed
+
+            "-w",
+            _ttsOutputFile, // output wave file
+
+            _text,
+        }
+    );
     qCInfo(self) << this << _ttsProcess->program() << _ttsProcess->arguments();
 }
 

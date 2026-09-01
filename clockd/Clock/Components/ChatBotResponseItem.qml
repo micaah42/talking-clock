@@ -109,9 +109,9 @@ ColumnLayout {
         spacing: 8
 
         CToolButton {
-            onClicked: root.accepted()
-            enabled: root.done
-            text: Icons.speaker
+            enabled: root.response.ttsStatus === ChatBotResponse.Done
+            onClicked: player.playing ? player.stop() : player.play()
+            text: player.playing ? Icons.stop : Icons.play_arrow
         }
         CToolButton {
             onClicked: root.accepted()
@@ -127,5 +127,12 @@ ColumnLayout {
         onTriggered: count += 1
         interval: 15
         repeat: true
+    }
+
+    Timer {
+        id: autoAccept
+        onTriggered: root.accepted()
+        interval: 600 * 1000
+        running: true
     }
 }

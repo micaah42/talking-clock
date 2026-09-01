@@ -33,34 +33,10 @@ Section {
             id: moods
             Layout.fillWidth: true
             placeholderText: 'Mood'
-            readonly property var values: [//@
-                PromptBuilder.Enthusiastic, //@
-                PromptBuilder.Knightly, //@
-                PromptBuilder.Angry, //@
-                PromptBuilder.Deranged, //@
-                PromptBuilder.Stoned, //@
-                PromptBuilder.Depressed, //@
-                PromptBuilder.Alien, //@
-                PromptBuilder.SlightlyUpset, //@
-                PromptBuilder.HomicidalSpaceAI, //@
-                PromptBuilder.Formal //@
-            ]
-            model: [//@
-                'Enthusiastic', //@
-                'Knightly', //@
-                'Angry', //@
-                'Deranged', //@
-                'Stoned', //@
-                'Depressed', //@
-                'Alien', //@
-                'SlightlyUpset', //@
-                'HomicidalSpaceAI', //@
-                'Formal' //@
-            ]
-
-            currentIndex: values.indexOf(PromptBuilderSettings.mood)
+            model: PromptBuilder.moodEnum.keys
+            currentIndex: model.indexOf(PromptBuilderSettings.mood)
             onActivated: function (index) {
-                PromptBuilderSettings.mood = values[index]
+                PromptBuilderSettings.mood = PromptBuilder.moodEnum.values[index]
             }
         }
         CButton {
@@ -72,8 +48,7 @@ Section {
 
             onClicked: {
                 const alarms = AlarmService.nextAlarm ? [AlarmService.nextAlarm] : []
-                const prompt = _promptBuilder.create(alarms, ActionDayService.days, [],
-                                                     moods.values[moods.currentIndex])
+                const prompt = _promptBuilder.create([], [], [], PromptBuilderSettings.mood, new Date(0))
                 const modelId = models.model[models.currentIndex]
                 const response = _ollamaService.generate(prompt, modelId, root)
 

@@ -14,7 +14,7 @@ QtObject {
     property PromptBuilder promptBuilder: PromptBuilder
 
     function addPrompt(prompt) {
-        listModel.append(ollamaService.generate(prompt, '', listModel))
+        listModel.append(ollamaService.generate(prompt, PromptBuilderSettings.model, listModel))
     }
 
     function addBasicPrompt(extraString) {
@@ -31,7 +31,7 @@ QtObject {
     property string nextAlarmPrompt: {
         const alarm = AlarmService.nextAlarm
         if (!alarm)
-        return ''
+            return ''
 
         const days = ActionDayService.days
         const mood = PromptBuilderSettings.mood
@@ -48,7 +48,8 @@ QtObject {
         interval: 15000
         onTriggered: {
             console.info('update next alarm response for', nextAlarmPrompt)
-            ChatBotResponseService.alarmResponse = ollamaService.generate(nextAlarmPrompt, '', ChatBotResponseService)
+            ChatBotResponseService.alarmResponse = ollamaService.generate(nextAlarmPrompt, PromptBuilderSettings.model,
+                                                                          ChatBotResponseService)
         }
     }
 
@@ -56,6 +57,9 @@ QtObject {
         target: AlarmService
 
         function onAlarmTriggered(_alarm) {
+            if (ChatBotResponseService.alarmResponse === null)
+                return
+
             listModel.append(ChatBotResponseService.alarmResponse)
             ChatBotResponseService.alarmResponse.parent = listModel
             ChatBotResponseService.alarmResponse = null

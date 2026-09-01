@@ -8,7 +8,7 @@
 #include <QRegularExpression>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "ollamaservice")
+Q_LOGGING_CATEGORY(self, "ollamaservice", QtWarningMsg)
 }
 
 QNetworkRequest OllamaService::ollamaRequest(const QString &endpoint)

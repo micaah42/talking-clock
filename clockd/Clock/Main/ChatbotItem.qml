@@ -80,7 +80,7 @@ ColumnLayout {
                 }
             }
 
-            onAccepted: ChatBotInit.listModel.removeAt(index, 1)
+            onAccepted: index => ChatBotInit.listModel.removeAt(index, 1)
             Layout.fillWidth: true
             response: modelData
         }

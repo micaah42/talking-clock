@@ -8,7 +8,7 @@
 #include <QNetworkReply>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "lamacppservice", QtInfoMsg)
+Q_LOGGING_CATEGORY(self, "chatbotservice.llamacpp", QtInfoMsg)
 }
 
 QNetworkRequest LLamaCppService::llamaCppRequest(const QString &endpoint)
@@ -28,16 +28,14 @@ LLamaCppService::LLamaCppService(QObject *parent)
 ChatBotResponse *LLamaCppService::generate(const QString &prompt, const QString &model, QObject *parent)
 {
     QJsonObject requestJson{
-        {"messages",
-         QJsonArray{
-             QJsonObject{{"content", prompt}, {"role", "user"}},
-         }},
-        // {"reasoning_format", "auto"},
-        // {"timings_per_token", true},
-        // {"return_progress", true},
+        {"model", !model.isEmpty() || this->models().empty() ? model : this->models().first()},
+        {"temperature", 1.2},
         {"stream", true},
-        // {"temperature", 1.0},
-        // {"n_predict", 512},
+        {"messages",
+         QJsonArray{QJsonObject{
+             {"content", prompt},
+             {"role", "user"},
+         }}},
     };
 
     auto request = LLamaCppService::llamaCppRequest("chat/completions");
@@ -67,7 +65,15 @@ ChatBotResponse *LLamaCppService::generate(const QString &prompt, const QString 
                 continue;
 
             qCDebug(self) << this << reply << "received chunk:" << bytes;
-            auto object = LLamaCppService::parseResponse(bytes).object();
+
+            static const QByteArray startString("data: ");
+
+            if (!bytes.startsWith(startString)) {
+                qCWarning(self) << "expected starts with" << startString << "got:" << bytes.left(startString.size());
+                return;
+            }
+
+            auto object = LLamaCppService::parseResponse(bytes.mid(startString.size())).object();
 
             auto error = object["error"];
             if (error.isString()) {
@@ -96,23 +102,12 @@ ChatBotResponse *LLamaCppService::generate(const QString &prompt, const QString 
 
 void LLamaCppService::refreshIsAvailable()
 {
-    this->refreshVersion();
+    this->refreshModels();
 }
 
 void LLamaCppService::refreshVersion()
 {
-    auto request = LLamaCppService::llamaCppRequest("models");
-    auto reply = _nam.get(request);
-    this->connectReplyError(reply);
-
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        auto object = LLamaCppService::parseResponse(reply->readAll()).object();
-        // llama.cpp doesn't provide version via this endpoint, set a default
-        this->setVersion("llama.cpp");
-        this->setIsAvailable(true);
-
-        reply->deleteLater();
-    });
+    //
 }
 
 void LLamaCppService::refreshModels()
@@ -139,15 +134,9 @@ void LLamaCppService::refreshModels()
 
 QJsonDocument LLamaCppService::parseResponse(const QByteArray &bytes)
 {
-    static const QByteArray startString("data: ");
-
-    if (!bytes.startsWith(startString)) {
-        qCWarning(self) << "expected starts with" << startString;
-        return {};
-    }
 
     QJsonParseError parseError;
-    auto const document = QJsonDocument::fromJson(bytes.mid(startString.size()), &parseError);
+    auto const document = QJsonDocument::fromJson(bytes, &parseError);
 
     if (parseError.error != QJsonParseError::NoError) {
         qCWarning(self) << "failed to parse response:" << parseError.errorString() << bytes;

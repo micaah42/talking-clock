@@ -3,11 +3,12 @@
 #include <QLoggingCategory>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "promptbuilder")
+Q_LOGGING_CATEGORY(self, "promptbuilder", QtWarningMsg)
 }
 
 PromptBuilder::PromptBuilder(QObject *parent)
     : QObject{parent}
+    , _moodEnum{new EnumUtil<Mood>{this}}
 {}
 
 QString alarmsStringFromList(const QList<Alarm *> &alarms)
@@ -75,25 +76,27 @@ QString PromptBuilder::create(
     auto moodModifier = [&]() {
         switch (mood) {
         case Enthusiastic:
-            return "an enthusiastic";
+            return "an enthusiastic assistant";
         case Knightly:
-            return "an mediaval knight's";
+            return "an mediaval knight's squire";
         case Angry:
-            return "an angry";
+            return "an angry & grumpy person";
         case Deranged:
             return "a deranged psychopath";
         case Stoned:
-            return "a stoned hippie";
+            return "a stoned hippie (but don't over do it)";
         case Depressed:
             return "a depressed robot";
         case Alien:
             return "an alien";
         case SlightlyUpset:
-            return "a slightly upset";
+            return "a slightly upset but polite person";
         case HomicidalSpaceAI:
             return "a homicidal space AI";
         case ExtremelyRude:
             return "an extremely rude and pushy";
+        case DisappointedParent:
+            return "a very disappointed parent";
         case Formal:
         default:
             return "a formal and professional";
@@ -103,9 +106,7 @@ QString PromptBuilder::create(
     if (!extra.isEmpty())
         prompt += extra;
 
-    QString command = QString{"Write a message in natural language as if you were %1 assistant. Avoid emojis and special signs."}.arg(
-        moodModifier
-    );
+    QString command = QString{"Reply in natural language as if you were %1. Avoid emojis and non-ascii signs."}.arg(moodModifier);
 
     prompt += command;
 
@@ -191,10 +192,20 @@ void PromptBuilderSettings::setShowPrompt(bool newShowPrompt)
     emit showPromptChanged();
 }
 
+QString PromptBuilderSettings::model() const
+{
+    return _model;
+}
 
+void PromptBuilderSettings::setModel(const QString &newModel)
+{
+    if (_model == newModel)
+        return;
+    _model = newModel;
+    emit modelChanged();
+}
 
-
-
-
-
-
+EnumUtilBase *PromptBuilder::moodEnum() const
+{
+    return _moodEnum;
+}
