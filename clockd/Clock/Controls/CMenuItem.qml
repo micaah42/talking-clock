@@ -6,6 +6,11 @@ import Clock
 import "../Style"
 
 MenuItem {
-    font.pixelSize: Theme.fontSizeMedium
-    font.family: FontService.family
+    id: root
+
+    contentItem: CLabel {
+        horizontalAlignment: Text.AlignHCenter
+        font.pixelSize: Theme.fontSizeLarge
+        text: root.text
+    }
 }
