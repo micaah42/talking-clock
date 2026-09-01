@@ -5,7 +5,7 @@
 #include <QRegularExpression>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "linkpreviewservice")
+Q_LOGGING_CATEGORY(self, "linkpreviewservice", QtWarningMsg)
 }
 
 LinkPreviewService::LinkPreviewService(QObject *parent)
@@ -33,6 +33,7 @@ LinkPreview *LinkPreviewService::getLinkPreview(const QUrl &url, QObject *parent
         }
 
         QString html = QString::fromUtf8(reply->readAll());
+        qCDebug(self) << "received html:" << html;
 
         auto extractMeta = [&](const QString &property) -> QString {
             // Matches <meta property="og:title" content="Some Title"> or reversed
@@ -60,12 +61,10 @@ LinkPreview *LinkPreviewService::getLinkPreview(const QUrl &url, QObject *parent
         preview->setOgUrl(extractMeta("url"));
         preview->setOgSiteName(extractMeta("site_name"));
 
-        // Basic validation: if we didn't even get a title, we might consider it a failure
-        if (preview->ogTitle().isEmpty() && preview->ogDescription().isEmpty()) {
+        if (preview->ogTitle().isEmpty() && preview->ogDescription().isEmpty())
             preview->setStatus(LinkPreview::Error);
-        } else {
+        else
             preview->setStatus(LinkPreview::Success);
-        }
     });
 
     return preview;
