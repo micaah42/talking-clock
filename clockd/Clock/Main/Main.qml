@@ -24,16 +24,16 @@ Item {
     objectName: "clockMain"
 
     Component.onCompleted: {
-        EventFilter.installToObject(EventFilter.application);
-        LightingInit.init();
-        TimeService.now;
-        ChatBotInit;
+        EventFilter.installToObject(EventFilter.application)
+        LightingInit.init()
+        TimeService.now
+        ChatBotInit
     }
 
     Connections {
         target: EventFilter
         function onButtonClicked() {
-            MaterialSounds.playUiTapVariant();
+            MaterialSounds.playUiTapVariant()
         }
     }
 
@@ -99,20 +99,20 @@ Item {
                         delay: 850
 
                         onClicked: {
-                            sideBarItem.muteAlarms();
+                            sideBarItem.muteAlarms()
                         }
                         onReleased: {
                             if (!wasActivated)
-                                return;
+                                return
                             for (let alarm of ActiveAlarmListModel.asList) {
                                 if (alarm.singleShot && false)
                                     // TODO: alarm should be destroyed but:
                                     // "Error: Invalid attempt to destroy() an indestructible object"
-                                    alarm.destroy(1000);
+                                    alarm.destroy(1000)
                             }
 
-                            ActiveAlarmListModel.clear();
-                            wasActivated = false;
+                            ActiveAlarmListModel.clear()
+                            wasActivated = false
                         }
                     }
 
@@ -124,9 +124,9 @@ Item {
                         contentItem: SleepyBedItem {}
                         onClicked: {
                             for (let alarm of ActiveAlarmListModel.asList) {
-                                alarm.snooze(5);
+                                alarm.snooze(5)
                             }
-                            ActiveAlarmListModel.clear();
+                            ActiveAlarmListModel.clear()
                         }
 
                         onPressAndHold: selectMenu.open()
@@ -143,9 +143,9 @@ Item {
                                     text: modelData
                                     onTriggered: {
                                         for (let alarm of ActiveAlarmListModel.asList) {
-                                            alarm.snooze(modelData);
+                                            alarm.snooze(modelData)
                                         }
-                                        ActiveAlarmListModel.clear();
+                                        ActiveAlarmListModel.clear()
                                     }
                                 }
                             }
@@ -161,8 +161,8 @@ Item {
             anchors.topMargin: 8
 
             onAlarmAdded: {
-                mainMenu.currentPage = null;
-                menuDrawer.open = true;
+                mainMenu.currentPage = null
+                menuDrawer.open = true
             }
         }
         content.data: Clock {
@@ -207,44 +207,46 @@ Item {
     Connections {
         target: EventFilter
         function onUserInactive() {
-            mainMenu.currentPage = null;
+            mainMenu.currentPage = null
 
             if (!sideBarItem.hasActiveAlarms)
-                menuDrawer.open = false;
+                menuDrawer.open = false
         }
     }
 
     PerformancePopup {
         id: popup
         dialog.onAboutToShow: {
-            x = PerformanceConfiguration.x;
-            y = PerformanceConfiguration.y;
+            x = PerformanceConfiguration.x
+            y = PerformanceConfiguration.y
         }
 
         onDragStopped: {
-            PerformanceConfiguration.x = x;
-            PerformanceConfiguration.y = y;
-            console.log(x, y);
+            PerformanceConfiguration.x = x
+            PerformanceConfiguration.y = y
+            console.log(x, y)
         }
 
         Component.onCompleted: {
-            Style.fontFamily = FontService.family;
-            popup.dialog.visible = Qt.binding(() => PerformanceConfiguration.visible);
+            Style.fontFamily = FontService.family
+            popup.dialog.visible = Qt.binding(() => PerformanceConfiguration.visible)
         }
     }
 
     property int clickCounter: 0
     onClickCounterChanged: {
-        console.log(clickCounter);
-        clickResetTimer.restart();
-
+        clickResetTimer.restart()
         if (clickCounter === 8)
-            spaceScene.startRocket();
+            spaceScene.startRocket()
     }
 
     Timer {
         id: clickResetTimer
         onTriggered: clickCounter = 0
         interval: 1000
+    }
+
+    QuickTestEngineClickOverlay {
+        anchors.fill: parent
     }
 }
