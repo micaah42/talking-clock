@@ -58,7 +58,7 @@ def clockd() -> subprocess.Popen[str]:
         except subprocess.TimeoutExpired:
             process.kill()
             output, _ = process.communicate()
-        print(f"\n--- clockd {process_exit_status(process)} ---")
+        print(f"\n--- clockd exit status: {process_exit_status(process)} ---")
         if output:
             print(f"\n--- clockd logs ---\n{output}")
 
@@ -67,6 +67,7 @@ def clockd() -> subprocess.Popen[str]:
 def quick_test_engine(clockd: subprocess.Popen[str]) -> QuickTestEngine:
     """Connect to the QuickTestEngine instance created by clockd's main function."""
     time.sleep(0.5)
+    
     if clockd.poll() is not None:
         output, _ = clockd.communicate()
         pytest.fail(f"clockd {process_exit_status(clockd)} during startup:\n{output}")

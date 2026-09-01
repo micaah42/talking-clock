@@ -140,6 +140,13 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
 )
 
+include(CTest)
+option(TC_CLOCKD_BUILD_TESTING "Force building clockd tests even as a subproject" OFF)
+
+if (BUILD_TESTING AND (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR TC_CLOCKD_BUILD_TESTING))
+    add_subdirectory(tests/)
+endif()
+
 execute_process(COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/usr)
 execute_process(COMMAND cp -r ${CMAKE_CURRENT_LIST_DIR}/share ${CMAKE_CURRENT_BINARY_DIR}/usr)
 install(DIRECTORY share/ DESTINATION share/)

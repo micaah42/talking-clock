@@ -5,6 +5,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <QTimer>
 
 #ifndef TINYORM_USING_QTSQLDRIVERS
 #define TINYORM_USING_QTSQLDRIVERS
@@ -13,6 +14,7 @@
 #include <orm/db.hpp>
 
 #include "loghandling.h"
+#include <quicktestengine.h>
 
 void printApplicationStart();
 
@@ -50,6 +52,19 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.addImportPath(":/");
+
+    QTimer timer;
+    QuickTestEngine testEngine;
+    //  timer.setInterval(5000);
+    //  timer.callOnTimeout([&]() {
+    // testEngine.setEventLogging(!testEngine.eventLogging());
+    // if (!testEngine.eventLogging()) {
+    // auto startTime = testEngine.recording().start.toString("yyyy-MM-dd-hh-mm-ss");
+    // const auto filename = QString("recording_%1.json").arg(startTime);
+    // testEngine.saveRecording(filename);
+    // }
+    //  });
+    //  timer.start();
 
     qInfo() << "loading view...";
     engine.loadFromModule("Clock", "MainWindow");
