@@ -9,7 +9,7 @@
 #include <QStandardPaths>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "event")
+Q_LOGGING_CATEGORY(self, "event", QtWarningMsg)
 }
 
 EventFilter::EventFilter(QObject *parent)

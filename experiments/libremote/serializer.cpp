@@ -9,7 +9,7 @@
 #include "templatemodel.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "serializer")
+Q_LOGGING_CATEGORY(self, "serializer", QtWarningMsg)
 }
 
 VariantSerializer *VariantSerializer::I()

@@ -5,7 +5,7 @@
 #include <QPixmap>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "gradient")
+Q_LOGGING_CATEGORY(self, "gradient", QtWarningMsg)
 }
 
 template<typename Enum>

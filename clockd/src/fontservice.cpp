@@ -9,7 +9,7 @@
 #include "setting.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "fonts")
+Q_LOGGING_CATEGORY(self, "fonts", QtWarningMsg)
 }
 
 FontService::FontService(QQmlApplicationEngine *parent)

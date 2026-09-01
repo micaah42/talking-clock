@@ -3,7 +3,7 @@
 #include <QLoggingCategory>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "chatbotservice")
+Q_LOGGING_CATEGORY(self, "chatbotservice", QtWarningMsg)
 }
 
 ChatBotService::ChatBotService(QObject *parent)
@@ -41,6 +41,8 @@ void ChatBotService::setModels(const QStringList &newModels)
 {
     if (_models == newModels)
         return;
+
+    qCInfo(self) << "models changed:" << newModels;
     _models = newModels;
     emit modelsChanged();
 }

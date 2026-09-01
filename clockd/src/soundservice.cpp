@@ -6,7 +6,7 @@
 #include "pathservice.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "sounds")
+Q_LOGGING_CATEGORY(self, "sounds", QtWarningMsg)
 }
 
 SoundService::SoundService(QObject *parent)

@@ -12,7 +12,7 @@
 #include <QLoggingCategory>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "paths")
+Q_LOGGING_CATEGORY(self, "paths", QtWarningMsg)
 }
 
 QDir PathService::_shareDir = []() {

@@ -4,7 +4,7 @@
 #include <QLoggingCategory>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "about")
+Q_LOGGING_CATEGORY(self, "about", QtWarningMsg)
 }
 
 About::About(QObject *parent)

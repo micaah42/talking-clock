@@ -7,7 +7,7 @@
 #include "pathservice.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "actiondays")
+Q_LOGGING_CATEGORY(self, "actiondays", QtWarningMsg)
 }
 
 using namespace Orm;

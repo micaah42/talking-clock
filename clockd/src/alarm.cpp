@@ -5,7 +5,7 @@
 #include "listmodel.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "alarm");
+Q_LOGGING_CATEGORY(self, "alarm", QtWarningMsg)
 }
 
 Alarm::Alarm(QObject *parent)

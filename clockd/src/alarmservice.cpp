@@ -12,7 +12,7 @@
 #include "pathservice.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "alarms")
+Q_LOGGING_CATEGORY(self, "alarms", QtWarningMsg)
 }
 
 AlarmService::AlarmService(const int tickRate, QObject *parent)

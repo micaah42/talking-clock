@@ -6,7 +6,7 @@
 #include <QProcess>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "systemlight");
+Q_LOGGING_CATEGORY(self, "systemlight", QtWarningMsg);
 }
 
 SystemLight::SystemLight(const QString &path, QObject *parent)

@@ -4,7 +4,7 @@
 #include <QProcess>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "timezone");
+Q_LOGGING_CATEGORY(self, "timezone", QtWarningMsg);
 }
 
 TimeZone::TimeZone(const QByteArray &id, QObject *parent)

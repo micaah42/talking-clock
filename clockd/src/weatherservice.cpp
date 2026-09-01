@@ -13,7 +13,7 @@
 #include "weatherreportsample.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "weather")
+Q_LOGGING_CATEGORY(self, "weather", QtWarningMsg)
 }
 
 static const QHash<QString, QString> YR2MaterialSymbol{
