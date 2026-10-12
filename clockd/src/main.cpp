@@ -18,73 +18,66 @@
 
 void printApplicationStart();
 
-int main(int argc, char *argv[])
-{
-    if (true || qEnvironmentVariableIsEmpty("QT_IM_MODULE")) {
-        qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-    }
+int main(int argc, char *argv[]) {
+  if (true || qEnvironmentVariableIsEmpty("QT_IM_MODULE")) {
+    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+  }
 
-    QCoreApplication::setApplicationName("talking-clock");
-    QCoreApplication::setOrganizationName("micaah");
-    QCoreApplication::setOrganizationDomain("org");
-    QCoreApplication::setApplicationVersion("0.1");
-    LogHandling::init();
+  QCoreApplication::setApplicationName("talking-clock");
+  QCoreApplication::setOrganizationName("micaah");
+  QCoreApplication::setOrganizationDomain("org");
+  QCoreApplication::setApplicationVersion("0.1");
+  LogHandling::init();
 
-    printApplicationStart();
+  printApplicationStart();
 
-    QGuiApplication::setQuitOnLastWindowClosed(false);
-    QGuiApplication app(argc, argv);
-    app.setWindowIcon(QIcon{":/favicon.ico"});
+  // QGuiApplication::setQuitOnLastWindowClosed(false);
+  QGuiApplication app(argc, argv);
+  app.setWindowIcon(QIcon{":/favicon.ico"});
 
-    QQuickStyle::setStyle("Material");
+  QQuickStyle::setStyle("Material");
 
 #ifndef Q_PROCESSOR_X86_64
-    app.setOverrideCursor(QCursor(Qt::BlankCursor));
+  app.setOverrideCursor(QCursor(Qt::BlankCursor));
 #endif
 
-    auto manager = Orm::DB::create({
-        {"driver", "QSQLITE"},
-        {"database", qEnvironmentVariable("DB_DATABASE", "./usr/share/clockd/actiondays.sqlite")},
-        {"foreign_key_constraints", qEnvironmentVariable("DB_FOREIGN_KEYS", "true")},
-        {"check_database_exists", true},
-        {"prefix", ""},
-    });
+  auto manager = Orm::DB::create({
+      {"driver", "QSQLITE"},
+      {"database", qEnvironmentVariable(
+                       "DB_DATABASE", "./usr/share/clockd/actiondays.sqlite")},
+      {"foreign_key_constraints",
+       qEnvironmentVariable("DB_FOREIGN_KEYS", "true")},
+      {"check_database_exists", true},
+      {"prefix", ""},
+  });
 
-    QQmlApplicationEngine engine;
-    engine.addImportPath(":/");
+  QuickTestEngine testEngine;
+  qmlRegisterSingletonInstance("QuickTestEngine", 1, 0, "QuickTestEngine",
+                               &testEngine);
 
-    QTimer timer;
-    QuickTestEngine testEngine;
-    //  timer.setInterval(5000);
-    //  timer.callOnTimeout([&]() {
-    // testEngine.setEventLogging(!testEngine.eventLogging());
-    // if (!testEngine.eventLogging()) {
-    // auto startTime = testEngine.recording().start.toString("yyyy-MM-dd-hh-mm-ss");
-    // const auto filename = QString("recording_%1.json").arg(startTime);
-    // testEngine.saveRecording(filename);
-    // }
-    //  });
-    //  timer.start();
+  QQmlApplicationEngine engine;
+  engine.addImportPath(":/");
 
-    qInfo() << "loading view...";
-    engine.loadFromModule("Clock", "MainWindow");
-    qInfo() << "done!";
+  qInfo() << "loading view...";
+  engine.loadFromModule("Clock", "MainWindow");
+  qInfo() << "done!";
 
-    return app.exec();
+  return app.exec();
 }
 
-void printApplicationStart()
-{
-    auto appName = QCoreApplication::applicationName();
-    auto buildTime = QString("build time: %1 %2").arg(__DATE__, __TIME__);
-    auto appVersion = QString("application version: %1").arg(QCoreApplication::applicationVersion());
-    auto qtVersion = QString("qt version: %1").arg(QT_VERSION_STR);
-    qInfo().noquote() << QString().fill('#', 82);
-    qInfo().noquote() << "#  " + appName.leftJustified(75, ' ') << "  #";
-    qInfo().noquote() << "#  " + QString().fill('-', 75) << "  #";
-    qInfo().noquote() << "#  " + buildTime.leftJustified(75, ' ') << "  #";
-    qInfo().noquote() << "#  " + appVersion.leftJustified(75, ' ') << "  #";
-    qInfo().noquote() << "#  " + qtVersion.leftJustified(75, ' ') << "  #";
-    qInfo().noquote() << "#  " + QString("by micaah42").rightJustified(75, ' ') << "  #";
-    qInfo().noquote() << QString().fill('#', 82);
+void printApplicationStart() {
+  auto appName = QCoreApplication::applicationName();
+  auto buildTime = QString("build time: %1 %2").arg(__DATE__, __TIME__);
+  auto appVersion = QString("application version: %1")
+                        .arg(QCoreApplication::applicationVersion());
+  auto qtVersion = QString("qt version: %1").arg(QT_VERSION_STR);
+  qInfo().noquote() << QString().fill('#', 82);
+  qInfo().noquote() << "#  " + appName.leftJustified(75, ' ') << "  #";
+  qInfo().noquote() << "#  " + QString().fill('-', 75) << "  #";
+  qInfo().noquote() << "#  " + buildTime.leftJustified(75, ' ') << "  #";
+  qInfo().noquote() << "#  " + appVersion.leftJustified(75, ' ') << "  #";
+  qInfo().noquote() << "#  " + qtVersion.leftJustified(75, ' ') << "  #";
+  qInfo().noquote() << "#  " + QString("by micaah42").rightJustified(75, ' ')
+                    << "  #";
+  qInfo().noquote() << QString().fill('#', 82);
 }

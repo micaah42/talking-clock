@@ -19,3 +19,13 @@ MAINSCREEN_SIDEBAR_TABBAR_PATH: Path = [
     PathPart(id="sideBarItem"),
     PathPart(id="tabBar"),
 ]
+
+MAINPAGE_CLOSE_BUTTON_PATH: Path = [
+    *MAINSCREEN_PATH,
+    PathPart(objectName="PageCloseButton"),
+]
+
+OVERLAY_PATH: Path = [
+    PathPart(id="window"),
+    PathPart(propertyName="overlayItem"),
+]
