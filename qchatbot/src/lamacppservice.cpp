@@ -27,8 +27,9 @@ LLamaCppService::LLamaCppService(QObject *parent)
 
 ChatBotResponse *LLamaCppService::generate(const QString &prompt, const QString &model, QObject *parent)
 {
+    const auto models = this->models();
     QJsonObject requestJson{
-        {"model", !model.isEmpty() || this->models().empty() ? model : this->models().first()},
+        {"model", !model.isEmpty() || models.empty() ? model : models.first()},
         {"temperature", 1.2},
         {"stream", true},
         {"messages",

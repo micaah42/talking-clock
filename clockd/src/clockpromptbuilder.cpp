@@ -65,7 +65,7 @@ QString PromptBuilder::create(
         QString actionDayPrompt = QStringList{
             "The following international action",
             actionDays.size() == 1 ?  "day takes" : "days take",
-            "place today, you may reference one ore two of them:\n",
+            "place today, you may reference some of them:\n",
         }.join(' ');
 
         actionDayPrompt += actionDayStrings.join("\n");
@@ -107,7 +107,6 @@ QString PromptBuilder::create(
         prompt += extra;
 
     QString command = QString{"Reply in natural language as if you were %1. Avoid emojis and non-ascii signs."}.arg(moodModifier);
-
     prompt += command;
 
     qCInfo(self) << "built prompt:" << prompt;
