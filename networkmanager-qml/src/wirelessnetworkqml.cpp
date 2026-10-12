@@ -6,7 +6,7 @@
 #include <QLoggingCategory>
 
 namespace {
-Q_LOGGING_CATEGORY(self, "wirelessnetwork")
+Q_LOGGING_CATEGORY(self, "wirelessnetwork", QtWarningMsg)
 }
 
 WirelessNetwork::WirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &wirelessNetwork, QObject *parent)

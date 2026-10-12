@@ -7,7 +7,7 @@
 #include "wirelessnetworkqml.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "nmqml.wireless")
+Q_LOGGING_CATEGORY(self, "nmqml.wireless", QtWarningMsg)
 }
 
 WirelessDevice::WirelessDevice(NetworkManager::WirelessDevice::Ptr &wirelessDevice, QObject *parent)
@@ -17,6 +17,7 @@ WirelessDevice::WirelessDevice(NetworkManager::WirelessDevice::Ptr &wirelessDevi
     connect(_wirelessDevice.get(), &NM::WirelessDevice::activeConnectionChanged, this, &WirelessDevice::onActiveConnectionChanged);
     connect(_wirelessDevice.get(), &NM::WirelessDevice::activeAccessPointChanged, this, &WirelessDevice::onActiveAccessPointChanged);
     connect(_wirelessDevice.get(), &NM::WirelessDevice::networkAppeared, this, &WirelessDevice::onNetworkAppeared);
+
     connect(NM::settingsNotifier(), &NM::SettingsNotifier::connectionAdded, this, &WirelessDevice::onConnectionAdded);
 
     const auto networks = _wirelessDevice->networks();

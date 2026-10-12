@@ -5,7 +5,7 @@
 #include "dbusreplyqml.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "nmqml.connection")
+Q_LOGGING_CATEGORY(self, "nmqml.connection", QtWarningMsg)
 }
 
 Connection::Connection(const NetworkManager::Connection::Ptr &connection, QObject *parent)
@@ -61,15 +61,30 @@ QString Connection::name() const
 
 void Connection::fetchSecrets()
 {
-    auto pending = _connection->secrets("802-11-wireless-security.psk");
-    auto reply = new DBusReply{pending, this};
+    {
+        auto pending = _connection->secrets("802-11-wireless-security.psk");
+        auto reply = new DBusReply{pending, this};
 
-    connect(reply, &DBusReply::finished, this, [reply]() {
-        if (reply->status() == DBusReply::Successful)
-            qCInfo(self) << "received secrets:" << reply->value();
-        else
-            qCWarning(self) << "failed to get secrets!";
+        connect(reply, &DBusReply::finished, this, [reply]() {
+            if (reply->status() == DBusReply::Successful)
+                qCInfo(self) << "received secrets:" << reply->value();
+            else
+                qCWarning(self) << "failed to get secrets!";
 
-        reply->deleteLater();
-    });
+            reply->deleteLater();
+        });
+    }
+    {
+        auto pending = _connection->secrets("wireless-security");
+        auto reply = new DBusReply{pending, this};
+
+        connect(reply, &DBusReply::finished, this, [reply]() {
+            if (reply->status() == DBusReply::Successful)
+                qCInfo(self) << "received secrets:" << reply->value();
+            else
+                qCWarning(self) << "failed to get secrets!";
+
+            reply->deleteLater();
+        });
+    }
 }

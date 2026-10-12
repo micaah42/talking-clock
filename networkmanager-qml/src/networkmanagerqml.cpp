@@ -9,10 +9,12 @@
 #include "wirelessdeviceqml.h"
 
 namespace {
-Q_LOGGING_CATEGORY(self, "nmqml")
+Q_LOGGING_CATEGORY(self, "nmqml", QtWarningMsg)
 }
 
 NetworkManagerQml::NetworkManagerQml()
+    : _secretAgent{nullptr}
+    , _wirelessDevice{nullptr}
 {
     //_secretAgent = new NM::SecretAgent(QString{"talking-clock:%1"}.arg(getpid()));
     NM::setNetworkingEnabled(true);
