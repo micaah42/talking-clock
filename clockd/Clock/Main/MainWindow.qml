@@ -17,6 +17,7 @@ ApplicationWindow {
     onHeightChanged: console.warn(`window.height=${height}`)
     height: 1080 / 2
 
+    readonly property Item overlayItem: Overlay.overlay
     Material.background: Theme.background
     Material.primary: Theme.primaryDark
     Material.accent: Theme.accentDark

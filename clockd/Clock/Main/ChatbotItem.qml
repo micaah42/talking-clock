@@ -13,9 +13,23 @@ ColumnLayout {
     id: root
 
     property real animationOpacity: Theme.o24
+    readonly property bool animating: !currentStatusResponse.done
+    property ChatBotResponse currentStatusResponse
+    height: parent.height
 
-    readonly property bool animating: runningResponses.length
-    property var runningResponses: []
+    function updateStatus() {
+        if (currentStatusResponse)
+            currentStatusResponse.destroy(100)
+
+        const upcomingAlarms = [AlarmService.nextAlarm]
+        const currentAlarms = []
+        const actionDays = ActionDayService.days
+        const mood = PromptBuilderSettings.mood
+        const time = TimeService.now15Minutes
+        const extra = `The current weather is ${WeatherService.currentSymbol}, the temperature is ${WeatherService.current.airTemperature}°C`
+        const prompt = PromptBuilder.create(upcomingAlarms, currentAlarms, actionDays, mood, time, extra)
+        currentStatusResponse = LLamaCppService.generate(prompt, PromptBuilderSettings.model, root)
+    }
 
     RowLayout {
         Layout.fillWidth: true
@@ -24,7 +38,7 @@ ColumnLayout {
             Layout.fillWidth: true
             text: `Clock is chiming in...`
             size: CLabel.XLarge
-            Layout.bottomMargin: 4
+            Layout.bottomMargin: 8
         }
         Item {
             Layout.alignment: Qt.AlignTop
@@ -47,6 +61,12 @@ ColumnLayout {
                     }
                 }
 
+                CToolButton {
+                    anchors.centerIn: parent
+                    enabled: currentStatusResponse.done
+                    onClicked: updateStatus()
+                }
+
                 SequentialAnimation on opacity {
                     loops: Animation.Infinite
                     running: root.animating
@@ -67,28 +87,36 @@ ColumnLayout {
         }
     }
 
-    Repeater {
-        model: ChatBotInit.listModel
-        delegate: ChatBotResponseItem {
-            id: responseItem
-
-            Component.onDestruction: runningResponses = runningResponses.filter(x => x !== responseItem.response)
-            Component.onCompleted: runningResponses = runningResponses.concat([response])
-            onDoneChanged: {
-                if (responseItem.done) {
-                    runningResponses = runningResponses.filter(x => x !== responseItem.response)
-                }
-            }
-
-            onAccepted: index => ChatBotInit.listModel.removeAt(index, 1)
-            Layout.fillWidth: true
-            response: modelData
-        }
+    ChatBotResponseItem {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        response: currentStatusResponse
     }
 
-    CButton {
-        onClicked: ChatBotInit.addBasicPrompt()
-        font.family: Icons.fontFamily
-        text: Icons.chat
-    }
+    // Repeater {
+    //     model: ChatBotInit.listModel
+    //     delegate: ChatBotResponseItem {
+    //         id: responseItem
+
+    //         Component.onDestruction: runningResponses = runningResponses.filter(x => x !== responseItem.response)
+    //         Component.onCompleted: runningResponses = runningResponses.concat([response])
+    //         onDoneChanged: {
+    //             if (responseItem.done) {
+    //                 runningResponses = runningResponses.filter(x => x !== responseItem.response)
+    //             }
+    //         }
+
+    //         onAccepted: index => ChatBotInit.listModel.removeAt(index, 1)
+    //         Layout.fillWidth: true
+    //         response: modelData
+    //     }
+    // }
+    // RowLayout {
+    //     CButton {
+    //         onClicked: updateStatus()
+    //         font.family: Icons.fontFamily
+    //         text: Icons.chat
+    //     }
+    // }
+    Component.onCompleted: updateStatus()
 }

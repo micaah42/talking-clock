@@ -8,10 +8,11 @@ import Clock
 import "../Style"
 import "../Alarms"
 import "../Controls"
+import "../Components"
 
 ColumnLayout {
     id: root
-    spacing: 16
+    spacing: 8
 
     function muteAlarms() {
         muteAlarmsRequested()
@@ -25,25 +26,35 @@ ColumnLayout {
         text: `Active Alarms:`
     }
 
-    Repeater {
-        model: ActiveAlarmListModel
+    FlickableColumnLayout {
+        Layout.preferredHeight: Math.min(contentHeight, root.height / 2)
+        Layout.fillWidth: true
 
-        delegate: AlarmNotification {
-            id: d1
-            Layout.fillWidth: true
-            alarm: modelData
+        Repeater {
+            model: ActiveAlarmListModel
 
-            Connections {
-                target: root
-                function onMuteAlarmsRequested() {
-                    d1.muteAlarm()
+            delegate: AlarmNotification {
+                id: d1
+                Layout.fillWidth: true
+                alarm: modelData
+
+                Connections {
+                    target: ActiveAlarmListModel
+                    function onMuteAlarmsRequested() {
+                        d1.muteAlarm()
+                    }
                 }
             }
         }
     }
 
-    Item {
+    Divider {
+        Layout.fillWidth: true
+    }
+
+    ChatBotResponseItem {
         Layout.fillHeight: true
         Layout.fillWidth: true
+        response: ChatBotResponseService.alarmResponse
     }
 }

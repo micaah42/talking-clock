@@ -31,6 +31,7 @@ Item {
             bright: true
 
             CButton {
+                objectName: 'PageCloseButton'
                 height: parent.height
                 onClicked: closed()
                 bottomInset: 0

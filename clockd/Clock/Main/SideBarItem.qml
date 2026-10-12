@@ -9,13 +9,13 @@ import "../Style"
 import "../Alarms"
 import "../Controls"
 
-ColumnLayout {
+StackLayout {
     id: root
     readonly property AlarmListModel activeAlarms: ActiveAlarmListModel
     readonly property bool hasActiveAlarms: activeAlarms.length > 0
+    currentIndex: hasActiveAlarms ? 1 : 0
 
     signal alarmAdded(var alarm)
-    spacing: 8
 
     function muteAlarms() {
         muteAlarmsRequested()
@@ -52,123 +52,85 @@ ColumnLayout {
         SideBarPage {
             title: "Chatbot"
             icon: Icons.robot_2
-            page: Flickable {
-                contentHeight: item.implicitHeight
-                ChatbotItem {
-                    id: item
-                    width: parent.width
-                }
-            }
+            page: ChatbotItem {}
         }
     ]
 
-    SideBarPage {
-        id: activeAlarmsPage
-        title: "Active Alarms!"
-        icon: Icons.alarm
-        page: ActiveAlarmsItem {
-            id: activeAlarmsItem
+    ColumnLayout {
+        spacing: 8
 
-            Connections {
-                target: root
-                function onMuteAlarmsRequested() {
-                    activeAlarmsItem.muteAlarms()
+        RowLayout {
+            TabBar {
+                id: tabBar
+                Layout.leftMargin: 8
+                Material.background: 'transparent'
+                currentIndex: swipeView.currentIndex
+
+                Repeater {
+                    id: tabButtonRepeater
+                    model: pages
+                    delegate: TabButton {
+                        id: d
+                        Material.background: 'transparent'
+                        implicitWidth: height
+                        font.pixelSize: Theme.fontSizeXLarge
+                        font.family: Icons.fontFamily
+                        text: modelData.icon
+                        onClicked: swipeView.currentIndex = index
+                    }
                 }
             }
-        }
-    }
 
-    RowLayout {
-        TabBar {
-            id: tabBar
-            Layout.leftMargin: 8
-            Material.background: 'transparent'
-
-            Repeater {
-                id: tabButtonRepeater
-                model: pages
-                delegate: TabButton {
-                    id: d
-                    Material.background: 'transparent'
-                    implicitWidth: height
-                    font.pixelSize: Theme.fontSizeXLarge
-                    font.family: Icons.fontFamily
-                    text: modelData.icon
-                }
+            Item {
+                Layout.fillWidth: true
             }
         }
 
-        Item {
+        CFrame {
+            id: frame
+            Layout.fillHeight: true
             Layout.fillWidth: true
-        }
+            padding: 0
 
-        Icon {
-            visible: root.hasActiveAlarms
-            Layout.preferredWidth: height
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Theme.fontSizeXLarge
-            text: Icons.priority_high
+            contentItem: SwipeView {
+                id: swipeView
 
-            background: Rectangle {
-                color: Theme.accent
-                radius: height / 2
-            }
-        }
-    }
+                visible: !hasActiveAlarms
+                spacing: 32
 
-    CFrame {
-        id: frame
-        Layout.fillHeight: true
-        Layout.fillWidth: true
-        padding: 0
+                Repeater {
+                    model: pages
+                    delegate: FeedbackLoader {
+                        required property SideBarPage modelData
+                        required property int index
 
-        contentItem: SwipeView {
-            id: swipeView
+                        visible: Math.abs(index - swipeView.currentIndex) <= 1
+                        sourceComponent: modelData.page
 
-            visible: !hasActiveAlarms
-            currentIndex: tabBar.currentIndex
-            spacing: 32
+                        Item {
+                            anchors.fill: parent
+                            anchors.rightMargin: -frame.rightPadding
+                            anchors.leftMargin: -frame.leftPadding
+                            anchors.margins: -frame.padding
+                            clip: true
 
-            onCurrentIndexChanged: {
-                if (tabBar.currentIndex !== currentIndex)
-                    tabBar.currentIndex = currentIndex
-            }
-
-            Repeater {
-                model: pages
-                delegate: FeedbackLoader {
-                    required property SideBarPage modelData
-                    required property int index
-
-                    active: Math.abs(index - swipeView.currentIndex) <= 1
-                    sourceComponent: modelData.page
-
-                    Item {
-                        anchors.fill: parent
-                        anchors.rightMargin: -frame.rightPadding
-                        anchors.leftMargin: -frame.leftPadding
-                        anchors.margins: -frame.padding
-                        clip: true
-
-                        Icon {
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
-                            anchors.margins: -implicitHeight / 4
-                            font.pixelSize: parent.width
-                            opacity: Theme.o11
-                            text: modelData.icon
+                            Icon {
+                                anchors.bottom: parent.bottom
+                                anchors.right: parent.right
+                                anchors.margins: -implicitHeight / 4
+                                font.pixelSize: parent.width
+                                opacity: Theme.o11
+                                text: modelData.icon
+                            }
                         }
                     }
                 }
             }
         }
+    }
 
-        FeedbackLoader {
-            anchors.fill: parent
-            visible: hasActiveAlarms
-            active: hasActiveAlarms
-            sourceComponent: activeAlarmsPage.page
-        }
+    CFrame {
+        contentItem: ActiveAlarmsItem {}
     }
 
     Connections {

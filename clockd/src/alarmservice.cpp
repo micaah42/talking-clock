@@ -11,6 +11,8 @@
 
 #include "pathservice.h"
 
+#include <deletionutils.h>
+
 namespace {
 Q_LOGGING_CATEGORY(self, "alarms", QtWarningMsg)
 }
@@ -195,6 +197,22 @@ Alarm *AlarmService::nextAlarm() const
     return _nextAlarm;
 }
 
+const QList<Alarm *> AlarmService::alarmsTriggeredInInterval(const QDateTime &from, const QDateTime &to) const
+{
+    QList<Alarm *> alarms;
+    for (const auto alarm : std::as_const(_alarmModel))
+        if (alarm->activated())
+            if (from < alarm->nextTimeout() && alarm->nextTimeout() < to)
+                alarms.append(alarm);
+
+    return alarms;
+}
+
+const QList<Alarm *> AlarmService::alarmsTriggeredInInterval(const QDateTime &from, int minutes) const
+{
+    return this->alarmsTriggeredInInterval(from, from.addSecs(60 * minutes));
+}
+
 void AlarmService::removeAlarm(Alarm *alarm)
 {
     _alarmModel.removeAll(alarm);
@@ -237,3 +255,25 @@ void AlarmService::updateNextAlarm()
 }
 
 SortFilterAlarmModel::SortFilterAlarmModel() {}
+
+void ActiveAlarmListModel::snoozeAlarms(int minutes)
+{
+    for (auto const alarm : *this)
+        alarm->snooze(minutes);
+
+    this->clear();
+}
+
+void ActiveAlarmListModel::clearAlarms()
+{
+    for (auto const alarm : *this)
+        if (alarm->singleShot())
+            qDeleteAll1(alarm);
+
+    this->clear();
+}
+
+void ActiveAlarmListModel::muteAlarms()
+{
+    emit muteAlarmsRequested();
+}

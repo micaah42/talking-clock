@@ -59,12 +59,12 @@ Item {
             alwaysRunToEnd: true
 
             OpacityAnimator {
-                duration: 800
+                duration: 500
                 from: 0
                 to: 1
             }
             OpacityAnimator {
-                duration: 800
+                duration: 500
                 from: 1
                 to: 0
             }
@@ -96,23 +96,18 @@ Item {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         text: 'Accept'
-                        delay: 850
+                        delay: 500
 
                         onClicked: {
-                            sideBarItem.muteAlarms()
+                            ActiveAlarmListModel.muteAlarms()
                         }
                         onReleased: {
                             if (!wasActivated)
                                 return
-                            for (let alarm of ActiveAlarmListModel.asList) {
-                                if (alarm.singleShot && false)
-                                    // TODO: alarm should be destroyed but:
-                                    // "Error: Invalid attempt to destroy() an indestructible object"
-                                    alarm.destroy(1000)
-                            }
 
-                            ActiveAlarmListModel.clear()
+                            ActiveAlarmListModel.clearAlarms()
                             wasActivated = false
+                            checked = false
                         }
                     }
 
@@ -123,10 +118,7 @@ Item {
                         Layout.fillHeight: true
                         contentItem: SleepyBedItem {}
                         onClicked: {
-                            for (let alarm of ActiveAlarmListModel.asList) {
-                                alarm.snooze(5)
-                            }
-                            ActiveAlarmListModel.clear()
+                            ActiveAlarmListModel.snoozeAlarms(15)
                         }
 
                         onPressAndHold: selectMenu.open()
@@ -142,10 +134,7 @@ Item {
                                 delegate: CMenuItem {
                                     text: modelData
                                     onTriggered: {
-                                        for (let alarm of ActiveAlarmListModel.asList) {
-                                            alarm.snooze(modelData)
-                                        }
-                                        ActiveAlarmListModel.clear()
+                                        ActiveAlarmListModel.snoozeAlarms(modelData)
                                     }
                                 }
                             }

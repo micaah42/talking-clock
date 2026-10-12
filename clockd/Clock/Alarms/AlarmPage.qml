@@ -60,6 +60,7 @@ Item {
                     }
 
                     CButton {
+                        objectName: "TimerMenuButton"
                         Layout.preferredWidth: height
                         Layout.fillHeight: true
                         font.family: Icons.fontFamily
@@ -72,6 +73,7 @@ Item {
                             y: parent.height + 8
 
                             CMenuItem {
+                                objectName: "NewTimerMenuItem"
                                 text: 'New Timer'
                                 onClicked: {
                                     const alarm = AlarmService.newAlarm()
@@ -117,6 +119,7 @@ Item {
 
     Dialog {
         id: timerDialog
+        objectName: "TimerDialog"
         property Alarm alarm
 
         anchors.centerIn: parent
@@ -127,6 +130,7 @@ Item {
 
         contentItem: DurationEdit {
             id: durationEdit
+            objectName: "TimerDurationEdit"
         }
 
         onRejected: alarm.destroy()

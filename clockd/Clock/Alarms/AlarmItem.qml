@@ -8,6 +8,7 @@ import "../Style"
 
 ItemDelegate {
     id: ctrl
+    objectName: alarm?.singleShot ? "TimerAlarmItem" : ""
 
     property Alarm alarm
     property bool wasHeld: false

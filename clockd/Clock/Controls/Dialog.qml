@@ -53,6 +53,7 @@ T.Dialog {
                 text: 'Cancel'
             }
             CButton {
+                objectName: "DialogOkButton"
                 visible: root.standardButtons & T.Dialog.Ok
                 onClicked: accept()
                 highlighted: true

@@ -28,6 +28,7 @@ Item {
             Layout.fillWidth: true
 
             name: "Lighting"
+            objectName: 'LightingButton'
             text: Icons.lightbulb_2
             comp: Component {
                 LightingPage {}
@@ -54,6 +55,7 @@ Item {
             onClicked: currentPage = page
 
             name: "Alarm"
+            objectName: 'AlarmButton'
             text: Icons.alarm
             comp: Component {
                 AlarmPage {}
@@ -66,6 +68,7 @@ Item {
             onClicked: currentPage = page
 
             name: "Settings"
+            objectName: 'SettingsButton'
             text: Icons.settings
             comp: Component {
                 SettingsPage {}

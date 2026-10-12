@@ -71,14 +71,8 @@ ColumnLayout {
                 Layout.preferredWidth: weatherLine.width / 4
                 text: weatherLine.title
             }
-            Rectangle {
-                // Layout.alignment: Qt.AlignBottom
-                Layout.preferredHeight: 1.5
+            Divider {
                 Layout.fillWidth: true
-                radius: height / 2
-
-                color: Theme.foreground
-                opacity: Theme.o24
             }
         }
 

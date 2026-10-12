@@ -45,40 +45,19 @@ QtObject {
 
     property Timer timer: Timer {
         id: responseDebouncer
-        interval: 15000
+        interval: 1500
         onTriggered: {
+            if (ActiveAlarmListModel.length) {
+                responseDebouncer.restart()
+                return
+            }
+
+            if (nextAlarmPrompt === '')
+                return
+
             console.info('update next alarm response for', nextAlarmPrompt)
             ChatBotResponseService.alarmResponse = ollamaService.generate(nextAlarmPrompt, PromptBuilderSettings.model,
                                                                           ChatBotResponseService)
-        }
-    }
-
-    property Connections connections1: Connections {
-        target: AlarmService
-
-        function onAlarmTriggered(_alarm) {
-            if (ChatBotResponseService.alarmResponse === null)
-                return
-
-            listModel.append(ChatBotResponseService.alarmResponse)
-            ChatBotResponseService.alarmResponse.parent = listModel
-            ChatBotResponseService.alarmResponse = null
-        }
-    }
-
-    property Connections connections2: Connections {
-        target: TimeService
-
-        function onNowHoursChanged() {
-            if (TimeService.now.getHours() === 12) {
-                addBasicPrompt('It\'s 12 o clock now!')
-            }
-        }
-
-        function onNowMinutesChanged() {
-            if (TimeService.now.getHours() === 21 && TimeService.now.getMinutes() === 12) {
-                addBasicPrompt('It\'s 2112 now, like in the rush song!')
-            }
         }
     }
 }

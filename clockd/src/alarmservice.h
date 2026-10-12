@@ -1,6 +1,7 @@
 #ifndef ALARMSERVICE_H
 #define ALARMSERVICE_H
 
+#include <QDateTime>
 #include <QFile>
 #include <QJsonArray>
 #include <QMap>
@@ -55,6 +56,14 @@ public:
     explicit ActiveAlarmListModel(QObject *parent = nullptr)
         : AlarmListModel(parent)
     {}
+
+public slots:
+    void snoozeAlarms(int minutes);
+    void clearAlarms();
+    void muteAlarms();
+
+signals:
+    void muteAlarmsRequested();
 };
 
 class AlarmService : public QObject
@@ -75,6 +84,9 @@ public:
     Alarm *nextAlarm() const;
 
 public slots:
+    const QList<Alarm *> alarmsTriggeredInInterval(const QDateTime &from, const QDateTime &to) const;
+    const QList<Alarm *> alarmsTriggeredInInterval(const QDateTime &from, int minutes) const;
+
     void removeAlarm(Alarm *alarm);
     void removeAllAlarms();
 

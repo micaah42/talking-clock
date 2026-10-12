@@ -22,7 +22,7 @@ ColumnLayout {
     signal textAdded
     signal accepted
 
-    spacing: 8
+    spacing: 0
     onResponseChanged: {
         text = response?.text || ''
         characterTimer.count = 0
@@ -41,7 +41,6 @@ ColumnLayout {
         function onTtsStatusChanged() {
             if (response.ttsStatus === ChatBotResponse.Done) {
                 player.source = `file://${response.ttsOutputFile}`
-                player.play()
             }
         }
     }
@@ -51,72 +50,75 @@ ColumnLayout {
         audioOutput: AudioOutput {}
     }
 
-    Expandable {
-        Layout.fillWidth: true
-        previewLabel.text: 'Prompt'
-        previewLabel.opacity: Theme.o72
-        visible: PromptBuilderSettings.showPrompt
+    FlickableColumnLayout {
+        id: flickable
 
-        CLabel {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        clip: true
+
+        TextEdit {
+            id: responseOutput
+
             Layout.fillWidth: true
-            size: CLabel.Small
+            text: root.text.slice(0, characterTimer.count)
+            width: flickable.width
+
+            textFormat: Text.PlainText
+            color: Material.foreground
+            cursorPosition: text.length
+            font.pixelSize: Theme.fontSizeMedium
+            font.family: FontService.family
             wrapMode: Text.Wrap
-            text: root.response?.prompt || ''
-            opacity: Theme.o72
-        }
-    }
+            opacity: Theme.o84
+            enabled: false
 
-    CLabel {
-        Layout.fillWidth: true
-        visible: PromptBuilderSettings.showPrompt
-        opacity: Theme.o72
-        text: 'Response'
-    }
+            CLabel {
+                visible: !root.done
+                x: responseOutput.cursorRectangle.x + 8
+                y: responseOutput.cursorRectangle.y - 2
 
-    TextEdit {
-        id: responseOutput
-        Layout.fillWidth: true
-        text: root.text.slice(0, characterTimer.count)
+                text: '...'.slice(0, dotsTimer.count % 3 + 1)
 
-        textFormat: Text.PlainText
-        color: Material.foreground
-        cursorPosition: text.length
-        font.pixelSize: Theme.fontSizeMedium
-        font.family: FontService.family
-        wrapMode: Text.Wrap
-        enabled: false
-
-        CLabel {
-            visible: !root.done
-            x: responseOutput.cursorRectangle.x + 8
-            y: responseOutput.cursorRectangle.y - 2
-
-            text: '...'.slice(0, dotsTimer.count % 3 + 1)
-
-            Timer {
-                id: dotsTimer
-                property int count: 0
-                onTriggered: count++
-                running: !root.done
-                interval: 750
-                repeat: true
+                Timer {
+                    id: dotsTimer
+                    property int count: 0
+                    onTriggered: count++
+                    running: !root.done
+                    interval: 750
+                    repeat: true
+                }
             }
         }
     }
 
+    Slider {
+        Layout.topMargin: -8
+        Layout.bottomMargin: -24
+        Layout.fillWidth: true
+        onValueChanged: player.position = value
+        value: player.position
+        to: player.duration
+        live: false
+        z: 1
+    }
+
     RowLayout {
-        Layout.alignment: Qt.AlignRight
+        enabled: root.response.ttsStatus === ChatBotResponse.Done
+        Layout.alignment: Qt.AlignHCenter
         spacing: 8
 
         CToolButton {
-            enabled: root.response.ttsStatus === ChatBotResponse.Done
+            onClicked: player.position -= 5000
+            text: Icons.fast_rewind
+        }
+        CToolButton {
             onClicked: player.playing ? player.stop() : player.play()
             text: player.playing ? Icons.stop : Icons.play_arrow
         }
         CToolButton {
-            onClicked: root.accepted()
-            enabled: root.done
-            text: Icons.check
+            onClicked: player.position += 5000
+            text: Icons.fast_forward
         }
     }
 

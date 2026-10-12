@@ -23,6 +23,7 @@ RowLayout {
                 text: col.title
             }
             CButton {
+                objectName: col.title === 'Seconds' ? "SecondsIncrementButton" : ""
                 onClicked: msecs += col.duration
                 font.pixelSize: Theme.fontSizeLarge
                 Layout.fillWidth: true

@@ -8,7 +8,6 @@ DelayButton {
     id: root
     property bool wasActivated: false
     onActivated: wasActivated = true
-    onReleased: progress = 0
 
     background: Rectangle {
         anchors.fill: parent
